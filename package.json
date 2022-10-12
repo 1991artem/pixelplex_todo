@@ -5,6 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/1991artem/pixelplex#readme",
   "devDependencies": {
+    "@types/node": "^18.8.4",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "eslint": "^8.25.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
