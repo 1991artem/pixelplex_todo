@@ -1,0 +1,6 @@
+{
+  "PORT": 4500,
+  "mongoUri": "mongodb+srv://1991artem:1991artem1991@cluster0.wm8hh7v.mongodb.net/app?retryWrites=true&w=majority",
+  "jwtSecret": "1991",
+  "baseUrl": "http://localhost:4500"
+}
