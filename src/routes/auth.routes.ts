@@ -4,16 +4,8 @@ import config from 'config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { check, validationResult } from 'express-validator';
-import { IUser } from '../helps/interfaces';
+import { IUser, ServerMessage } from '../helps/interfaces';
 
-type ServerMessage = (
-  res: Response,
-  startus: number,
-  body: {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    errors?: {} | null,
-    message: string
-  }) => void;
 
 export default class AuthApi {
   private router = Router();
@@ -25,7 +17,7 @@ export default class AuthApi {
   registration(){
     //link ===> /api/auth/register
     this.router.post(
-      '/register',
+      '/auth/register',
       [
         check('email', 'Incorrect email').isEmail(),                 // validation email
         check('password', 'Minimum password length 8 characters and maximum password length 256 characters')         // validation Password
@@ -69,12 +61,12 @@ export default class AuthApi {
         this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
-      }
+  }
 
   login(){
   //link ===> /api/auth/login
   this.router.post(
-    '/login',
+    '/auth/login',
     [
       check('username', 'Minimum name length 5 characters').isLength({ min:5, max: 256 }),
       check('password', 'Minimum password length 8 characters and maximum password length 256 characters').isLength({ min:8, max: 256 }),
@@ -113,11 +105,12 @@ export default class AuthApi {
   serverMessage(res, status, {errors = null, message}): ServerMessage {
     return res.status(status).json({ message: message });
   }
-  getJwtToken(user){
+  getJwtToken(user){ 
+    const tokenLifetime: string = config.get('tokenLifetime')                   // request token to client
     return jwt.sign(
       { userId: user.id },
       config.get('jwtSecret'),
-      { expiresIn: '4h' }
+      { expiresIn: tokenLifetime }
     )
   }
 }
