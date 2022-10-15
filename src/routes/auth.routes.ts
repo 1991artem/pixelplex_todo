@@ -15,7 +15,7 @@ export default class AuthApi {
     return this.router;
   }
   registration(){
-    //link ===> /api/auth/register
+    //endpoint ===> /api/auth/register
     this.router.post(
       '/auth/register',
       [
@@ -64,7 +64,7 @@ export default class AuthApi {
   }
 
   login(){
-  //link ===> /api/auth/login
+  //endpoint ===> /api/auth/login
   this.router.post(
     '/auth/login',
     [
@@ -101,8 +101,10 @@ export default class AuthApi {
   })
   }
 
+
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  serverMessage(res, status, {errors = null, message}): ServerMessage {
+  serverMessage(res, status, {errors = [], message}): ServerMessage {
     return res.status(status).json({ message: message });
   }
   getJwtToken(user){ 
