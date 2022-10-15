@@ -3,7 +3,7 @@ import {Group} from '../models/groups';
 import { check, validationResult } from 'express-validator';
 import { ServerMessage, IGroup, IGetUserAuthInfoRequest } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
-import getIdByHeaderToken from '../helps/decodedToken'
+import getIdByHeaderToken from '../helps/decodedToken';
 
 
 export default class GroupApi {
