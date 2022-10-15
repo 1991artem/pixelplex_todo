@@ -11,7 +11,9 @@ export default class TaskApi {
   taskRouter(){
     this.addTask();
     this.showTask();
-    this.showTaskById()
+    this.showTaskById();
+    this.deleteTaskById();
+    this.updateTaskById();
     return this.router;
   }
   addTask(){
@@ -41,10 +43,6 @@ export default class TaskApi {
         const userId: string = getIdByHeaderToken(res, req) as string;
         const task = new Task({ name, discription,  owner: userId});       // create new task
         await task.save();
-
-
-
-
         this.serverMessage(res, 201, {message: 'Task created'});
 
       } catch (e) {
@@ -67,20 +65,48 @@ export default class TaskApi {
     })
   }
   showTaskById(){
-    //endpoint ===> /api/task
+    //endpoint ===> /api/task/delete/:id
     this.router.get(
-      '/task',
+      '/task/:id',
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const task: ITask = await Task.findById(req.user.userId)
+        const task: ITask = await Task.findById(req.params?.id)
         res.json(task)
       } catch (e) {
         this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
-
+  deleteTaskById(){
+    //endpoint ===> /api/task/delete/:id
+    this.router.delete(
+      '/task/delete/:id',
+      autorization,
+      async (req: IGetUserAuthInfoRequest, res: Response) => {
+      try {
+        await Task.findByIdAndDelete(req.params?.id)
+        this.serverMessage(res, 200, {message: 'Task deleted'});
+      } catch (e) {
+        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+      }
+    })
+  }
+  updateTaskById(){
+    //endpoint ===> /api/task/edit/:id
+    this.router.put(
+      '/task/edit/:id',
+      autorization,
+      async (req: IGetUserAuthInfoRequest, res: Response) => {
+      try {
+        const {name, discription, dedline, status, priority} = req.body;
+        const task: ITask = await Task.findByIdAndUpdate(req.params?.id, { name, discription, dedline, status, priority }, { new: true });
+        res.json(task);
+      } catch (e) {
+        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+      }
+    })
+  }
   serverMessage(res, status, { message}): ServerMessage {
     return res.status(status).json({ message: message });
   }

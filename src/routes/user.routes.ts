@@ -29,13 +29,13 @@ export default class UserApi {
     })
   }
   showUserById(){
-    //endpoint ===> /api/user
+    //endpoint ===> /api/user/:id
     this.router.get(
-      '/user',
+      '/user/:id',
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const user = await User.findById(req.user.userId)
+        const user = await User.findById(req.params?.id)
         res.json(user)
       } catch (e) {
         this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
@@ -49,22 +49,21 @@ export default class UserApi {
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const {group_name} = req.body;
-        const isMatch: IGroup = await Group.findOne({ group_name })  
-        console.log(isMatch);         // check group in DB
+        const {group_id} = req.body;
+        const isMatch: IGroup = await Group.findById(group_id)       // check group in DB
         if (!isMatch) {
           return this.serverMessage(res, 400, {message: 'This name is not in the DB'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
         const user = await User.findById(userId);
-        if(!user.groups.includes(group_name)) {
-        user.groups.push(group_name);
+        if(!user.groups.includes(group_id)) {
+        user.groups.push(group_id);
         await user.save();
         } else {
           return this.serverMessage(res, 400, {message: 'This user includes the group'})
         }
 
-        this.serverMessage(res, 201, {message: `User add to ${group_name}`});
+        this.serverMessage(res, 201, {message: 'User add to group'});
       } catch (e) {
         this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again' + e});
       }

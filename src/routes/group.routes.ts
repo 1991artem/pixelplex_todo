@@ -63,13 +63,13 @@ export default class GroupApi {
     })
   }
   showGroupById(){
-    //endpoint ===> /api/group
+    //endpoint ===> /api/group/:id
     this.router.get(
-      '/group',
+      '/group/:id',
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const group: IGroup = await Group.findById(req.user.userId)
+        const group: IGroup = await Group.findById(req.params?.id)
         res.json(group)
       } catch (e) {
         this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
