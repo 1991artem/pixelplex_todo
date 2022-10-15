@@ -4,7 +4,8 @@ import config from 'config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { check, validationResult } from 'express-validator';
-import { IUser, ServerMessage } from '../helps/interfaces';
+import { IUser } from '../helps/interfaces';
+import { serverMessage } from '../helps/errorHandler';
 
 
 export default class AuthApi {
@@ -37,17 +38,14 @@ export default class AuthApi {
       try {
         const errors = validationResult(req)          // check register tamplated validation
         if (!errors.isEmpty()) {
-          return res.status(400).json({
-            errors: errors.array(),
-            message: 'Incorrect data during registration'
-          })
+          return serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect data during registration'})
         }
 
         const {username, email, password} = req.body;
 
         const isMatch: IUser = await User.findOne({ username })           // check user in DB
         if (isMatch) {
-          return this.serverMessage(res, 400, {message: 'This user already exists'})
+          return serverMessage(res, 400, {message: 'This user already exists'})
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);               // hash password
@@ -55,10 +53,10 @@ export default class AuthApi {
         const user = new User({ username, email, password: hashedPassword });       // create new user
         await user.save();
 
-        this.serverMessage(res, 201, {message: 'User created'});
+        serverMessage(res, 201, {message: 'User created'});
 
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
@@ -76,7 +74,7 @@ export default class AuthApi {
       const errors = validationResult(req)                // check login tamplated validation
   
       if (!errors.isEmpty()) {
-        return this.serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect login information'})
+        return serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect login information'})
       }
   
       const {username, password} = req.body
@@ -84,28 +82,21 @@ export default class AuthApi {
       const user: IUser = await User.findOne({ username })              // check db.user and login user
 
       if (!user) {
-        return this.serverMessage(res, 400, {message: 'User is not found'})
+        return serverMessage(res, 400, {message: 'User is not found'})
       }
   
       const isMatch = await bcrypt.compare(password, user.password)             // check db.user.password and enter password
   
       if (!isMatch) {
-        return this.serverMessage(res, 400, {message: 'Wrong password, please try again'})
+        return serverMessage(res, 400, {message: 'Wrong password, please try again'})
       }
       
       res.json({ token: this.getJwtToken(user), userId: user.id })              // request token to client
   
     } catch (e) {
-      this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'})
+      serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'})
     }
   })
-  }
-
-
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  serverMessage(res, status, {errors = [], message}): ServerMessage {
-    return res.status(status).json({ message: message });
   }
   getJwtToken(user){ 
     const tokenLifetime: string = config.get('tokenLifetime')                   // request token to client

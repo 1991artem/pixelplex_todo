@@ -1,9 +1,12 @@
 import { Router, Response } from 'express';
 import {Task} from '../models/task';
+import {User} from '../models/user';
 import { check, validationResult } from 'express-validator';
-import { ServerMessage, IGetUserAuthInfoRequest, ITask } from '../helps/interfaces';
+import { IGetUserAuthInfoRequest, ITask, IQueryParams, IUser } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken'
+import { serverMessage } from '../helps/errorHandler';
+import sortData from '../helps/dataSort';
 
 
 export default class TaskApi {
@@ -29,24 +32,21 @@ export default class TaskApi {
         const errors = validationResult(req)          // check register tamplated validation
 
         if (!errors.isEmpty()) {
-          return res.status(400).json({
-            errors: errors.array(),
-            message: 'Incorrect data'
-          })
+          return serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect data'})
         }
 
         const {name, discription} = req.body;
         const isMatch: ITask = await Task.findOne({ name })           // check task in DB
         if (isMatch) {
-          return this.serverMessage(res, 400, {message: 'This task already exists'})
+          return serverMessage(res, 400, {message: 'This task already exists'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
         const task = new Task({ name, discription,  owner: userId});       // create new task
         await task.save();
-        this.serverMessage(res, 201, {message: 'Task created'});
+        serverMessage(res, 201, {message: 'Task created'});
 
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again' + e});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again' + e});
       }
     })
   }
@@ -57,10 +57,17 @@ export default class TaskApi {
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const task: ITask[] = await Task.find();
-        res.json(task)
+        const query: IQueryParams = req.query;
+        const {skip = '0', limit = '10', page = '1'} = query;
+        const pagination =  {
+          skip: parseInt(skip)*parseInt(page),
+          limit: parseInt(limit)*parseInt(page),
+        }
+        const task: ITask[] = await Task.find().skip(pagination.skip).limit(pagination.limit);
+        const responseData = sortData(query, task)
+        res.json(responseData)
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
@@ -74,7 +81,7 @@ export default class TaskApi {
         const task: ITask = await Task.findById(req.params?.id)
         res.json(task)
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
@@ -85,10 +92,19 @@ export default class TaskApi {
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        await Task.findByIdAndDelete(req.params?.id)
-        this.serverMessage(res, 200, {message: 'Task deleted'});
+        const userId: string = getIdByHeaderToken(res, req) as string;
+        const user: IUser = await User.findById(userId);
+        const task: ITask = await Task.findById(req.params?.id);
+        if(userId === task.owner || user.admin){
+          await Task.findByIdAndDelete(req.params?.id)
+          serverMessage(res, 200, {message: 'Task deleted'});
+        } else {
+          serverMessage(res, 400, {message: 'User is not task owner'});
+        }
+
+
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
@@ -99,15 +115,19 @@ export default class TaskApi {
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
+        const userId: string = getIdByHeaderToken(res, req) as string;
+        const user: IUser = await User.findById(userId);
+        const task: ITask = await Task.findById(req.params?.id);
+        if(userId === task.owner || user.admin){
         const {name, discription, dedline, status, priority} = req.body;
         const task: ITask = await Task.findByIdAndUpdate(req.params?.id, { name, discription, dedline, status, priority }, { new: true });
         res.json(task);
+        } else {
+          serverMessage(res, 400, {message: 'User is not task owner'});
+        }
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
-  }
-  serverMessage(res, status, { message}): ServerMessage {
-    return res.status(status).json({ message: message });
   }
 }

@@ -1,9 +1,10 @@
 import { Router, Response } from 'express';
 import {User} from '../models/user';
 import {Group} from '../models/groups';
-import { ServerMessage, IGetUserAuthInfoRequest, IGroup } from '../helps/interfaces';
+import { IGetUserAuthInfoRequest, IGroup } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken';
+import { serverMessage } from '../helps/errorHandler';
 
 
 export default class UserApi {
@@ -24,7 +25,7 @@ export default class UserApi {
         const user = await User.find();
         res.json(user)
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
@@ -38,7 +39,7 @@ export default class UserApi {
         const user = await User.findById(req.params?.id)
         res.json(user)
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
     })
   }
@@ -52,7 +53,7 @@ export default class UserApi {
         const {group_id} = req.body;
         const isMatch: IGroup = await Group.findById(group_id)       // check group in DB
         if (!isMatch) {
-          return this.serverMessage(res, 400, {message: 'This name is not in the DB'})
+          return serverMessage(res, 400, {message: 'This name is not in the DB'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
         const user = await User.findById(userId);
@@ -60,17 +61,13 @@ export default class UserApi {
         user.groups.push(group_id);
         await user.save();
         } else {
-          return this.serverMessage(res, 400, {message: 'This user includes the group'})
+          return serverMessage(res, 400, {message: 'This user includes the group'})
         }
 
-        this.serverMessage(res, 201, {message: 'User add to group'});
+        serverMessage(res, 201, {message: 'User add to group'});
       } catch (e) {
-        this.serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again' + e});
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again' + e});
       }
     })
-  }
-
-  serverMessage(res, status, {message}): ServerMessage {
-    return res.status(status).json({ message: message });
   }
 }
