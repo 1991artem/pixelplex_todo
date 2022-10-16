@@ -31,13 +31,13 @@ export default class GroupApi {
           return serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect data'})
         }
 
-        const {name, discription} = req.body;
+        const {name, description} = req.body;
         const isMatch: IGroup = await Group.findOne({ name })           // check group in DB
         if (isMatch) {
           return serverMessage(res, 400, {message: 'This group already exists'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
-        const group = new Group({ name, discription, owner: userId });       // create new group
+        const group = new Group({ name, description, owner: userId });       // create new group
         await group.save();
 
         serverMessage(res, 201, {message: 'Group created'});

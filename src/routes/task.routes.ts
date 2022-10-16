@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import {Task} from '../models/task';
 import {User} from '../models/user';
+import config from 'config';
 import { check, validationResult } from 'express-validator';
 import { IGetUserAuthInfoRequest, ITask, IQueryParams, IUser } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
@@ -17,6 +18,7 @@ export default class TaskApi {
     this.showTaskById();
     this.deleteTaskById();
     this.updateTaskById();
+    this.showTaskByGroupId();
     return this.router;
   }
   addTask(){
@@ -34,14 +36,17 @@ export default class TaskApi {
         if (!errors.isEmpty()) {
           return serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect data'})
         }
-
-        const {name, discription} = req.body;
+        const defaultDeadline = Date.now() + config.get('defaultTime'); // add 1h to create task time
+        const {name, description, status = 'to do', deadline = defaultDeadline, priority = 'high'} = req.body;
+        if (deadline <= Date.now()) {
+          return serverMessage(res, 400, {message: 'Wrong deadline time'})
+        }
         const isMatch: ITask = await Task.findOne({ name })           // check task in DB
         if (isMatch) {
           return serverMessage(res, 400, {message: 'This task already exists'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
-        const task = new Task({ name, discription,  owner: userId});       // create new task
+        const task = new Task({ name, description, status, deadline, priority,  owner: userId});       // create new task
         await task.save();
         serverMessage(res, 201, {message: 'Task created'});
 
@@ -59,13 +64,18 @@ export default class TaskApi {
       try {
         const query: IQueryParams = req.query;
         const {skip = '0', limit = '10', page = '1'} = query;
-        const pagination =  {
-          skip: parseInt(skip)*parseInt(page),
-          limit: parseInt(limit)*parseInt(page),
+        if(+skip*+limit >= 0 && +page >= 1){
+          const pagination =  {
+            limit: parseInt(limit)*parseInt(page),
+            skip: page === '1' ? parseInt(skip) : (parseInt(limit)*(parseInt(page)-1))
+          }
+          const task: ITask[] = await Task.find().limit(pagination.limit).skip(pagination.skip);
+          const responseData = sortData(query, task)
+          res.json(responseData)
+        } else {
+          serverMessage(res, 400, {message: 'Wrong query params'})
         }
-        const task: ITask[] = await Task.find().skip(pagination.skip).limit(pagination.limit);
-        const responseData = sortData(query, task)
-        res.json(responseData)
+
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
@@ -85,6 +95,49 @@ export default class TaskApi {
       }
     })
   }
+  showTaskByGroupId(){
+    //endpoint ===> /api/task/group
+    this.router.get(
+      '/tasks/group/:id',
+      autorization,
+      async (req: IGetUserAuthInfoRequest, res: Response) => {
+      try {
+        const group = req.params?.id;
+        const userId: string = getIdByHeaderToken(res, req) as string;
+        const client: IUser = await User.findOne({_id: userId}, {groups: {
+            $elemMatch: {
+              $eq: group
+            }
+          }
+        })
+        
+        if(!client && !client.admin){
+          return serverMessage(res, 400, {message: 'Change group ID. User not includes group.'});
+        }
+        // TODO change method. Don,t like use lot of connections to DB. Check banchmarks!!!!!
+        const user: IUser[] = await User.find({
+          groups: {
+            $elemMatch: {
+              $eq: group
+            }
+          }
+        })
+        let taskArray: ITask[] = [] as ITask[];
+        const getTAskByGroupId = async ()=>{
+          for(const element in user) {
+            taskArray = [...taskArray, ...await Task.find({
+              owner: user[element]._id
+            })]
+          }
+        }
+        //----------------------------------------------------------------
+        await getTAskByGroupId()
+        res.json(taskArray)
+      } catch (e) {
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+      }
+    })
+  }
   deleteTaskById(){
     //endpoint ===> /api/task/delete/:id
     this.router.delete(
@@ -95,7 +148,7 @@ export default class TaskApi {
         const userId: string = getIdByHeaderToken(res, req) as string;
         const user: IUser = await User.findById(userId);
         const task: ITask = await Task.findById(req.params?.id);
-        if(userId === task.owner || user.admin){
+        if(userId === task.owner.toString() || user.admin){
           await Task.findByIdAndDelete(req.params?.id)
           serverMessage(res, 200, {message: 'Task deleted'});
         } else {
@@ -118,9 +171,17 @@ export default class TaskApi {
         const userId: string = getIdByHeaderToken(res, req) as string;
         const user: IUser = await User.findById(userId);
         const task: ITask = await Task.findById(req.params?.id);
-        if(userId === task.owner || user.admin){
-        const {name, discription, dedline, status, priority} = req.body;
-        const task: ITask = await Task.findByIdAndUpdate(req.params?.id, { name, discription, dedline, status, priority }, { new: true });
+        if(userId === task.owner.toString() || user.admin){
+        const {name, description, deadline, status, priority} = req.body;
+        const updateParams ={
+          name,
+          description,
+          deadline,
+          status: deadline < Date.now() ? undefined : status,
+          priority
+        }
+        console.log(updateParams)
+        const task: ITask = await Task.findByIdAndUpdate(req.params?.id, updateParams, { new: true });
         res.json(task);
         } else {
           serverMessage(res, 400, {message: 'User is not task owner'});
