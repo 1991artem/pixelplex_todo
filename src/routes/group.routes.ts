@@ -1,7 +1,8 @@
 import { Router, Response } from 'express';
-import {Group} from '../models/groups';
 import { check, validationResult } from 'express-validator';
-import { IGroup, IGetUserAuthInfoRequest } from '../helps/interfaces';
+import {Group} from '../models/groups';
+import {User} from '../models/user';
+import { IGroup, IGetUserAuthInfoRequest, IUser } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken';
 import { serverMessage } from '../helps/errorHandler';
@@ -12,7 +13,8 @@ export default class GroupApi {
   groupRouter(){
     this.createGroup();
     this.showGroups();
-    this.showGroupById()
+    this.showGroupById();
+    this.deleteGroupById();
     return this.router;
   }
   createGroup(){
@@ -36,10 +38,14 @@ export default class GroupApi {
         if (isMatch) {
           return serverMessage(res, 400, {message: 'This group already exists'})
         }
+
         const userId: string = getIdByHeaderToken(res, req) as string;
+        const admin: IUser = await User.findById(userId);
+        if(!admin.admin) {
+          return serverMessage(res, 403, {message: 'You do not have permission for this operation'})
+        }
         const group = new Group({ name, description, owner: userId });       // create new group
         await group.save();
-
         serverMessage(res, 201, {message: 'Group created'});
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again' + e});
@@ -69,6 +75,43 @@ export default class GroupApi {
       try {
         const group: IGroup = await Group.findById(req.params?.id)
         res.json(group)
+      } catch (e) {
+        serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
+      }
+    })
+  }
+  deleteGroupById(){
+    //endpoint ===> /api/group/delete/:id
+    this.router.delete(
+      '/group/delete/:id',
+      autorization,
+      async (req: IGetUserAuthInfoRequest, res: Response) => {
+      try {
+        const deletedId = req.params.id;
+        const userId: string = getIdByHeaderToken(res, req) as string;
+        const admin: IUser = await User.findById(userId);
+        if (!admin) {
+          return serverMessage(res, 403, {message: 'You do not have permission for this operation'})
+        }
+        const group: IGroup = await Group.findById(deletedId);
+        if (!group) {
+          return serverMessage(res, 400, {message: 'Group not faund'})
+        }
+        console.log(group)
+        await User.updateMany({
+          groups: {
+            $elemMatch: {
+              $eq: group
+            }
+          }
+        },
+        {
+          $pull: {
+            groups: deletedId
+          }     
+      })
+        await group.delete();
+        serverMessage(res, 200, {message: 'Group deleted'});
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }

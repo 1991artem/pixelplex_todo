@@ -3,11 +3,12 @@ import {Task} from '../models/task';
 import {User} from '../models/user';
 import config from 'config';
 import { check, validationResult } from 'express-validator';
-import { IGetUserAuthInfoRequest, ITask, IQueryParams, IUser } from '../helps/interfaces';
+import { IGetUserAuthInfoRequest, ITask, IQueryParams, IUser, IPaginationsParams } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken'
 import { serverMessage } from '../helps/errorHandler';
 import sortData from '../helps/dataSort';
+import getPaginationsParams from '../helps/getPaginationsParams';
 
 
 export default class TaskApi {
@@ -46,7 +47,7 @@ export default class TaskApi {
           return serverMessage(res, 400, {message: 'This task already exists'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
-        const task = new Task({ name, description, status, deadline, priority,  owner: userId});       // create new task
+        const task: ITask = new Task({ name, description, status, deadline, priority,  owner: userId});       // create new task
         await task.save();
         serverMessage(res, 201, {message: 'Task created'});
 
@@ -63,19 +64,10 @@ export default class TaskApi {
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
         const query: IQueryParams = req.query;
-        const {skip = '0', limit = '10', page = '1'} = query;
-        if(+skip*+limit >= 0 && +page >= 1){
-          const pagination =  {
-            limit: parseInt(limit)*parseInt(page),
-            skip: page === '1' ? parseInt(skip) : (parseInt(limit)*(parseInt(page)-1))
-          }
-          const task: ITask[] = await Task.find().limit(pagination.limit).skip(pagination.skip);
-          const responseData = sortData(query, task)
-          res.json(responseData)
-        } else {
-          serverMessage(res, 400, {message: 'Wrong query params'})
-        }
-
+        const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
+        const task: ITask[] = await Task.find().limit(pagination.limit).skip(pagination.skip);
+        const responseData = sortData(query, task)
+        res.json(responseData)
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
@@ -102,7 +94,8 @@ export default class TaskApi {
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const group = req.params?.id;
+        const group: string = req.params?.id;
+        const query: IQueryParams = req.query;
         const userId: string = getIdByHeaderToken(res, req) as string;
         const client: IUser = await User.findOne({_id: userId}, {groups: {
             $elemMatch: {
@@ -110,11 +103,12 @@ export default class TaskApi {
             }
           }
         })
-        
+
         if(!client && !client.admin){
-          return serverMessage(res, 400, {message: 'Change group ID. User not includes group.'});
+          return serverMessage(res, 403, {message: 'You do not have permission for this operation'})
         }
-        // TODO change method. Don,t like use lot of connections to DB. Check banchmarks!!!!!
+        const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
+        // TODO change method. Don,t like use lot of connections to DB. Check banchmarks!!!!! Done!!!!
         const user: IUser[] = await User.find({
           groups: {
             $elemMatch: {
@@ -122,17 +116,20 @@ export default class TaskApi {
             }
           }
         })
-        let taskArray: ITask[] = [] as ITask[];
-        const getTAskByGroupId = async ()=>{
+        const idArray: string[] = [];
           for(const element in user) {
-            taskArray = [...taskArray, ...await Task.find({
-              owner: user[element]._id
-            })]
-          }
+              idArray.push(user[element]._id.toString())
         }
+
+        const tasks: ITask[] = await Task.find({
+          owner: {
+            $in: idArray
+          }
+        }).limit(pagination.limit).skip(pagination.skip);
         //----------------------------------------------------------------
-        await getTAskByGroupId()
-        res.json(taskArray)
+
+        const responseData = sortData(query, tasks)
+        res.json(responseData)
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
@@ -149,13 +146,11 @@ export default class TaskApi {
         const user: IUser = await User.findById(userId);
         const task: ITask = await Task.findById(req.params?.id);
         if(userId === task.owner.toString() || user.admin){
-          await Task.findByIdAndDelete(req.params?.id)
+          await task.delete();
           serverMessage(res, 200, {message: 'Task deleted'});
         } else {
-          serverMessage(res, 400, {message: 'User is not task owner'});
+          return serverMessage(res, 403, {message: 'You do not have permission for this operation'}) 
         }
-
-
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
       }
@@ -180,11 +175,11 @@ export default class TaskApi {
           status: deadline < Date.now() ? undefined : status,
           priority
         }
-        console.log(updateParams)
+        //TODO: change update method
         const task: ITask = await Task.findByIdAndUpdate(req.params?.id, updateParams, { new: true });
         res.json(task);
         } else {
-          serverMessage(res, 400, {message: 'User is not task owner'});
+          serverMessage(res, 403, {message: 'You do not have permission for this operation'}) 
         }
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
