@@ -52,23 +52,26 @@ export default class UserApi {
       autorization,
       async (req: IGetUserAuthInfoRequest, res: Response) => {
       try {
-        const group = {
-          id: req.params?.id,
-        }
-        const isMatch: IGroup = await Group.findById(group.id)       // check group in DB
+        const group_id: string = req.params?.id;
+        const isMatch: IGroup = await Group.findById(group_id)       // check group in DB
         if (!isMatch) {
           return serverMessage(res, 400, {message: 'This name is not in the DB'})
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
         const user: IUser = await User.findById(userId);
-        if(!user.groups.includes(group.id) && user.admin) {
-        user.groups.push(group.id);
-        await user.save();
-        } else {
-          return !user.admin ? 
-          serverMessage(res, 403, {message: 'You do not have permission for this operation'}) 
-          : serverMessage(res, 400, {message: 'This user includes the group'})
+        const isInGroupsArray = user.groups.some((group) => group.equals(group_id));
+        if(isInGroupsArray){
+          return serverMessage(res, 400, {message: 'This user includes the group'});
         }
+        if(!user.admin) {
+          return serverMessage(res, 403, {message: 'You do not have permission for this operation'})
+        }
+        await user.updateOne({
+          $push: {
+            groups: group_id
+          }   
+        })
+        await user.save();
         serverMessage(res, 201, {message: 'User add to group'});
       } catch (e) {
         serverMessage(res, 500, {message: 'Uuppss :( Something went wrong, please try again'});
@@ -91,16 +94,15 @@ export default class UserApi {
         }
         const userId: string = getIdByHeaderToken(res, req) as string;
         const user: IUser = await User.findById(userId);
-        if(user.groups.includes(group.id) && !user.admin) {
-          console.log(user.groups)
-          const groupIndex = user.groups.indexOf(group.id);
-          user.groups.splice(groupIndex, 1);
-          console.log(user.groups)
+        if(user.admin) {
+          await user.updateOne({
+            $pull: {
+              groups: group.id
+            }   
+          })
           await user.save();
         } else {
-          return !user.admin ? 
-          serverMessage(res, 403, {message: 'You do not have permission for this operation'}) 
-          : serverMessage(res, 400, {message: 'This user not includes the group'})
+          return serverMessage(res, 403, {message: 'You do not have permission for this operation'})
         }
         serverMessage(res, 201, {message: 'User removed from group'});
       } catch (e) {
