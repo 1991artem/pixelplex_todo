@@ -66,7 +66,7 @@ export default class AuthApi {
   this.router.post(
     '/auth/login',
     [
-      check('username', 'Minimum name length 5 characters').isLength({ min:5, max: 256 }),
+      check('email', 'Minimum name length 5 characters').isEmail(),
       check('password', 'Minimum password length 8 characters and maximum password length 256 characters').isLength({ min:8, max: 256 }),
     ],
     async (req: Request, res: Response) => {
@@ -77,9 +77,9 @@ export default class AuthApi {
         return serverMessage(res, 400, {errors: errors.array(), message: 'Incorrect login information'})
       }
   
-      const {username, password} = req.body
+      const {email, password} = req.body
   
-      const user: IUser = await User.findOne({ username })              // check db.user and login user
+      const user: IUser = await User.findOne({ email })              // check db.user and login user
 
       if (!user) {
         return serverMessage(res, 400, {message: 'User is not found'})
