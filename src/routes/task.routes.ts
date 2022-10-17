@@ -168,16 +168,16 @@ export default class TaskApi {
         const task: ITask = await Task.findById(req.params?.id);
         if(userId === task.owner.toString() || user.admin){
         const {name, description, deadline, status, priority} = req.body;
-        const updateParams ={
+        const updateParams = {
           name,
           description,
           deadline,
           status: deadline < Date.now() ? undefined : status,
           priority
-        }
-        //TODO: change update method
-        const task: ITask = await Task.findByIdAndUpdate(req.params?.id, updateParams, { new: true });
-        res.json(task);
+        };
+        await task.updateOne( updateParams);
+        await task.save();
+        serverMessage(res, 200, {message: 'Task update'});
         } else {
           serverMessage(res, 403, {message: 'You do not have permission for this operation'}) 
         }
