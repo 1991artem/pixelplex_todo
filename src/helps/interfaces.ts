@@ -23,7 +23,7 @@ export interface IGroupApi{
   showGroupById: ()=>void;
   deleteGroupById: ()=>void;
   updateTaskById: ()=>void;
-  checkUsersInGroup: (group_id: string)=>Promise<boolean>
+  checkUsersInGroup: (group_id: string)=>Promise<IUser[]>
 }
 export interface ITaskApi{
   taskRouter: ()=> Router;
@@ -59,7 +59,7 @@ export interface IGroup extends Document {
   name: string;
   description: string;
   create: Date;
-  owner: SchemaDefinitionProperty<string>;
+  owner?: SchemaDefinitionProperty<string>;
 }
 
 export type ServerMessage = (

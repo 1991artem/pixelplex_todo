@@ -7,6 +7,7 @@ import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken';
 import { serverMessage } from '../helps/errorHandler';
 import getPaginationsParams from '../helps/getPaginationsParams';
+import getSortParams from '../helps/getSortParams';
 
 export default class UserApi implements IUserApi {
   private router = Router();
@@ -41,9 +42,7 @@ export default class UserApi implements IUserApi {
         try {
           const query: IQueryParams = req.query;
           const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
-          const sort = {
-            [Object.keys(query)[0]]: Object.values(query)[0],
-          };
+          const sort = query ? getSortParams(query) : {};
           const user: IUser = await User.findById(req.params?.id).limit(pagination.limit).skip(pagination.skip).sort(sort) as IUser;
           res.json(user);
         } catch (e) {

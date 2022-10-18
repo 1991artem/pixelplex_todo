@@ -8,6 +8,7 @@ import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken';
 import { serverMessage } from '../helps/errorHandler';
 import getPaginationsParams from '../helps/getPaginationsParams';
+import getSortParams from '../helps/getSortParams';
 
 export default class TaskApi {
   private router = Router();
@@ -63,9 +64,7 @@ export default class TaskApi {
   //       try {
   //         const query: IQueryParams = req.query;
   //         const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
-  //         const sort = {
-  //           [Object.keys(query)[0]]: Object.values(query)[0],
-  //         };
+  //         const sort = query ? getSortParams(query) : {};
   //         const tasks: ITask[] = await Task.find().limit(pagination.limit).skip(pagination.skip)
   //           .sort(sort) as ITask[];
   //         res.json(tasks);
@@ -121,10 +120,7 @@ export default class TaskApi {
           for (const element in user) {
             idArray.push(user[element]._id?.toString() as string);
           }
-          const sort = {
-            [Object.keys(query)[0]]: Object.values(query)[0],
-          };
-
+          const sort = query ? getSortParams(query) : {};
           const tasks: ITask[] = await Task.find({
             owner: {
               $in: idArray,

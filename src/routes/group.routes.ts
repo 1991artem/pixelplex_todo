@@ -7,6 +7,7 @@ import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken';
 import { serverMessage } from '../helps/errorHandler';
 import getPaginationsParams from '../helps/getPaginationsParams';
+import getSortParams from '../helps/getSortParams';
 
 export default class GroupApi implements IGroupApi {
   private router = Router();
@@ -62,14 +63,22 @@ export default class GroupApi implements IGroupApi {
         try {
           const query: IQueryParams = req.query;
           const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
-          const sort = {
-            [Object.keys(query)[0]]: Object.values(query)[0],
-          };
+          const sort = query ? getSortParams(query) : {};
           const groups: IGroup[] = await Group.find()
             .limit(pagination.limit)
             .skip(pagination.skip)
             .sort(sort) as IGroup[];
-          res.json(groups);
+          const response = await Promise.all(groups.map(async (group: IGroup) => {
+            const users: IUser[] = await this.checkUsersInGroup(group._id?.toString() as string);
+            return {
+              _id: group._id?.toString() as string,
+              name: group.name,
+              description: group.description,
+              create: group.create,
+              users: users.length,
+            };
+          }));
+          res.json(response);
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
@@ -83,7 +92,14 @@ export default class GroupApi implements IGroupApi {
       async (req: Request, res: Response) => {
         try {
           const group: IGroup = await Group.findById(req.params?.id) as IGroup;
-          res.json(group);
+          const response = {
+            _id: group._id?.toString() as string,
+            name: group.name,
+            description: group.description,
+            create: group.create,
+            users: await this.checkUsersInGroup(group._id?.toString() as string),
+          };
+          res.json(response);
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
@@ -103,8 +119,8 @@ export default class GroupApi implements IGroupApi {
             serverMessage(res, 403, { message: 'You do not have permission for this operation' });
             return;
           }
-          const isEmpty: boolean = await this.checkUsersInGroup(deletedId);
-          if (isEmpty) {
+          const usersArray: IUser[] = await this.checkUsersInGroup(req.params?.id) as IUser[];
+          if (usersArray.length) {
             serverMessage(res, 400, { message: 'Group not empty' });
             return;
           }
@@ -141,8 +157,8 @@ export default class GroupApi implements IGroupApi {
         try {
           const userId: string = getIdByHeaderToken(res, req) as string;
           const user: IUser = await User.findById(userId) as IUser;
-          const isEmpty: boolean = await this.checkUsersInGroup(req.params?.id);
-          if (isEmpty) {
+          const usersArray: IUser[] = await this.checkUsersInGroup(req.params?.id) as IUser[];
+          if (usersArray.length) {
             serverMessage(res, 400, { message: 'Group not empty' });
             return;
           }
@@ -164,7 +180,7 @@ export default class GroupApi implements IGroupApi {
         }
       });
   }
-  async checkUsersInGroup(group_id: string): Promise<boolean> {
+  async checkUsersInGroup(group_id: string): Promise<IUser[]> {
     const users: IUser[] = await User.find({
       groups: {
         $elemMatch: {
@@ -172,6 +188,6 @@ export default class GroupApi implements IGroupApi {
         },
       },
     }) as IUser[];
-    return users.length ? true : false;
+    return users;
   }
 }
