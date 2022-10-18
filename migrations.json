@@ -1,0 +1,10 @@
+{
+  "uri": "mongodb+srv://1991artem:1991artem1991@cluster0.wm8hh7v.mongodb.net/app?retryWrites=true&w=majority",
+  "database": "app",
+  "options": {
+    "useNewUrlParser": true,
+    "useUnifiedTopology": true
+  },
+  "migrationsDir": "migrations",
+  "migrationsCollection": "migrationlog"
+}

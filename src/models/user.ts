@@ -1,34 +1,30 @@
 import { Schema, model, Types } from 'mongoose';
+import { IUser } from '../helps/interfaces';
 
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
   username: {
     type: String,
     required: true
   },
   email: {
     type: String, 
-    required: true, 
-    unique: true},
+    required: true
+  },
   password: {
     type: String, 
-    required: true
+    required: true,
+    unique: true
   },
   admin: {
     type: Boolean,
-    required: true
+    default: false,
   },
-  task: [
-    {
-      type: Types.ObjectId,
-      ref: 'Task' 
-    }
-  ],
   groups: [
     {
       type: Types.ObjectId,
-      ref: 'Group' 
+      ref: 'Group'
     }
   ]
 });
 
-export const User = model('User', userSchema);
+export const User = model('User', userSchema, "users");

@@ -1,30 +1,26 @@
 import { Schema, model, Types } from 'mongoose';
+import { IGroup } from '../helps/interfaces';
 
 
-const groupSchema = new Schema({
+const groupSchema = new Schema<IGroup>({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
-  discription: {
-    type: String, 
-    required: true
+  description: {
+    type: String
   },
   create: {
     type: Date, 
     default: Date.now,
     required: true
   },
-  author: {
+  owner: {
     type: Types.ObjectId,
-    ref: 'User' 
-  },
-  users: [
-    {
-      type: Types.ObjectId,
-      ref: 'User' 
-    }
-  ]
+    required: true,
+    ref: 'User'
+  }
 });
 
-export const Group = model('Group', groupSchema);
+export const Group = model('Group', groupSchema, 'group');

@@ -1,12 +1,13 @@
 
 import { Schema, model, Types } from 'mongoose';
+import { ITask } from '../helps/interfaces';
 
-const taskSchema = new Schema({
+const taskSchema = new Schema<ITask>({
   name: {
     type: String,
     required: true
   },
-  discription: {
+  description: {
     type: String, 
     required: true
   },
@@ -16,17 +17,20 @@ const taskSchema = new Schema({
     required: true
   },
   priority: {
-    type: Boolean,
+    type: String,
+    default: 'high',
     required: true
   },
   status: {
-    type: Boolean,
+    type: String,
+    default: 'to do',
     required: true
   },
   owner: {
     type: Types.ObjectId,
+    required: true,
     ref: 'User'
   }
 });
 
-export const Task = model('Task', taskSchema);
+export const Task = model('Task', taskSchema, 'task');
