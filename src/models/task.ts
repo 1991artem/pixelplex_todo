@@ -26,6 +26,9 @@ const taskSchema = new Schema<ITask>({
     default: 'to do',
     required: true,
   },
+  done: {
+    type: Date
+  },
   owner: {
     type: Types.ObjectId,
     required: true,

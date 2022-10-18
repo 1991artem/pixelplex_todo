@@ -2,12 +2,10 @@ import { Router, Response, Request } from 'express';
 import { User } from '../models/user';
 import { Group } from '../models/groups';
 import { Task } from '../models/task';
-import { IGroup, IPaginationsParams, IQueryParams, IUser, IUserApi } from '../helps/interfaces';
+import { IGroup, ITask, IUser, IUserApi, Statistic } from '../helps/interfaces';
 import autorization from '../middleware/auth.middleware';
 import getIdByHeaderToken from '../helps/decodedToken';
 import { serverMessage } from '../helps/errorHandler';
-import getPaginationsParams from '../helps/getPaginationsParams';
-import getSortParams from '../helps/getSortParams';
 
 export default class UserApi implements IUserApi {
   private router = Router();
@@ -17,6 +15,7 @@ export default class UserApi implements IUserApi {
     this.addToGroup();
     this.removeGroupFromUser();
     this.deleteUserById();
+    this.getUserStatisticByUserId();
     return this.router;
   }
   showUsers():void {
@@ -40,10 +39,7 @@ export default class UserApi implements IUserApi {
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const query: IQueryParams = req.query;
-          const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
-          const sort = query ? getSortParams(query) : {};
-          const user: IUser = await User.findById(req.params?.id).limit(pagination.limit).skip(pagination.skip).sort(sort) as IUser;
+          const user: IUser = await User.findById(req.params?.id) as IUser;
           res.json(user);
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
@@ -142,5 +138,58 @@ export default class UserApi implements IUserApi {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
       });
+  }
+  getUserStatisticByUserId(): void {
+    //endpoint ===> /api/statistic/user/:id
+    this.router.get(
+      '/statistic/user/:id',
+      autorization,
+      async (req: Request, res: Response) => {
+        try {
+          const id: string = req.params?.id;
+          const findUser: IUser = await User.findById(id) as IUser;
+          if (!findUser) {
+            serverMessage(res, 400, { message: 'User not faund' });
+            return;
+          }
+          const userId: string = getIdByHeaderToken(res, req) as string;
+          const client: IUser = await User.findById(userId) as IUser;
+          const isMatch = findUser.groups.filter((userGroup) => {
+            return client.groups.some((clientGroup) => clientGroup.toString() === userGroup.toString());
+          });
+          if (!isMatch) {
+            serverMessage(res, 403, { message: 'You do not have permission for this operation. You do not match group' });
+            return;
+          }
+          const statistic = await this.getUserStatistic(id);
+          res.json(statistic);
+        } catch (e) {
+          serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
+        }
+      });
+  }
+  async getUserStatistic(userId: string): Promise<Statistic> {
+    const result = {
+      id: userId,
+      todo: 0,
+      in_progress: 0,
+      done: 0,
+      dedline_done: 0,
+      dedline_skip: 0,
+    };
+    const tasks: ITask[] = await Task.find({
+      owner: userId,
+    });
+    tasks.forEach((task: ITask) => {
+      if (+task.deadline < +Date.now()) {
+        task.done ? result.dedline_done++ : result.dedline_skip++;
+      }
+      switch (task.status.toLowerCase()) {
+      case 'to do': result.todo++; break;
+      case 'done': result.todo++; break;
+      case 'progress': result.todo++; break;
+      }
+    });
+    return result;
   }
 }

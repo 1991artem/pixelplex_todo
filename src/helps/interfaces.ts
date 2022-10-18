@@ -50,6 +50,7 @@ export interface ITask extends Document {
   description: string;
   deadline: Date;
   priority: string;
+  done: Date;
   status: string;
   owner: SchemaDefinitionProperty<string>;
 }
@@ -115,3 +116,12 @@ export type Autorization = (
   res: Response<any, Record<string, any>>,
   next: () => void
 )=> any;
+
+export type Statistic = {
+  id: string,
+  todo: number,
+  in_progress: number,
+  done: number,
+  dedline_done: number,
+  dedline_skip: number,
+};

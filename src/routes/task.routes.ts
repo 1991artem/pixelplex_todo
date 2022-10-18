@@ -172,6 +172,7 @@ export default class TaskApi {
               description,
               deadline,
               status: deadline < Date.now() ? undefined : status,
+              done: (deadline > Date.now())&&(status === 'done') ? Date.now() : undefined,
               priority,
             };
             await task.updateOne( updateParams);
