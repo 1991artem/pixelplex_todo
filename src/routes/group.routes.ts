@@ -16,7 +16,7 @@ export default class GroupApi implements IGroupApi {
     this.showGroups();
     this.showGroupById();
     this.deleteGroupById();
-    this.updateTaskById();
+    this.updateGroupById();
     return this.router;
   }
   createGroup():void {
@@ -148,7 +148,7 @@ export default class GroupApi implements IGroupApi {
         }
       });
   }
-  updateTaskById():void {
+  updateGroupById():void {
     //endpoint ===> /api/group/edit/:id
     this.router.put(
       '/group/edit/:id',

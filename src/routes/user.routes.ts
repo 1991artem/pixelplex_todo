@@ -174,20 +174,21 @@ export default class UserApi implements IUserApi {
       todo: 0,
       in_progress: 0,
       done: 0,
-      dedline_done: 0,
-      dedline_skip: 0,
+      deadline_done: 0,
+      deadline_skip: 0,
     };
     const tasks: ITask[] = await Task.find({
       owner: userId,
     });
     tasks.forEach((task: ITask) => {
       if (+task.deadline < +Date.now()) {
-        task.done ? result.dedline_done++ : result.dedline_skip++;
-      }
-      switch (task.status.toLowerCase()) {
-      case 'to do': result.todo++; break;
-      case 'done': result.todo++; break;
-      case 'progress': result.todo++; break;
+        task.done ? result.deadline_done++ : result.deadline_skip++;
+      } else {
+        switch (task.status.toLowerCase()) {
+        case 'to do': result.todo++; break;
+        case 'done': result.todo++; break;
+        case 'progress': result.todo++; break;
+        }
       }
     });
     return result;

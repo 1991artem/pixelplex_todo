@@ -22,7 +22,7 @@ export interface IGroupApi{
   showGroups: ()=>void;
   showGroupById: ()=>void;
   deleteGroupById: ()=>void;
-  updateTaskById: ()=>void;
+  updateGroupById: ()=>void;
   checkUsersInGroup: (group_id: string)=>Promise<IUser[]>
 }
 export interface ITaskApi{
@@ -122,6 +122,6 @@ export type Statistic = {
   todo: number,
   in_progress: number,
   done: number,
-  dedline_done: number,
-  dedline_skip: number,
+  deadline_done: number,
+  deadline_skip: number,
 };

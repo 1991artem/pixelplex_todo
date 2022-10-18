@@ -33,23 +33,26 @@ export default class TaskApi {
         try {
           const errors = validationResult(req); // check register tamplated validation
           if (!errors.isEmpty()) {
-            return serverMessage(res, 400, { message: 'Incorrect data' });
+            serverMessage(res, 400, { message: 'Incorrect data' });
+            return;
           }
           const now: number = Date.now();
-          const defaultDeadline: number = now + Number(config.get('defaultTime')) ? Number(config.get('defaultTime')) : 0; // add 1h to create task time
-          const { name, description, status = 'to do', deadline = defaultDeadline, priority = 'high' } = req.body;
+          const defaultDeadline: number = now + Number(config.get('defaultTime')); // add 1h to create task time
+          const { name, description, status = 'to do', deadline = new Date(defaultDeadline), priority = 'high' } = req.body;
           if (deadline <= Date.now()) {
             serverMessage(res, 400, { message: 'Wrong deadline time' });
+            return;
           }
           const isMatch: ITask = await Task.findOne({ name }) as ITask; // check task in DB
           if (isMatch) {
             serverMessage(res, 400, { message: 'This task already exists' });
+            return;
           }
           const userId: string = getIdByHeaderToken(res, req) as string;
           const task: ITask = new Task({ name, description, status, deadline, priority, owner: userId }); // create new task
           await task.save();
-          serverMessage(res, 201, { message: 'Task created' });
-
+          const emails = await this.callUsers(userId);
+          res.json(emails);
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' + e });
         }
@@ -109,7 +112,7 @@ export default class TaskApi {
             return;
           }
           const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
-          const user: IUser[] = await User.find({
+          const users: IUser[] = await User.find({
             groups: {
               $elemMatch: {
                 $eq: group,
@@ -117,8 +120,8 @@ export default class TaskApi {
             },
           }) as IUser[];
           const idArray: string[] = [];
-          for (const element in user) {
-            idArray.push(user[element]._id?.toString() as string);
+          for (const element in users) {
+            idArray.push(users[element]._id?.toString() as string);
           }
           const sort = query ? getSortParams(query) : {};
           const tasks: ITask[] = await Task.find({
@@ -185,5 +188,17 @@ export default class TaskApi {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
       });
+  }
+  async callUsers(id: string): Promise<string[]> {
+    const user: IUser = await User.findById(id) as IUser;
+    const users: IUser[] = await User.find({
+      groups: {
+        $elemMatch: {
+          $in: user.groups,
+        },
+      },
+    }) as IUser[];
+
+    return users.map((user: IUser) => user.email);
   }
 }
