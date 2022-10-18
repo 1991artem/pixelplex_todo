@@ -193,9 +193,7 @@ export default class TaskApi {
     const user: IUser = await User.findById(id) as IUser;
     const users: IUser[] = await User.find({
       groups: {
-        $elemMatch: {
-          $in: user.groups,
-        },
+        $in: user.groups,
       },
     }) as IUser[];
 

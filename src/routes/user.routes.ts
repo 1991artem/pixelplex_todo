@@ -147,18 +147,23 @@ export default class UserApi implements IUserApi {
       async (req: Request, res: Response) => {
         try {
           const id: string = req.params?.id;
-          const findUser: IUser = await User.findById(id) as IUser;
-          if (!findUser) {
-            serverMessage(res, 400, { message: 'User not faund' });
-            return;
-          }
           const userId: string = getIdByHeaderToken(res, req) as string;
-          const client: IUser = await User.findById(userId) as IUser;
-          const isMatch = findUser.groups.filter((userGroup) => {
-            return client.groups.some((clientGroup) => clientGroup.toString() === userGroup.toString());
+          const isMatch: boolean = await User.find({
+            $or: [
+              { _id: id },
+              { _id: userId },
+            ],
+          }).then((users: IUser[]) => {
+            if (users.length === 2) {
+              return users[0].groups.some((groupFirst) =>
+                users[1].groups.some((groupSecond) =>
+                  groupSecond.toString() === groupFirst.toString()));
+            } else {
+              return false;
+            }
           });
           if (!isMatch) {
-            serverMessage(res, 403, { message: 'You do not have permission for this operation. You do not match group' });
+            serverMessage(res, 403, { message: 'You do not have permission for this operation. You do not have shared groups' });
             return;
           }
           const statistic = await this.getUserStatistic(id);
