@@ -1,6 +1,8 @@
-import express from 'express';
+/* eslint-disable no-console */
+import express, { urlencoded, json } from 'express';
 import config from 'config';
 import morgan from 'morgan';
+import chalk from 'chalk';
 import methodOverride from 'method-override';
 import AuthApi from './routes/auth.routes';
 import UserApi from './routes/user.routes';
@@ -15,21 +17,20 @@ export default class App {
   private user: UserApi = new UserApi();
   private group: GroupApi = new GroupApi();
   private task: TaskApi = new TaskApi();
-  listan(){
-    this.app.listen(this.PORT, () => {    // listen to port numbers
-        console.log(`listening port ${this.PORT}`);
-      });
+  listan():void {
+    this.app.listen(this.PORT, () => { // listen to port numbers
+      console.log(chalk.bgCyanBright.bold(`---listening port ${this.PORT}---`));
+    });
   }
-  midleware(){
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: false }));
+  midleware():void {
+    this.app.use(json());
+    this.app.use(urlencoded({ extended: false }));
     this.app.use(methodOverride('_method'));
     this.app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-    
-    
-    this.app.use(this.link, this.auth.authRouter())     // auth routes
-    this.app.use(this.link, this.user.userRouter())     // user routes
-    this.app.use(this.link, this.group.groupRouter())     // group routes
-    this.app.use(this.link, this.task.taskRouter())     // task routes
+
+    this.app.use(this.link, this.auth.authRouter()); // auth routes
+    this.app.use(this.link, this.user.userRouter()); // user routes
+    this.app.use(this.link, this.group.groupRouter()); // group routes
+    this.app.use(this.link, this.task.taskRouter()); // task routes
   }
 }

@@ -4,16 +4,16 @@ import { IUser } from '../helps/interfaces';
 const userSchema = new Schema<IUser>({
   username: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
-    type: String, 
-    required: true
+    type: String,
+    required: true,
   },
   password: {
-    type: String, 
+    type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   admin: {
     type: Boolean,
@@ -22,9 +22,9 @@ const userSchema = new Schema<IUser>({
   groups: [
     {
       type: Types.ObjectId,
-      ref: 'Group'
-    }
-  ]
+      ref: 'Group',
+    },
+  ],
 });
 
-export const User = model('User', userSchema, "users");
+export const User = model('User', userSchema, 'users');

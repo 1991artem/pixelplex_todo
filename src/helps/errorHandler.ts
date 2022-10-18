@@ -1,9 +1,12 @@
-import { ServerMessage} from '../helps/interfaces';
+import { Response } from 'express';
+import { ServerMessage } from '../helps/interfaces';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const serverMessage = (res, status, { errors = [], message}): ServerMessage =>{
-  return res.status(status).json({ message: message });
-}
+type message = {
+  message: string;
+};
 
+const serverMessage: ServerMessage = (res: Response, code: number, { message }:message): void => {
+  res.status(code).json({ message: message });
+};
 
-export  {serverMessage}
+export { serverMessage };

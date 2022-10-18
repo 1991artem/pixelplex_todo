@@ -5,32 +5,32 @@ import { ITask } from '../helps/interfaces';
 const taskSchema = new Schema<ITask>({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
-    type: String, 
-    required: true
+    type: String,
+    required: true,
   },
   deadline: {
-    type: Date, 
+    type: Date,
     default: Date.now,
-    required: true
+    required: true,
   },
   priority: {
     type: String,
     default: 'high',
-    required: true
+    required: true,
   },
   status: {
     type: String,
     default: 'to do',
-    required: true
+    required: true,
   },
   owner: {
     type: Types.ObjectId,
     required: true,
-    ref: 'User'
-  }
+    ref: 'User',
+  },
 });
 
 export const Task = model('Task', taskSchema, 'task');

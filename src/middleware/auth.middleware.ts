@@ -1,18 +1,20 @@
-import getIdByHeaderToken from '../helps/decodedToken'
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { NextFunction, RequestHandler, Response, Request } from 'express';
+import getIdByHeaderToken from '../helps/decodedToken';
+import { IGetUserAuthInfoRequest } from '../helps/interfaces';
 
-const autorization = (req, res, next) => {
+const autorization: RequestHandler = (req: Request | IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
   if (req.method === 'OPTIONS') {
-    return next()
+    return next();
   }
 
   try {
-    req.user = getIdByHeaderToken(res, req); // return user object
-    next()
+    (req as IGetUserAuthInfoRequest).user = getIdByHeaderToken(res, req) as string; // return user ID
+    next();
 
   } catch (e) {
-    res.status(401).json({ message: 'No authorization' })
+    res.status(401).json({ message: 'No authorization' });
   }
-}
-
+};
 
 export default autorization;

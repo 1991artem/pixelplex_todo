@@ -5,8 +5,11 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": false,
-    "outDir": "dist",
-  },
-  "lib": ["es2015"]
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "skipLibCheck": true
+  }
 }
 
