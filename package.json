@@ -9,8 +9,6 @@
     "launch": "ts-node --transpile-only ./src/index.ts",
     "launch:dev": "ts-node-dev --files ./src/index.ts",
     "audit": "npx audit-ci --config audit-ci.json",
-    "migrate:up": "node dist/migrations/cli.js up",
-    "migrate:down": "node dist/migrations/cli.js down",
     "lint": "npx eslint ./src",
     "lint:fix": "npx eslint ./src --fix"
   },
@@ -58,6 +56,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
+    "@types/readline-sync": "^1.4.4",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.8",
     "cross-env": "^6.0.3",
@@ -69,6 +68,7 @@
     "mongo-migrate-ts": "^1.1.1",
     "mongoose": "^6.6.5",
     "morgan": "^1.10.0",
+    "readline-sync": "^1.4.10",
     "shortid": "^2.2.16",
     "ts-migrate-mongoose": "^2.3.2",
     "url-parse": "^1.5.10"
