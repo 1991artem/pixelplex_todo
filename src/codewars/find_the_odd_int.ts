@@ -2,7 +2,8 @@
 import { question } from 'readline-sync';
 import chalk from 'chalk';
 
-export const find_odd_number_task = (): string => {
+export const find_odd_number_task = (): void => {
+  console.clear();
   console.log(chalk.yellowBright(`Given an array of integers, find the one that appears an odd number of times.
 
 There will always be only one integer that appears an odd number of times.
@@ -15,9 +16,12 @@ Examples
 [0,1,0,1,0] should return 0, because it occurs 3 times (which is odd).
 [1,2,2,3,3,3,4,3,3,3,2,2,1] should return 4, because it appears 1 time (which is odd).
   `));
-  const insertArray: string = question(chalk.blue('\nInsert array (for exaple - 1,2,3,4,5)\n'));
-  const array: Array<number> =
-    !insertArray ? [1,2,2,3,3,3,4,3,3,3,2,2,1] : insertArray.trim().split(/[.,]/g).map(string => +string.replace(/\D+/g, '')).filter((el: number | object) => el === el);
+  const insertArray: string = question(chalk.blue('\nInsert array (for exaple - 1,2,3,4,5)\n'),{
+    limit: /[0-9]/i,
+    limitMessage: 'Sorry,is not a number array',
+    defaultInput: '1,2,2,3,3,3,4,3,3,3,2,2,1',
+  });
+  const array: Array<number> = insertArray.trim().split(/[.,]/g).map(string => +string.replace(/\D+/g, '')).filter((el: number | object) => el === el);
 
   console.log(chalk.green(`Array is: [${array}]`));
   const find_odd_number = ( arrayOfNumber: Array<number> ): number => {
@@ -26,5 +30,5 @@ Examples
     return result ? result : 0;
   };
 
-  return chalk.green.bold(`\n---- Task result is ${find_odd_number(array)} ----\n`);
+  console.log(chalk.green.bold(`\n---- Task result is ${find_odd_number(array)} ----\n`));
 };
