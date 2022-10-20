@@ -8,7 +8,6 @@
     "build": "npx tsc",
     "launch": "ts-node --transpile-only ./src/server.ts",
     "launch:dev": "ts-node-dev --files ./src/server.ts",
-    "client": "npm run start --prefix client",
     "audit": "npx audit-ci --config audit-ci.json",
     "migrate:up": "node dist/migrations/cli.js up",
     "migrate:down": "node dist/migrations/cli.js down",
