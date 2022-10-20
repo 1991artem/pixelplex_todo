@@ -48,7 +48,7 @@ export default class UserApi implements IUserApi {
   }
   addToGroup():void {
     //endpoint ===> /api/user/group-add
-    this.router.put(
+    this.router.patch(
       '/user/group-add/:id',
       autorization,
       async (req: Request, res: Response) => {
@@ -83,7 +83,7 @@ export default class UserApi implements IUserApi {
   }
   removeGroupFromUser():void {
     //endpoint ===> /api/user/group-add
-    this.router.put(
+    this.router.patch(
       '/user/group-remove/:id',
       autorization,
       async (req: Request, res: Response) => {

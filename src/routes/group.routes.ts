@@ -150,7 +150,7 @@ export default class GroupApi implements IGroupApi {
   }
   updateGroupById():void {
     //endpoint ===> /api/group/edit/:id
-    this.router.put(
+    this.router.patch(
       '/group/edit/:id',
       autorization,
       async (req: Request, res: Response) => {

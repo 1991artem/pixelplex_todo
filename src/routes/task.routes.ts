@@ -160,7 +160,7 @@ export default class TaskApi {
   }
   updateTaskById():void {
     //endpoint ===> /api/task/edit/:id
-    this.router.put(
+    this.router.patch(
       '/task/edit/:id',
       autorization,
       async (req: Request, res: Response) => {
