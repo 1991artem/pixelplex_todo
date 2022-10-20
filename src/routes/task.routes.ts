@@ -42,8 +42,8 @@ export default class TaskApi {
             serverMessage(res, 400, { message: 'Wrong deadline time' });
             return;
           }
-          const isMatch: ITask = await Task.findOne({ name }) as ITask; // check task in DB
-          if (isMatch) {
+          const find_task: ITask | null = await Task.findOne({ name }); // check task in DB
+          if (find_task) {
             serverMessage(res, 400, { message: 'This task already exists' });
             return;
           }
@@ -64,7 +64,11 @@ export default class TaskApi {
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const task: ITask = await Task.findById(req.params?.id) as ITask;
+          const task: ITask | null = await Task.findById(req.params?.id);
+          if (!task) {
+            serverMessage(res, 404, { message: 'Task not found' });
+            return;
+          }
           res.json(task);
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
@@ -81,14 +85,14 @@ export default class TaskApi {
           const group: string = req.params?.id;
           const query: IQueryParams = req.query;
           const userId: string = getIdByHeaderToken(res, req) as string;
-          const client: IUser = await User.findOne({ _id: userId }, { groups: {
+          const user: IUser | null = await User.findOne({ _id: userId }, { groups: {
             $elemMatch: {
               $eq: group,
             },
           },
           }) as IUser;
-          const isAdmin: boolean = client?.admin;
-          if (!client && !isAdmin) {
+          const isAdmin: boolean = user?.admin;
+          if (!user && !isAdmin) {
             serverMessage(res, 403, { message: 'You do not have permission for this operation' });
             return;
           }
@@ -99,7 +103,7 @@ export default class TaskApi {
                 $eq: group,
               },
             },
-          }) as IUser[];
+          });
           const idArray: string[] = [];
           for (const element in users) {
             idArray.push(users[element]._id?.toString() as string);
@@ -125,10 +129,18 @@ export default class TaskApi {
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const user: IUser = await User.findById(userId) as IUser;
-          const task: ITask = await Task.findById(req.params?.id) as ITask;
-          if (userId === task.owner.toString() || user.admin) {
+          const userId: string = getIdByHeaderToken(res, req);
+          const user: IUser | null = await User.findById(userId);
+          if (!user) {
+            serverMessage(res, 404, { message: 'User not found' });
+            return;
+          }
+          const task: ITask | null = await Task.findById(req.params?.id);
+          if (!task) {
+            serverMessage(res, 404, { message: 'Task not found' });
+            return;
+          }
+          if (userId === task?.owner.toString()) {
             await task.delete();
             serverMessage(res, 200, { message: 'Task deleted' });
           } else {
@@ -146,10 +158,18 @@ export default class TaskApi {
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const user: IUser = await User.findById(userId) as IUser;
-          const task: ITask = await Task.findById(req.params?.id) as ITask;
-          if (userId === task.owner.toString() || user.admin) {
+          const userId: string = getIdByHeaderToken(res, req);
+          const user: IUser | null = await User.findById(userId);
+          if (!user) {
+            serverMessage(res, 404, { message: 'User not found' });
+            return;
+          }
+          const task: ITask | null= await Task.findById(req.params?.id);
+          if (!task) {
+            serverMessage(res, 404, { message: 'Task not found' });
+            return;
+          }
+          if (userId === task.owner.toString()) {
             const { name, description, deadline, status, priority } = req.body;
             const updateParams = {
               name,
@@ -171,7 +191,7 @@ export default class TaskApi {
       });
   }
   async callUsers(id: string): Promise<string[]> {
-    const user: IUser = await User.findById(id) as IUser;
+    const user: IUser | null = await User.findById(id) as IUser;
     const users: IUser[] = await User.find({
       groups: {
         $in: user.groups,

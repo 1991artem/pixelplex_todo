@@ -35,22 +35,22 @@ export default class GroupApi implements IGroupApi {
             return;
           }
           const { name, description } = req.body;
-          const group_exists: IGroup = await Group.findOne({ name }) as IGroup; // check group in DB
+          const group_exists: IGroup | null = await Group.findOne({ name }); // check group in DB
           if (group_exists) {
             serverMessage(res, 400, { message: 'This group already exists' });
             return;
           }
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const admin: IUser = await User.findById(userId) as IUser;
-          if (!admin.admin) {
+          const userId: string = getIdByHeaderToken(res, req);
+          const user: IUser | null = await User.findById(userId);
+          if (!user?.admin) {
             serverMessage(res, 403, { message: 'You do not have permission for this operation' });
             return;
           }
-          const group = new Group({ name, description, owner: userId }) as IGroup; // create new group
+          const group = new Group({ name, description, owner: userId }); // create new group
           await group.save();
           serverMessage(res, 201, { message: 'Group created' });
         } catch (e) {
-          serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' + e });
+          serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
       });
   }
@@ -67,9 +67,12 @@ export default class GroupApi implements IGroupApi {
           const groups: IGroup[] = await Group.find()
             .limit(pagination.limit)
             .skip(pagination.skip)
-            .sort(sort) as IGroup[];
+            .sort(sort);
           const response = await Promise.all(groups.map(async (group: IGroup) => {
-            const users: IUser[] = await this.checkUsersInGroup(group._id?.toString() as string);
+            if (!group._id?.toString()) {
+              return {};
+            }
+            const users: IUser[] = await this.checkUsersInGroup(group._id?.toString());
             return {
               _id: group._id?.toString() as string,
               name: group.name,
@@ -91,13 +94,21 @@ export default class GroupApi implements IGroupApi {
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const group: IGroup = await Group.findById(req.params?.id) as IGroup;
+          const group: IGroup | null = await Group.findById(req.params?.id);
+          if (!group) {
+            serverMessage(res, 404, { message: 'Not found 404' });
+            return;
+          };
+          if (!group._id?.toString()) {
+            serverMessage(res, 500, { message: 'Server Error' });
+            return;
+          };
           const response = {
-            _id: group._id?.toString() as string,
+            _id: group._id?.toString(),
             name: group.name,
             description: group.description,
             create: group.create,
-            users: await this.checkUsersInGroup(group._id?.toString() as string),
+            users: await this.checkUsersInGroup(group._id?.toString()),
           };
           res.json(response);
         } catch (e) {
@@ -113,18 +124,18 @@ export default class GroupApi implements IGroupApi {
       async (req: Request, res: Response) => {
         try {
           const deletedId = req.params.id;
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const admin: IUser = await User.findById(userId) as IUser;
-          if (!admin) {
+          const userId: string = getIdByHeaderToken(res, req);
+          const admin: IUser | null = await User.findById(userId);
+          if (!admin?.admin) {
             serverMessage(res, 403, { message: 'You do not have permission for this operation' });
             return;
           }
-          const usersArray: IUser[] = await this.checkUsersInGroup(req.params?.id) as IUser[];
+          const usersArray: IUser[] = await this.checkUsersInGroup(req.params?.id);
           if (usersArray.length) {
             serverMessage(res, 400, { message: 'Group not empty' });
             return;
           }
-          const group: IGroup = await Group.findById(deletedId) as IGroup;
+          const group: IGroup | null = await Group.findById(deletedId);
           if (!group) {
             serverMessage(res, 400, { message: 'Group not faund' });
             return;
@@ -156,14 +167,18 @@ export default class GroupApi implements IGroupApi {
       async (req: Request, res: Response) => {
         try {
           const userId: string = getIdByHeaderToken(res, req) as string;
-          const user: IUser = await User.findById(userId) as IUser;
-          const usersArray: IUser[] = await this.checkUsersInGroup(req.params?.id) as IUser[];
+          const user: IUser | null = await User.findById(userId) as IUser;
+          const usersArray: IUser[] = await this.checkUsersInGroup(req.params?.id);
           if (usersArray.length) {
             serverMessage(res, 400, { message: 'Group not empty' });
             return;
           }
           if (user.admin) {
-            const group: IGroup = await Group.findById(req.params?.id) as IGroup;
+            const group: IGroup | null = await Group.findById(req.params?.id);
+            if (!group) {
+              serverMessage(res, 404, { message: 'Not found 404' });
+              return;
+            }
             const { name, description } = req.body;
             const updateParams = {
               name,

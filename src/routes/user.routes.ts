@@ -39,7 +39,11 @@ export default class UserApi implements IUserApi {
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const user: IUser = await User.findById(req.params?.id) as IUser;
+          const user: IUser | null = await User.findById(req.params?.id);
+          if (!user) {
+            serverMessage(res, 404, { message: 'User not found' });
+            return;
+          }
           res.json(user);
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
@@ -54,12 +58,16 @@ export default class UserApi implements IUserApi {
       async (req: Request, res: Response) => {
         try {
           const group_id: string = req.params?.id;
-          const group: IGroup = await Group.findById(group_id) as IGroup; // check group in DB
+          const group: IGroup | null = await Group.findById(group_id); // check group in DB
           if (!group) {
             serverMessage(res, 400, { message: 'This name is not in the DB' });
           }
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const user: IUser = await User.findById(userId) as IUser;
+          const userId: string = getIdByHeaderToken(res, req);
+          const user: IUser | null = await User.findById(userId);
+          if (!user) {
+            serverMessage(res, 404, { message: 'User not found' });
+            return;
+          }
           const isInGroupsArray = user.groups.some((group) => group.toString() === group_id);
           if (isInGroupsArray) {
             serverMessage(res, 400, { message: 'This user includes the group' });
@@ -89,13 +97,17 @@ export default class UserApi implements IUserApi {
       async (req: Request, res: Response) => {
         try {
           const group_id = req.params?.id;
-          const group: IGroup = await Group.findById(group_id) as IGroup; // check group in DB
+          const group: IGroup | null = await Group.findById(group_id); // check group in DB
           if (!group) {
             serverMessage(res, 400, { message: 'This name is not in the DB' });
             return;
           }
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const user: IUser = await User.findById(userId) as IUser; // check user in DB
+          const userId: string = getIdByHeaderToken(res, req);
+          const user: IUser | null = await User.findById(userId); // check user in DB
+          if (!user) {
+            serverMessage(res, 404, { message: 'User not found' });
+            return;
+          };
           if (user.admin) {
             await user.updateOne({
               $pull: {
@@ -120,13 +132,17 @@ export default class UserApi implements IUserApi {
       async (req: Request, res: Response) => {
         try {
           const deletedId = req.params.id;
-          const userId: string = getIdByHeaderToken(res, req) as string;
-          const admin: IUser = await User.findById(userId) as IUser;
+          const userId: string = getIdByHeaderToken(res, req);
+          const admin: IUser | null = await User.findById(userId);
           if (!admin) {
+            serverMessage(res, 404, { message: 'User not found' });
+            return;
+          }
+          if (!admin.admin) {
             serverMessage(res, 403, { message: 'You do not have permission for this operation' });
             return;
           }
-          const user: IUser = await User.findById(deletedId) as IUser;
+          const user: IUser | null = await User.findById(deletedId);
           if (!user) {
             serverMessage(res, 400, { message: 'User not faund' });
             return;
@@ -147,7 +163,7 @@ export default class UserApi implements IUserApi {
       async (req: Request, res: Response) => {
         try {
           const id: string = req.params?.id;
-          const userId: string = getIdByHeaderToken(res, req) as string;
+          const userId: string = getIdByHeaderToken(res, req);
           const isMatch: boolean = await User.find({
             $or: [
               { _id: id },

@@ -48,8 +48,8 @@ export default class AuthApi implements IAuthApi {
             return;
           }
           const { username, email, password } = req.body;
-          const isMatch: IUser = await User.findOne({ username }) as IUser; // check user in DB
-          if (isMatch) {
+          const find_user: IUser | null = await User.findOne({ username }); // check user in DB
+          if (find_user) {
             serverMessage(res, 400, { message: 'This user already exists' });
             return;
           }
@@ -80,7 +80,7 @@ export default class AuthApi implements IAuthApi {
             return;
           }
           const { email, password } = req.body;
-          const user: IUser = await User.findOne({ email }) as IUser; // check db.user and login user
+          const user: IUser | null = await User.findOne({ email }); // check db.user and login user
           if (!user) {
             serverMessage(res, 400, { message: 'User is not found' });
             return;
