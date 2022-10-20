@@ -3,17 +3,20 @@ import { serverMessage } from '../helps/errorHandler';
 import { IQueryParams, GetPaginationsParams } from './interfaces';
 
 const getPaginationsParams: GetPaginationsParams = (query: IQueryParams, response: Response) => {
-  const { skip = '0', limit = '10', page = '1' } = query;
-  if (+skip*+limit < 0 && +page < 1) {
+  const skip: number = query.skip ? parseInt(query.skip) : 0;
+  const limit: number = query.limit ? parseInt(query.limit) : 10;
+  const page: number = query.page ? parseInt(query.page) : 1;
+
+  if (skip*limit < 0 && page < 1) {
     serverMessage(response, 400, { message: 'Wrong query params' });
     return {
-      limit: +limit,
-      skip: +skip,
+      limit: limit,
+      skip: skip,
     };
   }
   return {
-    limit: parseInt(limit)*parseInt(page),
-    skip: page === '1' ? parseInt(skip) : (parseInt(limit)*(parseInt(page)-1)),
+    limit: limit*page,
+    skip: page === 1 ? skip : (limit*(page-1)),
   };
 };
 

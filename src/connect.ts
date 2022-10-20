@@ -1,18 +1,10 @@
 /* eslint-disable no-console */
 import { connect, connection } from 'mongoose';
-import config from 'config';
 import chalk from 'chalk';
-
-interface IConnectOptions {
-  useNewUrlParser?: boolean;
-  useUnifiedTopology?: boolean;
-  useCreateIndex?: boolean;
-  useFindAndModify?: boolean;
-  connectTimeoutMS?: number;
-}
+import { IConnectOptions } from './helps/interfaces';
 
 export default class Connect {
-  private db: string = config.get('mongoUri'); // mongo uri (from config files)
+  private db: string = process.env.MONGO_URI || ''; // mongo uri (from config files)
   private connectOptions: IConnectOptions = { // default connection options
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -23,10 +15,7 @@ export default class Connect {
   }
 
   async connection(): Promise<void> { // connect to database (Mongoose)
-    await connect(
-      this.db,
-      this.connectOptions,
-    )
+    await connect( this.db, this.connectOptions)
       .then(() => {
         console.info(chalk.green.bold(`Successfully connected to ${this.db}`));
       })
