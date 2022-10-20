@@ -47,15 +47,15 @@ export default class UserApi implements IUserApi {
       });
   }
   addToGroup():void {
-    //endpoint ===> /api/user/group-add
+    //endpoint ===> /api/user/group-add/:id
     this.router.patch(
       '/user/group-add/:id',
       autorization,
       async (req: Request, res: Response) => {
         try {
           const group_id: string = req.params?.id;
-          const isMatch: IGroup = await Group.findById(group_id) as IGroup; // check group in DB
-          if (!isMatch) {
+          const group: IGroup = await Group.findById(group_id) as IGroup; // check group in DB
+          if (!group) {
             serverMessage(res, 400, { message: 'This name is not in the DB' });
           }
           const userId: string = getIdByHeaderToken(res, req) as string;
@@ -82,7 +82,7 @@ export default class UserApi implements IUserApi {
       });
   }
   removeGroupFromUser():void {
-    //endpoint ===> /api/user/group-add
+    //endpoint ===> /api/user/group-add/:id
     this.router.patch(
       '/user/group-remove/:id',
       autorization,
@@ -113,7 +113,7 @@ export default class UserApi implements IUserApi {
       });
   }
   deleteUserById():void {
-    //endpoint ===> /api/user/delete/:id
+    //endpoint ===> /api/user/:id
     this.router.delete(
       '/user/delete/:id',
       autorization,

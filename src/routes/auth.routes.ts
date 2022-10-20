@@ -2,12 +2,33 @@ import { Router, Request, Response } from 'express';
 import config from 'config';
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { check, validationResult } from 'express-validator';
+import { check, ValidationChain, validationResult } from 'express-validator';
 import { User } from '../models/user';
 import { IUser, IAuthApi } from '../helps/interfaces';
 import { serverMessage } from '../helps/errorHandler';
 
+const check_prors: ValidationChain[] = [
+  check('email', 'Incorrect email').isEmail(), // validation email
+  check('password', 'Minimum password length 8 characters and maximum password length 256 characters') // validation Password
+    .isLength({ min: 8, max: 256 }),
+  check('password', 'Minimum once lower case symbol') // validation Password
+    .isStrongPassword ({ minLowercase: 1 }),
+  check('password', 'Minimum once upper case symbol') // validation Password
+    .isStrongPassword ({ minUppercase: 1 }),
+  check('password', 'Password must contain numbers. For example => !@#$%^&*_-=+') // validation Password
+    .isStrongPassword ({ minSymbols: 1 }),
+  check('password', 'Password must contain numbers') // validation Password
+    .isStrongPassword ({ minNumbers: 1 }),
+  check('username', 'Minimum name length 5 characters') // validation username
+    .isLength({ min: 5, max: 256 }),
+];
+
 export default class AuthApi implements IAuthApi {
+  private check: ValidationChain[] = check_prors || [
+    check('email', 'Incorrect email').notEmpty(),
+    check('password', 'Incorrect password').notEmpty(),
+    check('username', 'Incorrect name').notEmpty(),
+  ];
   private router = Router();
   authRouter(): Router {
     this.registration();
@@ -18,26 +39,12 @@ export default class AuthApi implements IAuthApi {
     //endpoint ===> /api/auth/register
     this.router.post(
       '/auth/register',
-      [
-        check('email', 'Incorrect email').isEmail(), // validation email
-        check('password', 'Minimum password length 8 characters and maximum password length 256 characters') // validation Password
-          .isLength({ min: 8, max: 256 }),
-        check('password', 'Minimum once lower case symbol') // validation Password
-          .isStrongPassword ({ minLowercase: 1 }),
-        check('password', 'Minimum once upper case symbol') // validation Password
-          .isStrongPassword ({ minUppercase: 1 }),
-        check('password', 'Password must contain numbers. For example => !@#$%^&*_-=+') // validation Password
-          .isStrongPassword ({ minSymbols: 1 }),
-        check('password', 'Password must contain numbers') // validation Password
-          .isStrongPassword ({ minNumbers: 1 }),
-        check('username', 'Minimum name length 5 characters') // validation username
-          .isLength({ min: 5, max: 256 }),
-      ],
+      this.check ,
       async (req: Request, res: Response) => {
         try {
           const errors = validationResult(req); // check register tamplated validation
           if (!errors.isEmpty()) {
-            serverMessage(res, 400, { message: 'Incorrect data during registration' });
+            serverMessage(res, 400, { errors: errors.array(), message: 'Incorrect data during registration' });
             return;
           }
           const { username, email, password } = req.body;
@@ -69,7 +76,7 @@ export default class AuthApi implements IAuthApi {
           const errors = validationResult(req); // check login tamplated validation
 
           if (!errors.isEmpty()) {
-            serverMessage(res, 400, { message: 'Incorrect login information' });
+            serverMessage(res, 400, { errors: errors.array(), message: 'Incorrect login information' });
             return;
           }
           const { email, password } = req.body;
@@ -90,10 +97,13 @@ export default class AuthApi implements IAuthApi {
       });
   }
   getJwtToken(user: IUser): string {
-    const tokenLifetime: string = config.get('tokenLifetime'); // request token to client
+    const tokenLifetime: string = config.get('tokenLifetime');
+    if (!process.env.JWT_SECRET) {
+      return '';
+    } // request token to client
     return sign(
       { userId: user?.id },
-      config.get('jwtSecret'),
+      process.env.JWT_SECRET,
       { expiresIn: tokenLifetime },
     );
   }

@@ -14,7 +14,6 @@ export default class TaskApi {
   private router = Router();
   taskRouter():Router {
     this.addTask();
-    // this.showTasks();
     this.showTaskById();
     this.deleteTaskById();
     this.updateTaskById();
@@ -22,9 +21,9 @@ export default class TaskApi {
     return this.router;
   }
   addTask():void {
-    //endpoint ===> /api/task/add
+    //endpoint ===> /api/task/
     this.router.post(
-      '/task/add',
+      '/task/',
       autorization,
       [
         check('name', 'Name is empty').notEmpty(), // validation task name
@@ -33,7 +32,7 @@ export default class TaskApi {
         try {
           const errors = validationResult(req); // check register tamplated validation
           if (!errors.isEmpty()) {
-            serverMessage(res, 400, { message: 'Incorrect data' });
+            serverMessage(res, 400, { errors: errors.array(), message: 'Incorrect data' });
             return;
           }
           const now: number = Date.now();
@@ -58,26 +57,8 @@ export default class TaskApi {
         }
       });
   }
-  // showTasks():void {
-  //   //endpoint ===> /api/tasks
-  //   this.router.get(
-  //     '/tasks',
-  //     autorization,
-  //     async (req: Request, res: Response) => {
-  //       try {
-  //         const query: IQueryParams = req.query;
-  //         const pagination: IPaginationsParams = getPaginationsParams(query, res) as IPaginationsParams;
-  //         const sort = query ? getSortParams(query) : {};
-  //         const tasks: ITask[] = await Task.find().limit(pagination.limit).skip(pagination.skip)
-  //           .sort(sort) as ITask[];
-  //         res.json(tasks);
-  //       } catch (e) {
-  //         serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
-  //       }
-  //     });
-  // }
   showTaskById():void {
-    //endpoint ===> /api/task/delete/:id
+    //endpoint ===> /api/task/:id
     this.router.get(
       '/task/:id',
       autorization,
@@ -91,7 +72,7 @@ export default class TaskApi {
       });
   }
   showTaskByGroupId():void {
-    //endpoint ===> /api/task/group
+    //endpoint ===> /api/task/group/:id
     this.router.get(
       '/tasks/group/:id',
       autorization,
@@ -138,9 +119,9 @@ export default class TaskApi {
       });
   }
   deleteTaskById():void {
-    //endpoint ===> /api/task/delete/:id
+    //endpoint ===> /api/task/:id
     this.router.delete(
-      '/task/delete/:id',
+      '/task/:id',
       autorization,
       async (req: Request, res: Response) => {
         try {
@@ -159,9 +140,9 @@ export default class TaskApi {
       });
   }
   updateTaskById():void {
-    //endpoint ===> /api/task/edit/:id
+    //endpoint ===> /api/task/:id
     this.router.patch(
-      '/task/edit/:id',
+      '/task/:id',
       autorization,
       async (req: Request, res: Response) => {
         try {

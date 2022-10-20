@@ -20,7 +20,7 @@ export default class GroupApi implements IGroupApi {
     return this.router;
   }
   createGroup():void {
-    //endpoint ===> /api/group/create
+    //endpoint ===> /api/group/
     this.router.post(
       '/group/create',
       autorization,
@@ -31,12 +31,12 @@ export default class GroupApi implements IGroupApi {
         try {
           const errors = validationResult(req); // check register tamplated validation
           if (!errors.isEmpty()) {
-            serverMessage(res, 400, { message: 'Incorrect data' });
+            serverMessage(res, 400, { errors: errors.array(), message: 'Incorrect data' });
             return;
           }
           const { name, description } = req.body;
-          const isMatch: IGroup = await Group.findOne({ name }) as IGroup; // check group in DB
-          if (isMatch) {
+          const group_exists: IGroup = await Group.findOne({ name }) as IGroup; // check group in DB
+          if (group_exists) {
             serverMessage(res, 400, { message: 'This group already exists' });
             return;
           }
@@ -106,9 +106,9 @@ export default class GroupApi implements IGroupApi {
       });
   }
   deleteGroupById():void {
-    //endpoint ===> /api/group/delete/:id
+    //endpoint ===> /api/group/:id
     this.router.delete(
-      '/group/delete/:id',
+      '/group/:id',
       autorization,
       async (req: Request, res: Response) => {
         try {
@@ -149,9 +149,9 @@ export default class GroupApi implements IGroupApi {
       });
   }
   updateGroupById():void {
-    //endpoint ===> /api/group/edit/:id
+    //endpoint ===> /api/group/:id
     this.router.patch(
-      '/group/edit/:id',
+      '/group/:id',
       autorization,
       async (req: Request, res: Response) => {
         try {

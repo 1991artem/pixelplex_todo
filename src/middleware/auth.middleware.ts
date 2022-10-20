@@ -13,7 +13,7 @@ const autorization: RequestHandler = (req: Request | IGetUserAuthInfoRequest, re
     next();
 
   } catch (e) {
-    res.status(401).json({ message: 'No authorization' });
+    res.status(401).json({ message: 'Unauthorized' });
   }
 };
 

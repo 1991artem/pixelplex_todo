@@ -1,7 +1,15 @@
 import { Request, Response, Router } from 'express';
+import { ValidationError } from 'express-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import { Document, SchemaDefinitionProperty } from 'mongoose';
 
+export interface IConnectOptions {
+  useNewUrlParser?: boolean;
+  useUnifiedTopology?: boolean;
+  useCreateIndex?: boolean;
+  useFindAndModify?: boolean;
+  connectTimeoutMS?: number;
+}
 export interface IAuthApi{
   authRouter: ()=> Router;
   registration: ()=>void;
@@ -67,6 +75,7 @@ export type ServerMessage = (
   res: Response,
   code: number,
   body: {
+    errors?: ValidationError[];
     message: string
   }) => void;
 

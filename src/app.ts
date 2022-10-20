@@ -3,6 +3,7 @@ import express, { urlencoded, json } from 'express';
 import config from 'config';
 import morgan from 'morgan';
 import chalk from 'chalk';
+import cors from 'cors';
 import methodOverride from 'method-override';
 import AuthApi from './routes/auth.routes';
 import UserApi from './routes/user.routes';
@@ -17,13 +18,14 @@ export default class App {
   private user: UserApi = new UserApi();
   private group: GroupApi = new GroupApi();
   private task: TaskApi = new TaskApi();
-  listan():void {
+  lesten():void {
     this.app.listen(this.PORT, () => { // listen to port numbers
       console.log(chalk.bgCyanBright.bold(`---listening port ${this.PORT}---`));
     });
   }
   midleware():void {
     this.app.use(json());
+    this.app.use(cors());
     this.app.use(urlencoded({ extended: false }));
     this.app.use(methodOverride('_method'));
     this.app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
@@ -34,3 +36,4 @@ export default class App {
     this.app.use(this.link, this.task.taskRouter()); // task routes
   }
 }
+

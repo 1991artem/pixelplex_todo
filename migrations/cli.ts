@@ -1,8 +1,7 @@
 import { mongoMigrateCli } from 'mongo-migrate-ts';
-import config from 'config';
 
 mongoMigrateCli({
-  uri: config.get('mongoUri'),
+  uri: process.env.MONGO_URI || '',
   database: 'app',
   migrationsDir: __dirname,
   migrationsCollection: 'migrationlog',
