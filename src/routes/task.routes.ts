@@ -85,7 +85,10 @@ export default class TaskApi {
           const group: string = req.params?.id;
           const query: IQueryParams = req.query;
           const userId: string = getIdByHeaderToken(res, req) as string;
-          const user: IUser | null = await User.findOne({ _id: userId }, { groups: {
+          const user: IUser | null = await User.findOne({ 
+            _id: userId
+          },
+          { groups: {
             $elemMatch: {
               $eq: group,
             },

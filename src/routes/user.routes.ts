@@ -90,31 +90,30 @@ export default class UserApi implements IUserApi {
       });
   }
   removeGroupFromUser():void {
-    //endpoint ===> /api/user/group-add/:id
+    //endpoint ===> /api/user/:user_id/remove/:group_id
     this.router.patch(
-      '/user/group-remove/:id',
+      '/user/:user_id/remove/:group_id',
       autorization,
       async (req: Request, res: Response) => {
         try {
-          const group_id = req.params?.id;
-          const group: IGroup | null = await Group.findById(group_id); // check group in DB
-          if (!group) {
-            serverMessage(res, 400, { message: 'This name is not in the DB' });
-            return;
-          }
+          const group_id = req.params?.group_id;
+          const user_id = req.params?.user_id;
           const userId: string = getIdByHeaderToken(res, req);
-          const user: IUser | null = await User.findById(userId); // check user in DB
-          if (!user) {
+          const admin: IUser | null = await User.findById(userId); // check user in DB
+          if (!admin) {
             serverMessage(res, 404, { message: 'User not found' });
             return;
           };
-          if (user.admin) {
-            await user.updateOne({
+          if (admin?.admin) {
+          await User.updateOne({ 
+              _id: user_id
+            },
+            {
               $pull: {
-                groups: group_id,
-              },
-            });
-            await user.save();
+              groups: group_id,
+            },
+          },
+          ); 
           } else {
             serverMessage(res, 403, { message: 'You do not have permission for this operation' });
           }

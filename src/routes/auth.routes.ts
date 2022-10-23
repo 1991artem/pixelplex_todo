@@ -90,7 +90,7 @@ export default class AuthApi implements IAuthApi {
             serverMessage(res, 400, { message: 'Wrong password, please try again' });
             return;
           }
-          res.json({ token: this.getJwtToken(user), userId: user?.id }); // request token to client
+          res.json({ token: this.getJwtToken(user), userId: user?.id, admin: user?.admin, username: user?.username }); // request token to client
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
