@@ -7,6 +7,6 @@ dotenv.config();
 const app: App = new App();
 const connect: Connect = new Connect();
 
-connect.start(); // start the App
-app.lesten(); // start the Listan Server
-app.midleware();
+connect.start(); // connect to (Mongoose), start SERVER
+app.lesten(); // listen Server
+app.modules();

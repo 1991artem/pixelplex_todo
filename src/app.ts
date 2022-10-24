@@ -12,7 +12,7 @@ import TaskApi from './routes/task.routes';
 
 export default class App {
   private app = express();
-  private PORT: number = config.get('PORT') || 4200;
+  private PORT: number | string = process.env.PORT ?? config.get('PORT');
   private link: string = config.get('apiLink');
   private auth: AuthApi = new AuthApi();
   private user: UserApi = new UserApi();
@@ -23,7 +23,7 @@ export default class App {
       console.log(chalk.bgCyanBright.bold(`---listening port ${this.PORT}---`));
     });
   }
-  midleware():void {
+  modules():void {
     this.app.use(json());
     this.app.use(cors());
     this.app.use(urlencoded({ extended: false }));
