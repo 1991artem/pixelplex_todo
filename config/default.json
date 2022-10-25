@@ -1,0 +1,7 @@
+{
+  "PORT": 4500,
+  "tokenLifetime": "4h",
+  "defaultTime": 3600000,
+  "baseUrl": "http://localhost:4500",
+  "migratecollection": "users"
+}

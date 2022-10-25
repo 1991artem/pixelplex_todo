@@ -4,8 +4,8 @@
   "description": "NodeJS PixelPlex task",
   "main": "dist/server.js",
   "scripts": {
-    "start": "tsc -w",
-    "build": "npx tsc",
+    "build": "tsc",
+    "start": "node ./dist/",
     "launch": "ts-node --transpile-only ./src/server.ts",
     "launch:dev": "ts-node-dev --files ./src/server.ts",
     "audit": "npx audit-ci --config audit-ci.json",
