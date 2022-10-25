@@ -1,6 +1,4 @@
 {
   "PORT": 4500,
-  "tokenLifetime": "4h",
-  "defaultTime": 3600000,
-  "migratecollection": "users"
+  "tokenLifetime": "4h"
 }
