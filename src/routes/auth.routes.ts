@@ -7,7 +7,8 @@ import { User } from '../models/user';
 import { IUser, IAuthApi } from '../helps/interfaces';
 import { serverMessage } from '../helps/errorHandler';
 
-const check_prors: ValidationChain[] = [
+export default class AuthApi {
+  private check_registration_form: ValidationChain[] = [
   check('email', 'Incorrect email').isEmail(), // validation email
   check('password', 'Minimum password length 8 characters and maximum password length 256 characters') // validation Password
     .isLength({ min: 8, max: 256 }),
@@ -22,25 +23,17 @@ const check_prors: ValidationChain[] = [
   check('username', 'Minimum name length 5 characters') // validation username
     .isLength({ min: 5, max: 256 }),
 ];
-
-export default class AuthApi implements IAuthApi {
-  private check: ValidationChain[] = check_prors || [
-    check('email', 'Incorrect email').notEmpty(),
-    check('password', 'Incorrect password').notEmpty(),
-    check('username', 'Incorrect name').notEmpty(),
-  ];
+private check_login_form =[
+  check('email', 'Minimum name length 5 characters').isEmail(),
+  check('password', 'Minimum password length 8 characters and maximum password length 256 characters').isLength({ min: 8, max: 256 }),
+];
   private router = Router();
   authRouter(): Router {
-    this.registration();
-    this.login();
+    this.router.post('/auth/register', this.check_registration_form, this.registration_controller);
+    this.router.post('/auth/login', this.check_login_form, this.login_controller);
     return this.router;
   }
-  registration(): void {
-    //endpoint ===> /api/auth/register
-    this.router.post(
-      '/auth/register',
-      this.check ,
-      async (req: Request, res: Response) => {
+  async registration_controller(req: Request, res: Response): Promise<void> {
         try {
           const errors = validationResult(req); // check register tamplated validation
           if (!errors.isEmpty()) {
@@ -60,18 +53,9 @@ export default class AuthApi implements IAuthApi {
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
-      });
   }
 
-  login(): void {
-  //endpoint ===> /api/auth/login
-    this.router.post(
-      '/auth/login',
-      [
-        check('email', 'Minimum name length 5 characters').isEmail(),
-        check('password', 'Minimum password length 8 characters and maximum password length 256 characters').isLength({ min: 8, max: 256 }),
-      ],
-      async (req: Request, res: Response) => {
+  async login_controller(req: Request, res: Response): Promise<void> {
         try {
           const errors = validationResult(req); // check login tamplated validation
 
@@ -94,8 +78,8 @@ export default class AuthApi implements IAuthApi {
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
-      });
   }
+
   getJwtToken(user: IUser): string {
     const tokenLifetime: string = config.get('tokenLifetime');
     if (!process.env.JWT_SECRET) {

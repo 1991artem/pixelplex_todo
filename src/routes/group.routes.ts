@@ -10,24 +10,19 @@ import getPaginationsParams from '../helps/getPaginationsParams';
 import getSortParams from '../helps/getSortParams';
 
 export default class GroupApi implements IGroupApi {
+  private check_create_form =       [
+    check('name', 'Name is empty').notEmpty(), // validation group name
+  ]
   private router = Router();
   groupRouter():Router {
-    this.createGroup();
+    this.router.post('/group/create', autorization, this.check_create_form, this.create_group_controller)
     this.showGroups();
     this.showGroupById();
     this.deleteGroupById();
     this.updateGroupById();
     return this.router;
   }
-  createGroup():void {
-    //endpoint ===> /api/group/
-    this.router.post(
-      '/group/create',
-      autorization,
-      [
-        check('name', 'Name is empty').notEmpty(), // validation group name
-      ],
-      async (req: Request, res: Response) => {
+  async create_group_controller(req: Request, res: Response):Promise<void> {
         try {
           const errors = validationResult(req); // check register tamplated validation
           if (!errors.isEmpty()) {
@@ -52,7 +47,6 @@ export default class GroupApi implements IGroupApi {
         } catch (e) {
           serverMessage(res, 500, { message: 'Uuppss :( Something went wrong, please try again' });
         }
-      });
   }
   showGroups():void {
     //endpoint ===> /api/groups

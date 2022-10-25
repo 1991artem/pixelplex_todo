@@ -12,8 +12,8 @@ export interface IConnectOptions {
 }
 export interface IAuthApi{
   authRouter: ()=> Router;
-  registration: ()=>void;
-  login: ()=>void;
+  registration_controller: (req: Request, res: Response)=>Promise<void>;
+  login_controller: (req: Request, res: Response)=>Promise<void>;
   getJwtToken: (user: IUser)=>string;
 }
 export interface IUserApi{
@@ -26,7 +26,7 @@ export interface IUserApi{
 }
 export interface IGroupApi{
   groupRouter: ()=> Router;
-  createGroup: ()=>void;
+  createGroup: (req: Request, res: Response)=>Promise<void>;
   showGroups: ()=>void;
   showGroupById: ()=>void;
   deleteGroupById: ()=>void;
