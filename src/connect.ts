@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { connect, connection } from 'mongoose';
-import chalk from 'chalk';
+import colors from 'colors';
 import { IConnectOptions } from './helps/interfaces';
 
 export default class Connect {
@@ -17,7 +17,7 @@ export default class Connect {
   async connection(): Promise<void> { // connect to database (Mongoose)
     await connect( this.db, this.connectOptions)
       .then(() => {
-        console.info(chalk.green.bold(`Successfully connected to ${this.db}`));
+        console.info(colors.green.bold(`Successfully connected to ${this.db}`));
       })
       .catch(error => {
         console.error('Error connecting to database: ', error);
