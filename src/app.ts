@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import express, { urlencoded, json, Response } from 'express';
+import express, { urlencoded, json, Response, NextFunction } from 'express';
 import config from 'config';
 import morgan from 'morgan';
 import colors from 'colors';
@@ -25,7 +25,7 @@ export default class App {
 
     this.app.use(this.authRouter.authRouter()); // auth routes
 
-    this.app.use((error: { message: any; data: any; statusCode: any; }, _req: any, res: Response, _next: any) => {
+    this.app.use((error: { message: any; data: any; statusCode: any; }, _req: any, res: Response, _next: NextFunction) => {
       const { message, data, statusCode } = error;
       if (!statusCode || statusCode >= 500) {
         console.error(error);
