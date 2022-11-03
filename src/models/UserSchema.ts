@@ -1,37 +1,52 @@
-import { Schema, model, Types } from 'mongoose';
-import { IUser } from '../helps/interfaces';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../db";
+import { Group } from "./GroupSchema";
 
-const userSchema = new Schema<IUser>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 5,
-    maxlength: 255,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 8,
-    maxlength: 255,
-  },
-  admin: {
-    type: Boolean,
-    default: false,
-  },
-  groups: [
-    {
-      type: Types.ObjectId,
-      ref: 'Group',
+export class User extends Model {
+  declare id: number;
+  declare name: string;
+  declare password: string;
+  declare email: string;
+  declare role: string;
+}
+
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER, 
+      primaryKey: true, 
+      autoIncrement: true
     },
-  ],
-});
+    name: {
+      type: DataTypes.STRING, 
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+    role: {
+      type: DataTypes.STRING, 
+      defaultValue: "USER"
+    },
+  },
+  {
+    tableName: 'users',
+    sequelize,
+  },
+);
 
-export const User = model('User', userSchema, 'users');
+User.belongsToMany(Group, {
+  through: 'UserGroup',
+  foreignKey: 'userId',
+  otherKey: 'groupId'  
+})
+
+Group.belongsToMany(User, {
+  through: 'UserGroup',
+  foreignKey: 'groupId',
+  otherKey: 'userId' 
+})

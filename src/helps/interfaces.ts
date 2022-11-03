@@ -1,25 +1,15 @@
 import { Router } from 'express';
-import { Document, SchemaDefinitionProperty } from 'mongoose';
-
-export interface IConnectOptions {
-  useNewUrlParser?: boolean;
-  useUnifiedTopology?: boolean;
-  useCreateIndex?: boolean;
-  useFindAndModify?: boolean;
-  serverSelectionTimeoutMS?: number;
-  maxPoolSize?: number;
-}
+import { Model, Optional } from 'sequelize';
 
 export interface IUser extends Document {
-  _id?: SchemaDefinitionProperty<string>;
+  id: number;
   name: string;
   email: string;
   password: string;
-  admin: boolean;
-  groups: Array<SchemaDefinitionProperty<string>>
+  role: string;
 }
 
-export type UserType = IUser | null;
+export type UserCreationAttributes = Optional<IUser, 'id'>;
 
 export interface IAuthRouter{
   authRouter: ()=> Router;

@@ -10,9 +10,10 @@ import AuthRouter from './Auth/auth.routes';
 export default class App {
   private app = express();
   private PORT: number | string = process.env.PORT ?? config.get('PORT');
+  private apiUrl = '/api/v1'
 
   private authRouter: AuthRouter = new AuthRouter();
-  lesten():void {
+  listen():void {
     this.app.listen(this.PORT, () => { // listen to port numbers
       console.log(colors.bgGreen.bold(`---listening port ${this.PORT}---`));
     });
@@ -23,7 +24,7 @@ export default class App {
     this.app.use(urlencoded({ extended: false }));
     this.app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
-    this.app.use(this.authRouter.authRouter()); // auth routes
+    this.app.use(this.apiUrl, this.authRouter.authRouter()); // auth routes
 
     this.app.use((error: { message: any; data: any; statusCode: any; }, _req: any, res: Response, _next: NextFunction) => {
       const { message, data, statusCode } = error;
