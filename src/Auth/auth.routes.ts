@@ -1,15 +1,18 @@
 import { Router } from 'express';
 import { IAuthRouter } from '../helps/interfaces';
 import AuthController from './auth.controller';
-import Validate from '../validate/validate';
+import { validateError } from '../middleware/validate-payload.middleware.ts';
+import AuthValidate from './authValidate';
 
-export default class AuthRouter implements IAuthRouter {
+class AuthRouter implements IAuthRouter {
   private router = Router();
   private readonly baseAuthUrl = '/auth/';
-  authRouter(): Router {
-    this.router.post(`${this.baseAuthUrl}signin`, Validate.validateSigninBody, Validate.validateError, AuthController.signinController);
-    this.router.post(`${this.baseAuthUrl}login`, Validate.validateLoginBody, Validate.validateError, AuthController.loginController);
+  injecting(): Router {
+    this.router.post(`${this.baseAuthUrl}signin`, AuthValidate.validateSigninBody, validateError, AuthController.signUpPOST);
+    this.router.post(`${this.baseAuthUrl}login`, AuthValidate.validateLoginBody, validateError, AuthController.loginPOST);
     return this.router;
   }
 }
+
+export const authModule = new AuthRouter();
 

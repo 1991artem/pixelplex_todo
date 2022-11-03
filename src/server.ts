@@ -1,9 +1,8 @@
-import dotenv from 'dotenv';
 import Connect from './connect';
 import App from './app';
+import * as dotenv from 'dotenv'
 
 dotenv.config();
-console.log(process.env.DB_PASSWORD)
 
 const app: App = new App();
 const connect: Connect = new Connect();

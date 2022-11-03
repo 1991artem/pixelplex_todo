@@ -1,9 +1,6 @@
 export class ApiError extends Error {
-    status: number;
-    constructor(status: number, message: string) {
-        super();
-        this.status = status
-        this.message = message
+    constructor(public readonly statusCode: number, message: string) {
+        super(message);
     }
 
     static badRequest(message: string) {
@@ -21,4 +18,12 @@ export class ApiError extends Error {
     static exists(message: string) {
         return new ApiError(422, message)
     }
+    
+    static auth(message: string) {
+        return new ApiError(401, message)
+    }
+}
+
+export const isAppError = (error: unknown): error is ApiError =>{
+    return error instanceof ApiError;
 }

@@ -1,40 +1,33 @@
 import { AuthParams } from '../helps/interfaces';
-import AppError from '../helps/AppError';
 import { User } from '../models/UserSchema';
 import { compare, hash } from 'bcryptjs';
+import { ApiError } from '../error/ApiError';
 
-export default class AuthService {
-  static async userCreate( authParams: AuthParams): Promise<User> {
-    try {
+class AuthService {
+  async userCreate( authParams: AuthParams): Promise<User | void> {
       const {email, password, name} = authParams;
       const hashedPassword = await hash( password as string, 12 ); // hash password
       const condidate = await User.findOne({where: {email: email} }); // check user in DB
       if (condidate) {
-        throw new AppError('User with this email address already exists', 422);
+        throw ApiError.exists('User with this email address already exists');
       }
       const user = await User.create({name, email, password: hashedPassword}); // create new user
       return user;
-    } catch (error: any) {
-      throw new AppError(error.message, error.statusCode);
-    }
   }
 
-  static async userLogin(authParams: AuthParams): Promise<User> {
-    try {
+  async userLogin(authParams: AuthParams): Promise<User> {
       const { email, password } = authParams;
       const user = await User.findOne({where: {email: email} }); // check db.user and login user
       if (!user) {
-        throw new AppError('User is not found', 404);
+        throw ApiError.badRequest('Not found');
       }
       const isMatch: boolean = await compare( password, user?.password);
       if (!isMatch) {
-        throw new AppError('Wrong password, please try again', 404);
+        throw ApiError.auth('Authentification failed. Check your email/password.');
       }
       return user;
-    } catch (error: any) {
-      throw new AppError(error.message, error.statusCode);
-    }
-
   }
 }
+
+export const authService = new AuthService();
 

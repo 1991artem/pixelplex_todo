@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Model, Optional } from 'sequelize';
+import { Optional } from 'sequelize';
 
 export interface IUser extends Document {
   id: number;
@@ -12,7 +12,7 @@ export interface IUser extends Document {
 export type UserCreationAttributes = Optional<IUser, 'id'>;
 
 export interface IAuthRouter{
-  authRouter: ()=> Router;
+  injecting: ()=> Router;
 }
 export type AuthParams = {
   name?: string;

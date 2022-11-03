@@ -1,12 +1,14 @@
 import { Response, Request, NextFunction } from 'express';
+import { isAppError } from '../error/ApiError';
 
-const ApiError = require('../error/ApiError');
-
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    if (err instanceof ApiError) {
-        return res.status(err.status).json({message: err.message})
+const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
+    if (isAppError(error)) {
+        const { message, statusCode } = error;
+        res.status(statusCode).json({ message, statusCode });
+        return;
     }
-    return res.status(500).json({message: 'Server Error'})
+    console.error(error);
+    res.status(500).json({ message: 'Server error', statusCode: 500 });
 }
 
 export default errorHandler;

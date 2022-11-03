@@ -2,10 +2,12 @@
   "name": "pixelplex",
   "version": "1.0.0",
   "description": "NodeJS PixelPlex task",
-  "main": "dist/server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "build": "tsc",
-    "start": "node ./dist/",
+    "start": "tsc -w",
+    "build": "npx tsc",
     "launch": "ts-node --transpile-only ./src/server.ts",
     "launch:dev": "ts-node-dev --files ./src/server.ts",
     "audit": "npx audit-ci --config audit-ci.json",
@@ -16,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/1991artem/pixelplex.git"
+    "url": "git+https://github.com/1991artem/pixelplex_todo.git"
   },
   "keywords": [
     "PixelPlex",
@@ -25,10 +27,11 @@
   "author": "Artem Puzik <artem.puzik.it@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/1991artem/pixelplex/issues"
+    "url": "https://github.com/1991artem/pixelplex_todo/issues"
   },
-  "homepage": "https://github.com/1991artem/pixelplex#readme",
+  "homepage": "https://github.com/1991artem/pixelplex_todo#readme",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/config": "^3.3.0",
     "@types/cors": "^2.8.12",
@@ -50,10 +53,15 @@
     "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.4.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
+    "nodemon": "^2.0.3",
     "prettier": "^2.7.1",
+    "ts-loader": "^9.2.3",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.7.0",
+    "tsconfig-paths": "4.1.0",
     "typescript": "^4.8.4"
   },
   "dependencies": {
