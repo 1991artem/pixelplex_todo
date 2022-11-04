@@ -1,10 +1,10 @@
 import { Response, Request, NextFunction } from 'express';
-import { isAppError } from '../error/ApiError';
+import { isApiError } from '../error/ApiError';
 
 const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
-    if (isAppError(error)) {
-        const { message, statusCode } = error;
-        res.status(statusCode).json({ message, statusCode });
+    if (isApiError(error)) {
+        const { message, statusCode, details } = error;
+        res.status(statusCode).json({ message, statusCode, details });
         return;
     }
     console.error(error);
