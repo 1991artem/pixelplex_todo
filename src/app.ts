@@ -10,6 +10,7 @@ import errorHandler from './middleware/error-handler.middleware';
 import { userModule } from './user/user.routes';
 import { groupModule } from './group/group.routes';
 import { taskModule } from './task/task.routes';
+import { processNotFoundEndpoint } from './middleware/not-found.middleware';
 
 export default class App {
   private app = express();
@@ -33,6 +34,7 @@ export default class App {
     this.app.use(this.apiUrl, groupModule.injecting());
     this.app.use(this.apiUrl, taskModule.injecting());
 
+    this.app.use(processNotFoundEndpoint);
     this.app.use(errorHandler);
   };
 }
