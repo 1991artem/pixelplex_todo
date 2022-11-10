@@ -2,6 +2,31 @@
 
 ## ENTITIES
 
+### ENUMS
+
+  ```TypeScript
+enum ROLE {
+  ADMIN = 'admin',
+  USER = 'user',
+}
+  ```
+
+  ```TypeScript
+enum TASK_STATUS {
+  TO_DO = 'to_do',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done',
+}
+  ```
+
+  ```TypeScript
+enum TASK_PRIORITY {
+  LOW = 'low',
+  NORMAL = 'normal',
+  HIGH = 'high',
+}
+  ```
+
 ### 1. USER
 
   ```TypeScript
@@ -43,31 +68,8 @@
   ```TypeScript
   userId: number,
   groupId: number,
-  ```
-
-### ENUMS
-
-  ```TypeScript
-enum ROLE {
-  ADMIN = 'admin',
-  USER = 'user',
-}
-  ```
-
-  ```TypeScript
-enum TASK_STATUS {
-  TO_DO = 'to do',
-  IN_PROGRESS = 'in progress',
-  DONE = 'done',
-}
-  ```
-
-  ```TypeScript
-enum TASK_PRIORITY {
-  LOW = 'low',
-  NORMAL = 'normal',
-  HIGH = 'high',
-}
+  createdAt: Date,
+  updatedAt: Date,
   ```
 
 ### RELATIONS
