@@ -1,17 +1,32 @@
 import { Schema } from 'express-validator';
 import { SORT_FIELD, SORT_TYPE } from '../../helps/enums';
 
-export default class GroupValidation {
+export default class GroupParamsValidation {
   static  validationCreateGroupBody: Schema = {
       name: {
         notEmpty: true,
         trim: true,
-        unescape: true,
+        escape: true,
         errorMessage: 'Name cannot be missing',
       },
       description: {
         trim: true,
-        unescape: true,
+        escape: true,
+      }
+    }
+
+    static  validationUpdateGroupBody: Schema = {
+      name: {
+        notEmpty: true,
+        trim: true,
+        escape: true,
+        optional: true,
+        errorMessage: 'Name cannot be missing',
+      },
+      description: {
+        trim: true,
+        escape: true,
+        optional: true,
       }
     }
 
@@ -19,7 +34,7 @@ export default class GroupValidation {
       'pagination.[limit]': {
         in: "query",
         trim: true,
-        unescape: true,
+        escape: true,
         isInt: true,
         toInt: true,
         optional: true,
@@ -31,7 +46,7 @@ export default class GroupValidation {
       'pagination.[offset]': {
         in: "query",
         trim: true,
-        unescape: true,
+        escape: true,
         isInt: true,
         toInt: true,
         optional: true,
@@ -42,21 +57,23 @@ export default class GroupValidation {
       },
       'sort.[type]': {
         in: "query",
+        toLowerCase: true,
         isIn: {
           options: [Object.values(SORT_TYPE)],
         },
         trim: true,
-        unescape: true,
+        escape: true,
         optional: true,
         errorMessage: 'Sort params is wrong',
       },
       'sort.[field]': {
         in: "query",
+        toLowerCase: true,
         isIn: {
           options: [Object.values(SORT_FIELD)],
         },
         trim: true,
-        unescape: true,
+        escape: true,
         optional: true,
         errorMessage: 'Sort params is wrong',
       }
@@ -76,14 +93,14 @@ export default class GroupValidation {
       userId: {
         trim: true,
         isInt: true,
-        unescape: true,
+        escape: true,
         notEmpty: true,
         errorMessage: 'userId is wrong',
       },
       groupId: {
         trim: true,
         isInt: true,
-        unescape: true,
+        escape: true,
         notEmpty: true,
         errorMessage: 'groupId is wrong',
       }

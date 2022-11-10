@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { ROLE, TASK_PRIORITY, TASK_STATUS } from './enums';
 
 
 export interface IAuthRouter{
@@ -10,13 +11,17 @@ export interface IUserRouter{
 export interface IGroupRouter{
   injecting: ()=> Router;
 }
+export interface ITaskRouter{
+  injecting: ()=> Router;
+}
+
 
 export interface IUser extends Document {
   id: number;
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: ROLE;
 }
 
 export type UserDTO = {
@@ -27,4 +32,12 @@ export type UserDTO = {
 export type GroupDTO = {
   name: string;
   description: string;
+}
+
+export type TaskDTO = {
+  name: string,
+  description: string,
+  status: TASK_STATUS,
+  deadline: Date,
+  priority: TASK_PRIORITY,
 }

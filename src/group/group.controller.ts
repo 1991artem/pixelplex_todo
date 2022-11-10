@@ -40,7 +40,11 @@ export default class GroupController {
   static async updateGroupById( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const groupId = req.params?.id;
-      res.status(200).json({ id: groupId, message: `Update Group #${groupId}` });
+      const updateBody = {
+        name: req.body?.name,
+        description: req.body?.description,
+      }
+      res.status(200).json({ id: groupId, body: updateBody });
     } catch (error) {
       next(error);
     }
@@ -62,7 +66,7 @@ export default class GroupController {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
       }
-      res.status(200).json({ message: removeParams });
+      res.status(200).json({ body: removeParams });
     } catch (error) {
       next(error);
     }

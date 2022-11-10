@@ -9,6 +9,7 @@ import { authModule}  from './auth/auth.routes';
 import errorHandler from './middleware/error-handler.middleware';
 import { userModule } from './user/user.routes';
 import { groupModule } from './group/group.routes';
+import { taskModule } from './task/task.routes';
 
 export default class App {
   private app = express();
@@ -30,6 +31,7 @@ export default class App {
     this.app.use(this.apiUrl, authModule.injecting());
     this.app.use(this.apiUrl, userModule.injecting());
     this.app.use(this.apiUrl, groupModule.injecting());
+    this.app.use(this.apiUrl, taskModule.injecting());
 
     this.app.use(errorHandler);
   };

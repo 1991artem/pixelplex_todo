@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-export default class AuthValidation {
+export default class AuthParamsValidation {
     static validateSignUpBody: Schema = {
       email: {
         normalizeEmail: {
@@ -12,14 +12,14 @@ export default class AuthValidation {
           errorMessage: 'Please enter a valid email address',
         },
         trim: true,
-        unescape: true,
+        escape: true,
       },
       name: {
         isLength: {
           errorMessage: 'Name should be at least 5 chars long and maximum of 256 chars',
           options: { min: 5, max: 256 },
         },
-        unescape: true,
+        escape: true,
         trim: true
       },
       password: {
@@ -28,7 +28,7 @@ export default class AuthValidation {
           options: { min: 8, max: 256 },
         },
         trim: true,
-        unescape: true,
+        escape: true,
         isStrongPassword: {
           errorMessage: 'Please enter a valid password (ex: Password123#)',
           options: [
@@ -53,7 +53,7 @@ export default class AuthValidation {
           errorMessage: 'Invalid email',
         },
         trim: true,
-        unescape: true,
+        escape: true,
       },
       password: {
         isLength: {
@@ -61,7 +61,7 @@ export default class AuthValidation {
           options: { min: 8, max: 256 },
         },
         trim: true,
-        unescape: true,
+        escape: true,
     },
     };
 }
