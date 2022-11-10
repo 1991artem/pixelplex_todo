@@ -33,7 +33,7 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Task, (task) => task.owner)
+  @OneToMany(() => Task, (task) => task.user)
   tasks: Task[]
 
   @ManyToMany(() => Group, (group)=> group.users)

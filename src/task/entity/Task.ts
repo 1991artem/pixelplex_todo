@@ -41,5 +41,5 @@ export class Task extends BaseEntity {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.tasks)
-  owner: User["id"]
+  user: User
 }
