@@ -1,5 +1,15 @@
 import { Router } from 'express';
-import { Optional } from 'sequelize';
+
+
+export interface IAuthRouter{
+  injecting: ()=> Router;
+}
+export interface IUserRouter{
+  injecting: ()=> Router;
+}
+export interface IGroupRouter{
+  injecting: ()=> Router;
+}
 
 export interface IUser extends Document {
   id: number;
@@ -9,13 +19,12 @@ export interface IUser extends Document {
   role: string;
 }
 
-export type UserCreationAttributes = Optional<IUser, 'id'>;
-
-export interface IAuthRouter{
-  injecting: ()=> Router;
-}
-export type AuthParams = {
+export type UserDTO = {
   name?: string;
   password: string;
   email: string;
+}
+export type GroupDTO = {
+  name: string;
+  description: string;
 }

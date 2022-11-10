@@ -1,11 +1,13 @@
-# Artem Puzik
+# TODOS
 
-NodeJS PixelPlex
+- It is necessary to create a file '.env' with fields in the root directory:
 
-
-It is necessary to create a file '.env' with fields in the root directory
-
-for example:
-
-MONGO_URI = "mongodb+srv://example"
-JWT_SECRET = 123456
+```TypeScript
+  PORT=4500
+  DB_NAME=database
+  DB_USER=user
+  DB_PASSWORD=****
+  DB_HOST=localhost
+  DB_PORT=5432
+  JWT_SECRET = secret_key
+```

@@ -3,8 +3,8 @@ import { isApiError } from '../error/ApiError';
 
 const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
     if (isApiError(error)) {
-        const { message, statusCode, details } = error;
-        res.status(statusCode).json({ message, statusCode, details });
+        const { message, statusCode } = error;
+        res.status(statusCode).json({ message, statusCode });
         return;
     }
     console.error(error);

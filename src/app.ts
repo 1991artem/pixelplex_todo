@@ -5,8 +5,10 @@ import morgan from 'morgan';
 import colors from 'colors';
 import cors from 'cors';
 
-import { authModule}  from './Auth/auth.routes';
+import { authModule}  from './auth/auth.routes';
 import errorHandler from './middleware/error-handler.middleware';
+import { userModule } from './user/user.routes';
+import { groupModule } from './group/group.routes';
 
 export default class App {
   private app = express();
@@ -25,7 +27,9 @@ export default class App {
     this.app.use(urlencoded({ extended: false }));
     this.app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
-    this.app.use(this.apiUrl, authModule.injecting()); // auth routes
+    this.app.use(this.apiUrl, authModule.injecting());
+    this.app.use(this.apiUrl, userModule.injecting());
+    this.app.use(this.apiUrl, groupModule.injecting());
 
     this.app.use(errorHandler);
   };

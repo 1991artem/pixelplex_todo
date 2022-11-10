@@ -1,15 +1,16 @@
 import { Router } from 'express';
 import { IAuthRouter } from '../helps/interfaces';
 import AuthController from './auth.controller';
-import { validateError } from '../middleware/validate-payload.middleware.ts';
-import AuthValidate from './authValidate';
+import { validationError } from '../middleware/validation.middleware.ts';
+import AuthValidation from './middleware/auth-validation.middleware.ts';
+import { checkSchema } from 'express-validator';
 
 class AuthRouter implements IAuthRouter {
   private router = Router();
   private readonly baseAuthUrl = '/auth/';
   injecting(): Router {
-    this.router.post(`${this.baseAuthUrl}signin`, AuthValidate.validateSigninBody, validateError, AuthController.signUpPOST);
-    this.router.post(`${this.baseAuthUrl}login`, AuthValidate.validateLoginBody, validateError, AuthController.loginPOST);
+    this.router.post(`${this.baseAuthUrl}signup`, checkSchema(AuthValidation.validateSignUpBody), validationError, AuthController.signUpPOST);
+    this.router.post(`${this.baseAuthUrl}login`, checkSchema(AuthValidation.validateLoginBody), validationError, AuthController.loginPOST);
     return this.router;
   }
 }

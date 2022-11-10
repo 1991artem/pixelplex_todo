@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
+    "target": "esnext",
     "sourceMap": false,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "outDir": "./dist",
-    "skipLibCheck": true
+    "outDir": "./dist",                         
+    "rootDir": "./src",                                                           
+    "moduleResolution": "node",                  
+    "esModuleInterop": true,                      
+    "skipLibCheck": true,                           
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "emitDecoratorMetadata": true
   }
 }
