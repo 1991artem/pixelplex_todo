@@ -7,10 +7,10 @@ import { User } from './user/entity/User';
 
 dotenv.config();
 
-const user = process.env.DB_USER;
+const user = process.env.DB_USER as string;
 const host = process.env.DB_HOST || 'localhost';
-const database = process.env.DB_NAME;
-const password = process.env.DB_PASSWORD;
+const database = process.env.DB_NAME as string;
+const password = process.env.DB_PASSWORD as string;
 const port = Number(process.env.DB_PORT) || 5432;
 
 

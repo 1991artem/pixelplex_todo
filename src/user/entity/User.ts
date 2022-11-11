@@ -41,9 +41,11 @@ export class User extends BaseEntity {
     name: "user_group",
     joinColumn: {
         name: "userId",
+        referencedColumnName: 'id',
     },
     inverseJoinColumn: {
         name: "groupId",
+        referencedColumnName: 'id',
     },
   })
   groups: Group[]
