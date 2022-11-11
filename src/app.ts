@@ -15,7 +15,7 @@ import { processNotFoundEndpoint } from './middleware/not-found.middleware';
 export default class App {
   private app = express();
   
-  private PORT: number | string = process.env.PORT ?? config.get('PORT');
+  private PORT: number | string = process.env.APP_PORT ?? config.get('PORT');
   private apiUrl = '/api/v1'
 
   listen():void {
