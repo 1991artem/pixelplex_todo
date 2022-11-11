@@ -1,6 +1,6 @@
 # TODOS
 
-## SQL QUERYS
+## SQL QUERIES
 
 ```sql
 CREATE DATABASE sql_todos_db;
