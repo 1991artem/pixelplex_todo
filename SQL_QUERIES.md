@@ -10,10 +10,10 @@ CREATE DATABASE sql_todos_db;
 CREATE TABLE "user"
   (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    password VARCHAR(30) NOT NULL,
-    email VARCHAR(30) NOT NULL,
-    role VARCHAR(30) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
     createdAt DATE DEFAULT CURRENT_DATE,
     updatedAt DATE DEFAULT CURRENT_DATE
   )
@@ -23,8 +23,8 @@ CREATE TABLE "user"
 CREATE TABLE "group"
   (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    description VARCHAR(30) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
     createdAt DATE DEFAULT CURRENT_DATE,
     updatedAt DATE DEFAULT CURRENT_DATE
   )
@@ -34,10 +34,10 @@ CREATE TABLE "group"
 CREATE TABLE "task"
   (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    description VARCHAR(30),
-    status VARCHAR(30) NOT NULL,
-    priority VARCHAR(30) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255),
+    status VARCHAR(255) NOT NULL,
+    priority VARCHAR(255) NOT NULL,
     userId INT,
     FOREIGN KEY(userId) REFERENCES "user" ON UPDATE CASCADE ON DELETE CASCADE,
     deadline DATE NOT NULL,
