@@ -1,19 +1,18 @@
-import { Schema } from 'express-validator';
-import { TASK_STATUS, TASK_PRIORITY, SORT_FIELD, SORT_TYPE } from '../../helps/enums';
+import { checkSchema } from 'express-validator';
+import { TASK_STATUS, TASK_PRIORITY, SORT_FIELD, SORT_TYPE } from '../../types/enums';
 
 export default class TaskParamsValidation {
-  static  validationTaskParamsId: Schema = {
+  static  validationTaskParamsId = checkSchema({
       id: {
         in: ['params'],
         trim: true,
         isInt: true,
-        toInt: true,
         escape: true,
         errorMessage: 'ID is wrong',
       }
-    }
+    })
 
-    static  validationTaskDTO: Schema = {
+    static  validationTaskDTO = checkSchema({
       name: {
         notEmpty: true,
         trim: true,
@@ -46,7 +45,7 @@ export default class TaskParamsValidation {
           errorMessage: 'Invalid Date format',
         },
         custom: {
-          options: value => new Date(value) > new Date()
+          options: (value: string) => new Date(value) > new Date()
         },
         errorMessage: 'Invalid deadline',
       },
@@ -60,9 +59,9 @@ export default class TaskParamsValidation {
         },
         errorMessage: 'Invalid priority',
       }
-    }
+    })
 
-    static  validationUpdateTaskBody: Schema = {
+    static  validationUpdateTaskBody = checkSchema({
       name: {
         notEmpty: true,
         trim: true,
@@ -97,7 +96,7 @@ export default class TaskParamsValidation {
           errorMessage: 'Invalid Date format',
         },
         custom: {
-          options: value => new Date(value) > new Date()
+          options: (value: string) => new Date(value) > new Date()
         },
         errorMessage: 'Invalid deadline',
       },
@@ -111,18 +110,17 @@ export default class TaskParamsValidation {
         },
         errorMessage: 'Invalid priority',
       }
-    }
+    })
 
-    static  validationPaginationQueryParams: Schema = {
+    static  validationPaginationQueryParams = checkSchema({
       'pagination.[limit]': {
         in: "query",
         trim: true,
         escape: true,
         isInt: true,
-        toInt: true,
         optional: true,
         custom: {
-          options: value => value >=0
+          options: (value: string) => +value >=0
         },
         errorMessage: 'Pagination params is wrong',
       },
@@ -131,10 +129,9 @@ export default class TaskParamsValidation {
         trim: true,
         escape: true,
         isInt: true,
-        toInt: true,
         optional: true,
         custom: {
-          options: value => value >=0
+          options: (value: string) => +value >=0
         },
         errorMessage: 'Pagination params is wrong',
       },
@@ -160,5 +157,5 @@ export default class TaskParamsValidation {
         optional: true,
         errorMessage: 'Sort params is wrong',
       }
-    }
+    })
 }

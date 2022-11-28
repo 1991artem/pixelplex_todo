@@ -1,23 +1,17 @@
-import { Router } from 'express';
-import { checkSchema } from 'express-validator';
-import { IGroupRouter } from '../helps/interfaces';
-import { validationError } from '../middleware/validation.middleware.ts';
+import { Application, Router } from 'express';
+import { validatePayload } from '../middleware/validate-payload.middleware.ts';
 import GroupController from './group.controller';
 import GroupParamsValidation from './middleware/group-validation.middleware.ts';
 
-class GroupRouter implements IGroupRouter {
-  private router = Router();
-  private readonly baseAuthUrl = '/group/';
-  injecting(): Router {
-    this.router.post(`${this.baseAuthUrl}create`, checkSchema(GroupParamsValidation.validationCreateGroupBody), validationError, GroupController.createGroup);
-    this.router.get(`${this.baseAuthUrl}all`, checkSchema(GroupParamsValidation.validationPaginationQueryParams), validationError, GroupController.showAllGroups);
-    this.router.get(`${this.baseAuthUrl}:id`, checkSchema(GroupParamsValidation.validationIdParams), validationError, GroupController.showGroupById);
-    this.router.delete(`${this.baseAuthUrl}:id`, checkSchema(GroupParamsValidation.validationIdParams), validationError, GroupController.deleteGroupById);
-    this.router.patch(`${this.baseAuthUrl}:id`, checkSchema(GroupParamsValidation.validationIdParams), checkSchema(GroupParamsValidation.validationUpdateGroupBody), validationError, GroupController.updateGroupById);
-    this.router.post(`${this.baseAuthUrl}add-user`, checkSchema(GroupParamsValidation.validationUserIdGroupIdInBody), validationError, GroupController.addUserToGroup);
-    this.router.post(`${this.baseAuthUrl}remove-user`, checkSchema(GroupParamsValidation.validationUserIdGroupIdInBody), validationError, GroupController.removeUserFromGroup);
-    return this.router;
-  }
-}
+const router = Router();
+router.post(`/create`, GroupParamsValidation.validationCreateGroupBody, validatePayload, GroupController.createGroup);
+router.get(`/all`, GroupParamsValidation.validationPaginationQueryParams, validatePayload, GroupController.getAllGroups);
+router.get(`/:id`, GroupParamsValidation.validationIdParams, validatePayload, GroupController.getGroupById);
+router.delete(`/:id`, GroupParamsValidation.validationIdParams, validatePayload, GroupController.deleteGroupById);
+router.patch(`/:id`, GroupParamsValidation.validationIdParams, GroupParamsValidation.validationUpdateGroupBody, validatePayload, GroupController.updateGroupById);
+router.post(`/add-user`, GroupParamsValidation.validationUserIdGroupIdInBody, validatePayload, GroupController.addUserToGroup);
+router.post(`/remove-user`, GroupParamsValidation.validationUserIdGroupIdInBody, validatePayload, GroupController.removeUserFromGroup);
 
-export const groupModule = new GroupRouter();
+export function mountRouter(app: Application): void {
+  app.use('/api/v1/group', router);
+}

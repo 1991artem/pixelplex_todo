@@ -1,14 +1,13 @@
-import { Schema } from 'express-validator';
+import { checkSchema } from 'express-validator';
 
 export default class UserParamsValidation {
-  static  validationUserParamsId: Schema = {
+  static  validationUserParamsId = checkSchema({
       id: {
         in: ['params'],
         trim: true,
         isInt: true,
-        toInt: true,
         escape: true,
         errorMessage: 'ID is wrong',
       }
-    }
+    })
 }

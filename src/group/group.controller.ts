@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { GroupDTO } from '../helps/interfaces';
+import { QueryType } from '../types/types';
+import { GroupDTO } from './dto/group.dto';
 
 export default class GroupController {
   static async createGroup( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -8,23 +9,23 @@ export default class GroupController {
         name: req.body?.name,
         description: req.body?.description,
       }
-      res.status(201).json({ id: 0, message: `Group has been created`, group: groupDTO });
+      res.status(201).json(groupDTO);
     } catch (error) {
       next(error);
     }
   }
-  static async showAllGroups( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAllGroups( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams = req.query;
-      res.status(200).json({params: queryParams});
+      const queryParams: Partial<QueryType> = req.query;
+      res.status(200).json(queryParams);
     } catch (error) {
       next(error);
     }
   }
-  static async showGroupById( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getGroupById( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const groupId = req.params?.id;
-      res.status(200).json({ id: groupId, message: `Show Group #${groupId}` });
+      res.status(200).json(groupId);
     } catch (error) {
       next(error);
     }
@@ -32,7 +33,7 @@ export default class GroupController {
   static async deleteGroupById( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const groupId = req.params?.id;
-      res.status(200).json({ id: groupId, message: `Delete Group #${groupId}` });
+      res.status(200).json(groupId);
     } catch (error) {
       next(error);
     }
@@ -44,7 +45,7 @@ export default class GroupController {
         name: req.body?.name,
         description: req.body?.description,
       }
-      res.status(200).json({ id: groupId, body: updateBody });
+      res.status(200).json({ groupId, updateBody });
     } catch (error) {
       next(error);
     }
@@ -55,7 +56,7 @@ export default class GroupController {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
       }
-      res.status(200).json({ message: addParams });
+      res.status(200).json(addParams);
     } catch (error) {
       next(error);
     }
@@ -66,7 +67,7 @@ export default class GroupController {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
       }
-      res.status(200).json({ body: removeParams });
+      res.status(200).json(removeParams);
     } catch (error) {
       next(error);
     }

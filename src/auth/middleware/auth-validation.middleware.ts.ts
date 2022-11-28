@@ -1,7 +1,7 @@
-import { Schema } from "express-validator";
+import { checkSchema } from "express-validator";
 
 export default class AuthParamsValidation {
-    static validateSignUpBody: Schema = {
+    static validateSignUpBody = checkSchema({
       email: {
         normalizeEmail: {
           options:
@@ -41,8 +41,9 @@ export default class AuthParamsValidation {
           ],
         },
     },
-    };
-    static validateLoginBody: Schema = {
+    })
+
+    static validateLoginBody = checkSchema({
       email: {
         normalizeEmail: {
           options:
@@ -63,5 +64,5 @@ export default class AuthParamsValidation {
         trim: true,
         escape: true,
     },
-    };
+    })
 }

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserDTO } from '../helps/interfaces';
+import { UserDTO } from '../user/dto/user.dto';
 
 export default class AuthController {
   static async signUpPOST( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -9,7 +9,7 @@ export default class AuthController {
         email: req.body.email,
         password: req.body.password,
       }
-      res.status(201).json({ body: userDTO });
+      res.status(201).json(userDTO);
     } catch (error) {
       next(error);
     }
@@ -21,11 +21,9 @@ export default class AuthController {
         email: req.body.email,
         password: req.body.password,
       }
-      res.status(200).json({ body: userDTO });
+      res.status(200).json(userDTO);
     } catch (error) {
       next(error);
     }
   }
-
 }
-

@@ -1,8 +1,8 @@
-import { Schema } from 'express-validator';
-import { SORT_FIELD, SORT_TYPE } from '../../helps/enums';
+import { checkSchema, Schema } from 'express-validator';
+import { SORT_FIELD, SORT_TYPE } from '../../types/enums';
 
 export default class GroupParamsValidation {
-  static  validationCreateGroupBody: Schema = {
+  static  validationCreateGroupBody = checkSchema({
       name: {
         notEmpty: true,
         trim: true,
@@ -13,9 +13,9 @@ export default class GroupParamsValidation {
         trim: true,
         escape: true,
       }
-    }
+    })
 
-    static  validationUpdateGroupBody: Schema = {
+    static  validationUpdateGroupBody = checkSchema({
       name: {
         notEmpty: true,
         trim: true,
@@ -28,15 +28,14 @@ export default class GroupParamsValidation {
         escape: true,
         optional: true,
       }
-    }
+    })
 
-    static  validationPaginationQueryParams: Schema = {
+    static  validationPaginationQueryParams = checkSchema({
       'pagination.[limit]': {
         in: "query",
         trim: true,
         escape: true,
         isInt: true,
-        toInt: true,
         optional: true,
         custom: {
           options: value => value >=0
@@ -48,7 +47,6 @@ export default class GroupParamsValidation {
         trim: true,
         escape: true,
         isInt: true,
-        toInt: true,
         optional: true,
         custom: {
           options: value => value >=0
@@ -77,19 +75,18 @@ export default class GroupParamsValidation {
         optional: true,
         errorMessage: 'Sort params is wrong',
       }
-    }
+    })
 
-    static  validationIdParams: Schema = {
+    static  validationIdParams = checkSchema({
       id: {
         in: 'params',
         trim: true,
         isInt: true,
-        toInt: true,
         errorMessage: 'ID is wrong',
       }
-    }
+    })
 
-    static  validationUserIdGroupIdInBody: Schema = {
+    static  validationUserIdGroupIdInBody = checkSchema({
       userId: {
         trim: true,
         isInt: true,
@@ -104,5 +101,5 @@ export default class GroupParamsValidation {
         notEmpty: true,
         errorMessage: 'groupId is wrong',
       }
-    }
+    })
 }

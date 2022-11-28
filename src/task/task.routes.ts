@@ -1,21 +1,15 @@
-import { Router } from 'express';
-import { checkSchema } from 'express-validator';
-import { ITaskRouter } from '../helps/interfaces';
-import { validationError } from '../middleware/validation.middleware.ts';
+import { Application, Router } from 'express';
+import { validatePayload } from '../middleware/validate-payload.middleware.ts';
 import TaskParamsValidation from './middleware/task-validation.middleware.ts';
 import TaskController from './task.controller';
 
-class TaskRouter implements ITaskRouter {
-  private router = Router();
-  private readonly baseAuthUrl = '/task/';
-  injecting(): Router {
-    this.router.post(`${this.baseAuthUrl}create`, checkSchema(TaskParamsValidation.validationTaskDTO), validationError, TaskController.createTask);
-    this.router.get(`${this.baseAuthUrl}all`, checkSchema(TaskParamsValidation.validationPaginationQueryParams), validationError, TaskController.showAllTasks);
-    this.router.get(`${this.baseAuthUrl}:id`, checkSchema(TaskParamsValidation.validationTaskParamsId), validationError, TaskController.showTaskById);
-    this.router.delete(`${this.baseAuthUrl}:id`, checkSchema(TaskParamsValidation.validationTaskParamsId), validationError, TaskController.deleteTaskById);
-    this.router.patch(`${this.baseAuthUrl}:id`, checkSchema(TaskParamsValidation.validationTaskParamsId), checkSchema(TaskParamsValidation.validationUpdateTaskBody), validationError, TaskController.updateTaskById);
-    return this.router;
-  }
-}
+const router = Router();
+router.post(`/create`, TaskParamsValidation.validationTaskDTO, validatePayload, TaskController.createTask);
+router.get(`/all`, TaskParamsValidation.validationPaginationQueryParams, validatePayload, TaskController.getAllTasks);
+router.get(`/:id`, TaskParamsValidation.validationTaskParamsId, validatePayload, TaskController.getTaskById);
+router.delete(`/:id`, TaskParamsValidation.validationTaskParamsId, validatePayload, TaskController.deleteTaskById);
+router.patch(`/:id`, TaskParamsValidation.validationTaskParamsId, TaskParamsValidation.validationUpdateTaskBody, validatePayload, TaskController.updateTaskById);
 
-export const taskModule = new TaskRouter();
+export function mountRouter(app: Application): void {
+  app.use('/api/v1/task', router);
+}

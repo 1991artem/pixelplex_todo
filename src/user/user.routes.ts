@@ -1,17 +1,11 @@
-import { Router } from 'express';
-import { checkSchema } from 'express-validator';
-import { IUserRouter } from '../helps/interfaces';
-import { validationError } from '../middleware/validation.middleware.ts';
+import { Application, Router } from 'express';
+import { validatePayload } from '../middleware/validate-payload.middleware.ts';
 import UserParamsValidation from './middleware/user-validation.middleware.ts';
 import UserController from './user.controller';
 
-class UserRouter implements IUserRouter {
-  private router = Router();
-  private readonly baseAuthUrl = '/user/';
-  injecting(): Router {
-    this.router.get(`${this.baseAuthUrl}:id/statistics`, checkSchema(UserParamsValidation.validationUserParamsId), validationError, UserController.getUserStatistics);
-    return this.router;
-  }
-}
+const router = Router();
+router.get(`/:id/statistics`, UserParamsValidation.validationUserParamsId, validatePayload, UserController.getUserStatistics);
 
-export const userModule = new UserRouter();
+export function mountRouter(app: Application): void {
+  app.use('/api/v1/user', router);
+}
