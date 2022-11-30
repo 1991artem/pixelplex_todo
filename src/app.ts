@@ -7,24 +7,25 @@ import { mountRouter as mountGroupRouter } from './group/group.routes';
 import { mountRouter as mountTaskRouter } from './task/task.routes';
 import { processNotFoundEndpoint } from './middleware/not-found.middleware';
 
-  const app = express();
-  
-  const PORT: number = 4500;
+const app = express();
 
-  const init = async(): Promise<void> => {
-    app.listen(PORT, () => { // listen to port numbers
-      console.log(`---listening port ${PORT}---`);
-    });
-  }
+const PORT: number = 4500;
 
-    app.use(json());
-    app.use(urlencoded({ extended: false }));
+const init = async(): Promise<void> => {
+  app.listen(PORT, () => {
+    console.log(`---listening port ${PORT}---`);
+  });
+};
 
-    mountAuthRouter(app);
-    mountUserRouter(app);
-    mountGroupRouter(app);
-    mountTaskRouter(app);
+app.use(json());
+app.use(urlencoded({ extended: false }));
 
-    app.use(processNotFoundEndpoint);
+mountAuthRouter(app);
+mountUserRouter(app);
+mountGroupRouter(app);
+mountTaskRouter(app);
 
-    init()
+app.use(processNotFoundEndpoint);
+app.use(errorHandler);
+
+init();

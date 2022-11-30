@@ -1,12 +1,12 @@
 import { Application, Router } from 'express';
-import AuthController from './auth.controller';
 import { validatePayload } from '../middleware/validate-payload.middleware.ts';
-import AuthParamsValidation from './middleware/auth-validation.middleware.ts';
+import AuthController from './auth.controller';
+import * as validation from './validator/auth-validation.ts';
 
 const router = Router();
 
-router.post(`/signup`, AuthParamsValidation.validateSignUpBody, validatePayload, AuthController.signUpPOST);
-router.post(`/login`, AuthParamsValidation.validateLoginBody, validatePayload, AuthController.loginPOST);
+router.post('/signup', validation.signUpPOST, validatePayload, AuthController.signUpPOST);
+router.post('/login', validation.loginPOST, validatePayload, AuthController.loginPOST);
 
 export function mountRouter(app: Application): void {
   app.use('/api/v1/auth', router);

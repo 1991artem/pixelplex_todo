@@ -1,5 +1,5 @@
-export type UserDTO = {
+export interface UserDTO {
   name?: string;
   password: string;
   email: string;
-}
+};

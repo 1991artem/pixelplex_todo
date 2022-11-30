@@ -2,17 +2,18 @@
   "name": "pixelplex",
   "version": "1.0.0",
   "description": "NodeJS PixelPlex task",
+  "main": "dist/app.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "start": "tsc -w",
-    "build": "npx tsc",
+    "build": "npm tsc",
     "launch": "ts-node --transpile-only ./src/app.ts",
     "launch:dev": "ts-node-dev --files ./src/app.ts",
-    "audit": "npx audit-ci --config audit-ci.json",
-    "lint": "npx eslint ./src",
-    "lint:fix": "npx eslint ./src --fix"
+    "audit": "npm audit-ci --config audit-ci.json",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
   "repository": {
     "type": "git",

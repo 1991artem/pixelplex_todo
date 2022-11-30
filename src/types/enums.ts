@@ -15,11 +15,10 @@ export enum TASK_PRIORITY {
   HIGH = 'high',
 }
 
-
 export enum SORT_TYPE {
   ASC = 'asc',
   DESC = 'desc',
-  TYPE = "TYPE"
+  TYPE = 'TYPE'
 }
 
 export enum SORT_FIELD {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { TaskDTO } from './dto/task.dto';
+import { TaskDTO } from './dtos/task.dto';
 
 export default class TaskController {
   static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -10,7 +10,7 @@ export default class TaskController {
         status: req.body?.status,
         deadline: req.body?.deadline,
         priority: req.body?.priority,
-      }
+      };
       res.status(201).json(taskDTO);
     } catch (error) {
       next(error);
@@ -49,7 +49,7 @@ export default class TaskController {
         status: req.body?.status,
         deadline: req.body?.deadline,
         priority: req.body?.priority,
-      }
+      };
       res.status(200).json({ taskId, updateBody });
     } catch (error) {
       next(error);

@@ -1,4 +1,4 @@
-import { PAGINATIONS, SORT_TYPE, SORT, SORT_FIELD } from "./enums";
+import { PAGINATIONS, SORT_TYPE, SORT, SORT_FIELD } from './enums';
 
 type Pagination = {
   [key in PAGINATIONS]: string;
@@ -12,4 +12,4 @@ type Sort = {
 export type QueryType = {
   pagination: Pagination,
   sort: Sort;
-}
+};

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { QueryType } from '../types/types';
-import { GroupDTO } from './dto/group.dto';
+import { GroupDTO } from './dtos/group.dto';
 
 export default class GroupController {
   static async createGroup( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -8,7 +8,7 @@ export default class GroupController {
       const groupDTO: GroupDTO = {
         name: req.body?.name,
         description: req.body?.description,
-      }
+      };
       res.status(201).json(groupDTO);
     } catch (error) {
       next(error);
@@ -44,7 +44,7 @@ export default class GroupController {
       const updateBody = {
         name: req.body?.name,
         description: req.body?.description,
-      }
+      };
       res.status(200).json({ groupId, updateBody });
     } catch (error) {
       next(error);
@@ -55,7 +55,7 @@ export default class GroupController {
       const addParams = {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
-      }
+      };
       res.status(200).json(addParams);
     } catch (error) {
       next(error);
@@ -66,7 +66,7 @@ export default class GroupController {
       const removeParams = {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
-      }
+      };
       res.status(200).json(removeParams);
     } catch (error) {
       next(error);
