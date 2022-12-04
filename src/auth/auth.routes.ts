@@ -1,6 +1,6 @@
 import { Application, Router } from 'express';
 import { validatePayload } from '../middleware/validate-payload.middleware.ts';
-import * as validation from '../validators/auth.validation.ts';
+import * as validation from './auth.validation';
 import AuthController from './auth.controller';
 
 const router = Router();
