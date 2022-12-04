@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Response, Request, NextFunction } from 'express';
-import { isApiError } from '../errors/api.errors';
+import { isApiError } from '../errors/app.error';
 
 const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
   if (isApiError(error)) {

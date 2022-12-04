@@ -6,16 +6,9 @@ import { mountRouter as mountUserRouter } from './user/user.routes';
 import { mountRouter as mountGroupRouter } from './group/group.routes';
 import { mountRouter as mountTaskRouter } from './task/task.routes';
 import { processNotFoundEndpoint } from './middleware/not-found.middleware';
+import errorHandler from './middleware/error-handler.middleware';
 
 const app = express();
-
-const PORT: number = 4500;
-
-const init = async(): Promise<void> => {
-  app.listen(PORT, () => {
-    console.log(`---listening port ${PORT}---`);
-  });
-};
 
 app.use(json());
 app.use(urlencoded({ extended: false }));
@@ -27,5 +20,12 @@ mountTaskRouter(app);
 
 app.use(processNotFoundEndpoint);
 app.use(errorHandler);
+
+const init = async(): Promise<void> => {
+  const PORT: number = 4500;
+  app.listen(PORT, () => {
+    console.log(`---listening port ${PORT}---`);
+  });
+};
 
 init();

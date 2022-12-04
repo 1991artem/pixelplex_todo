@@ -1,6 +1,6 @@
 import { checkSchema } from 'express-validator';
 
-const signUpPOST = checkSchema({
+const signUp = checkSchema({
   email: {
     normalizeEmail: {
       options:
@@ -42,7 +42,7 @@ const signUpPOST = checkSchema({
   },
 });
 
-const loginPOST = checkSchema({
+const login = checkSchema({
   email: {
     normalizeEmail: {
       options:
@@ -66,6 +66,6 @@ const loginPOST = checkSchema({
 });
 
 export {
-  signUpPOST,
-  loginPOST,
+  signUp,
+  login,
 };

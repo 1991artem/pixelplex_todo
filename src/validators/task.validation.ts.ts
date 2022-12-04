@@ -1,5 +1,5 @@
 import { checkSchema } from 'express-validator';
-import { TASK_STATUS, TASK_PRIORITY } from '../../types/enums';
+import { TASK_STATUS, TASK_PRIORITY } from '../types/enums';
 
 const createTask = checkSchema({
   name: {

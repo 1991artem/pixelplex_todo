@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { TaskDTO } from './dtos/task.dto';
 
 export default class TaskController {
   static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskDTO: TaskDTO = {
+      const taskDTO = {
         name: req.body?.name,
         description: req.body?.description,
         status: req.body?.status,

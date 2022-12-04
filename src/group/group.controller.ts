@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { QueryType } from '../types/types';
-import { GroupDTO } from './dtos/group.dto';
 
 export default class GroupController {
   static async createGroup( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const groupDTO: GroupDTO = {
+      const groupDTO = {
         name: req.body?.name,
         description: req.body?.description,
       };
