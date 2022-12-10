@@ -1,17 +1,18 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
+import { UserType } from 'user/types/user-types';
 import { AppError } from '../errors/app.error';
 import { STATUS_CODE } from '../types/enums';
 import { UserCreateDTO } from '../user/dtos/user.dtos';
 import { User } from '../user/entity/user.entity';
-import { UserProvider } from '../user/user.repository';
+import { UserRepository } from '../user/user.repository';
 import { UserAuthDTO } from './dtos/auth.dtos';
 
 class AuthService {
-  async userCreate(userDTO: UserCreateDTO): Promise<User | void> {
+  async userCreate(userDTO: UserCreateDTO): Promise<User> {
     const { email, password, name } = userDTO;
-    const hashedPassword = await hash(password as string, 12); // hash password
-    const condidate = await UserProvider.findOneByEmail(email); // check user in DB
+    const hashedPassword = await hash(password as string, 12);
+    const condidate: UserType = await UserRepository.findOneByEmail(email);
     if (condidate) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'User with this email address already exists',
@@ -22,36 +23,35 @@ class AuthService {
       email,
       password: hashedPassword,
     };
-    UserProvider.createUser(authParams); // create new user
-    return UserProvider.createUser(authParams); // create new user
+    UserRepository.createUser(authParams);
+    return UserRepository.createUser(authParams);
   }
 
-  async userLogin(userDTO: UserAuthDTO): Promise<string> {
+  async userLogin(userDTO: UserAuthDTO): Promise<string | void> {
     const { email, password } = userDTO;
-    const user = await UserProvider.findOneByEmail(email); // check user in DB
+    const user: UserType = await UserRepository.findOneByEmail(email);
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',
       );
     }
-    const isMatch: boolean = await compare(password, user?.password);
+    const isMatch: boolean = await compare(password, user.password);
     if (!isMatch) {
       throw new AppError(STATUS_CODE.UNAUTHORIZED,
         'Authentification failed. Check your email/password.',
       );
     }
-    const token = this.getJtwToken(`${user?.id}`, user?.role, user?.name);
+    const token: string | void = this.getJtwToken(`${user?.id}`, user?.role, user?.name);
     return token;
   }
 
-  getJtwToken(id: string, role: string, name: string): string {
-    const tokenLifetime: string = '4h';
-    if (!process.env.JWT_SECRET) {
-      return '';
+  getJtwToken(id: string, role: string, name: string): string | void {
+    const tokenLifetime: string | undefined = process.env.TOKEN_LIFETIME;
+    if (process.env.JWT_SECRET && process.env.TOKEN_LIFETIME) {
+      return sign({ id, role, name }, process.env.JWT_SECRET, {
+        expiresIn: tokenLifetime,
+      });
     }
-    return sign({ id, role, name }, process.env.JWT_SECRET, {
-      expiresIn: tokenLifetime,
-    });
   }
 }
 

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from 'types/express';
 import { STATUS_CODE } from '../types/enums';
 import { User } from '../user/entity/user.entity';
 import { AppError } from '../errors/app.error';
@@ -14,7 +15,7 @@ export default class AuthController {
         email: req.body.email,
         password: req.body.password,
       };
-      const user: User | void = await authService.userCreate(userCreateDTO);
+      const user: User = await authService.userCreate(userCreateDTO);
       if (user?.id) {
         res.status(STATUS_CODE.OK).json({ id: user?.id, message: 'User has been created' });
       } else {
@@ -31,22 +32,26 @@ export default class AuthController {
         email: req.body.email,
         password: req.body.password,
       };
-      const token: string = await authService.userLogin(userAuthDTO);
-      res.status(STATUS_CODE.OK).cookie('token', token, { maxAge: 3600000 }).json({
-        token,
-      });
+      const token: string | void = await authService.userLogin(userAuthDTO);
+      if (token) {
+        res.status(STATUS_CODE.OK).cookie('token', token, { maxAge: Number(process.env.COOKIE_LIFETIME) | 0 }).json({
+          token,
+        });
+      } else {
+        throw new AppError(STATUS_CODE.BAD_REQUEST, 'Token is invalid');
+      }
     } catch (error) {
       next(error);
     }
   }
 
-  static logout(_req: Request, res: Response, next: NextFunction): void {
+  static logout(req: AuthRequest, res: Response, next: NextFunction): void {
     try {
+      req.headers.authorization?.replace('Bearer ', '');
       res.status(STATUS_CODE.OK).clearCookie('token').json({
         message: 'User logged out',
       });;
     } catch (error) {
-      console.log(error)
       next(error);
     }
   }

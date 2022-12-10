@@ -1,19 +1,34 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { AppError } from 'errors/app.error';
+import { STATUS_CODE } from 'types/enums';
 import { AppDataSource } from '../../data-source';
 import { UserCreateDTO } from './dtos/user.dtos';
 import { User } from './entity/user.entity';
+import { UserType } from './types/user-types';
 
-export class UserProvider {
+export class UserRepository {
   private static _usersRepository = AppDataSource.getRepository(User);
-  static findOneByEmail(email: string) {
-    return this._usersRepository.findOneBy({
+  static async findOneByEmail(email: string): Promise<User | null> {
+    const user: UserType = await this._usersRepository.findOneBy({
       email,
     });
+    return user;
   }
-  static async createUser(authParams: UserCreateDTO) {
+
+  static async findOneById(id: number): Promise<User | null> {
+    const user: UserType = await this._usersRepository.findOneBy({
+      id,
+    });
+    return user;
+  }
+
+  static async createUser(authParams: UserCreateDTO): Promise<User> {
     const user: User = this._usersRepository.create(authParams);
+    if (!user) {
+      throw new AppError(STATUS_CODE.INTERNAL_SERVER_ERROR,
+        'User not created',
+      );
+    }
     await this._usersRepository.save(user);
-    return user; // create new user
+    return user;
   }
 }

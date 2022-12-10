@@ -20,7 +20,7 @@ export const AppDataSource = new DataSource({
   username: user,
   password: password,
   database: database,
-  synchronize: false,
+  synchronize: true,
   logging: false,
   entities: [User, Group, Task],
   subscribers: [],

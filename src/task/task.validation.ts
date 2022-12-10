@@ -126,7 +126,6 @@ const paginationParams = checkSchema({
   },
   'sort.[type]': {
     in: 'query',
-    toLowerCase: true,
     isIn: {
       options: [Object.values(SORT_TYPE)],
     },
@@ -137,7 +136,6 @@ const paginationParams = checkSchema({
   },
   'sort.[field]': {
     in: 'query',
-    toLowerCase: true,
     isIn: {
       options: [Object.values(SORT_FIELD)],
     },
