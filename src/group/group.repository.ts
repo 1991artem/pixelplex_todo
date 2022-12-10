@@ -23,12 +23,16 @@ export class GroupRepository {
 
   static async getAllGroups(paginationParams: IGroupPaginationsParams): Promise<Group[]> {
     const { limit, offset, field, type } = paginationParams;
-    const groups: Group[] = await this._groupsRepository
-      .createQueryBuilder('group')
-      .orderBy(field, type)
-      .skip(offset)
-      .take(limit)
-      .getMany();
+    const groups: Group[] = await this._groupsRepository.find({
+      relations: {
+        users: true,
+      },
+      skip: offset,
+      take: limit,
+      order: {
+        [field]: type,
+      },
+    });
 
     if (!groups.length) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -38,8 +42,13 @@ export class GroupRepository {
     return groups;
   }
   static async getGroupById(id: number): Promise<Group> {
-    const group: GroupType = await this._groupsRepository.findOneBy({
-      id: id,
+    const group: GroupType = await this._groupsRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        users: true,
+      },
     });
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -55,7 +64,7 @@ export class GroupRepository {
   static async updateGroupById(id: number, updateBody: Partial<GreateGroupDTO>): Promise<void> {
     await this._groupsRepository
       .createQueryBuilder()
-      .update(User)
+      .update(Group)
       .set({ ...updateBody })
       .where('id = :id', { id })
       .execute();
