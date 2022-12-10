@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import express, { urlencoded, json } from 'express';
-
+import * as express from 'express';
+import { urlencoded, json } from 'express';
+import { processError } from 'middleware/process-error.middleware';
 import { mountRouter as mountAuthRouter } from './auth/auth.routes';
 import { mountRouter as mountUserRouter } from './user/user.routes';
 import { mountRouter as mountGroupRouter } from './group/group.routes';
@@ -20,12 +21,18 @@ mountTaskRouter(app);
 
 app.use(processNotFoundEndpoint);
 app.use(errorHandler);
+app.use(processError);
 
-const init = async(): Promise<void> => {
-  const PORT: number = 4500;
-  app.listen(PORT, () => {
-    console.log(`---listening port ${PORT}---`);
-  });
+const init = (): void => {
+  try {
+    const PORT: number = 4500;
+    app.listen(PORT, () => {
+      console.log(`---listening port ${PORT}---`);
+    });
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
 };
 
 init();

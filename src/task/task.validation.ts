@@ -101,7 +101,6 @@ const updateTaskById = checkSchema({
   },
 });
 
-
 const paginationParams = checkSchema({
   'pagination.[limit]': {
     in: 'query',

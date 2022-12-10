@@ -5,11 +5,17 @@ type Pagination = {
 };
 
 type Sort = {
-  [SORT_TYPE.TYPE]: SORT_TYPE;
+  [SORT.TYPE]: SORT_TYPE;
   [SORT.FIELD]: SORT_FIELD;
 };
 
 export type QueryType = {
   pagination: Pagination,
   sort: Sort;
+};
+
+export interface IUserAuthInfoInRequest {
+  token: string;
+  role: string;
+  userId: string;
 };

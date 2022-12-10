@@ -46,7 +46,6 @@ const userInGroup = checkSchema({
   },
 });
 
-
 const paginationParams = checkSchema({
   'pagination.[limit]': {
     in: 'query',

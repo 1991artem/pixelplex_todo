@@ -18,7 +18,6 @@ export enum TASK_PRIORITY {
 export enum SORT_TYPE {
   ASC = 'asc',
   DESC = 'desc',
-  TYPE = 'TYPE'
 }
 
 export enum SORT_FIELD {
@@ -46,3 +45,18 @@ export enum STATUS_CODE {
   UNPROCESSABLE_ENTITY = 422,
   INTERNAL_SERVER_ERROR = 500,
 }
+
+type Pagination = {
+  [key in PAGINATIONS]: string;
+};
+
+type Sort = {
+  [SORT.TYPE]: SORT_TYPE;
+  [SORT.FIELD]: SORT_FIELD;
+};
+
+export type QueryType = {
+  pagination: Pagination,
+  sort: Sort;
+};
+
