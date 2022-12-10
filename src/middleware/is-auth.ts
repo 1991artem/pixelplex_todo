@@ -9,6 +9,9 @@ import { IUserAuthInfoInRequest } from 'types/types';
 export function isAuth(req: AuthRequest, _res: Response, next: NextFunction): void {
   const jwt_secret_key: string | undefined = process.env.JWT_SECRET;
   try {
+    if (req.method === 'OPTIONS') {
+      next();
+    }
     const authHeader = req.get('Authorization');
 
     if (!authHeader) {
