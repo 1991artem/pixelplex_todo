@@ -6,7 +6,7 @@ import { AppError } from 'errors/app.error';
 import { STATUS_CODE } from 'types/enums';
 import { IUserAuthInfoInRequest } from 'types/types';
 
-export function isAuth(req: AuthRequest, _res: Response, next: NextFunction): void {
+export function isAuth(req: AuthRequest, res: Response, next: NextFunction): void {
   const jwt_secret_key: string | undefined = process.env.JWT_SECRET;
   try {
     if (req.method === 'OPTIONS') {

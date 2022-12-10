@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import * as express from 'express';
 import { urlencoded, json } from 'express';
+import * as cookieParser from 'cookie-parser';
 import { AppDataSource } from '../data-source';
 import { processError } from './middleware/process-error.middleware';
 import { mountRouter as mountAuthRouter } from './auth/auth.routes';
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(json());
 app.use(urlencoded({ extended: false }));
+app.use(cookieParser());
 
 mountAuthRouter(app);
 mountUserRouter(app);

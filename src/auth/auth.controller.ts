@@ -32,10 +32,21 @@ export default class AuthController {
         password: req.body.password,
       };
       const token: string = await authService.userLogin(userAuthDTO);
-      res.status(STATUS_CODE.OK).json({
+      res.status(STATUS_CODE.OK).cookie('token', token, { maxAge: 3600000 }).json({
         token,
       });
     } catch (error) {
+      next(error);
+    }
+  }
+
+  static logout(_req: Request, res: Response, next: NextFunction): void {
+    try {
+      res.status(STATUS_CODE.OK).clearCookie('token').json({
+        message: 'User logged out',
+      });;
+    } catch (error) {
+      console.log(error)
       next(error);
     }
   }
