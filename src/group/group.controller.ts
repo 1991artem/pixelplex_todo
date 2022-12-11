@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { QueryType } from '../types/types';
 
 export default class GroupController {
   static async createGroup( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -15,7 +14,7 @@ export default class GroupController {
   }
   static async getAllGroups( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams: Partial<QueryType> = req.query;
+      const queryParams = req.query;
       res.status(200).json(queryParams);
     } catch (error) {
       next(error);

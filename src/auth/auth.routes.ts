@@ -1,5 +1,5 @@
 import { Application, Router } from 'express';
-import { validatePayload } from '../middleware/validate-payload.middleware.ts';
+import { validatePayload } from '../middleware/validate-payload.middleware';
 import * as validation from './auth.validation';
 import AuthController from './auth.controller';
 

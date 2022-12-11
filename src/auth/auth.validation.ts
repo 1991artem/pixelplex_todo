@@ -1,18 +1,8 @@
 import { checkSchema } from 'express-validator';
+import { email } from './constants';
 
 const signUp = checkSchema({
-  email: {
-    normalizeEmail: {
-      options:
-            { 'gmail_remove_dots': true,
-              'all_lowercase': true },
-    },
-    isEmail: {
-      errorMessage: 'Please enter a valid email address',
-    },
-    trim: true,
-    escape: true,
-  },
+  email,
   name: {
     isLength: {
       errorMessage: 'Name should be at least 5 chars long and maximum of 256 chars',
@@ -43,18 +33,7 @@ const signUp = checkSchema({
 });
 
 const login = checkSchema({
-  email: {
-    normalizeEmail: {
-      options:
-            { 'gmail_remove_dots': true,
-              'all_lowercase': true },
-    },
-    isEmail: {
-      errorMessage: 'Invalid email',
-    },
-    trim: true,
-    escape: true,
-  },
+  email,
   password: {
     isLength: {
       errorMessage: 'Password should be at least 8 chars long and maximum of 256 chars',

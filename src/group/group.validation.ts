@@ -1,5 +1,5 @@
 import { checkSchema } from 'express-validator';
-import { SORT_FIELD, SORT_TYPE } from '../types/enums';
+import { groupId, id, paginations, userId } from './constants';
 
 const createGroup = checkSchema({
   name: {
@@ -15,6 +15,7 @@ const createGroup = checkSchema({
 });
 
 const updateGroupById = checkSchema({
+  id: id,
   name: {
     notEmpty: true,
     trim: true,
@@ -29,85 +30,27 @@ const updateGroupById = checkSchema({
   },
 });
 
-const userInGroup = checkSchema({
-  userId: {
-    trim: true,
-    isInt: true,
-    escape: true,
-    notEmpty: true,
-    errorMessage: 'userId is invalid',
-  },
-  groupId: {
-    trim: true,
-    isInt: true,
-    escape: true,
-    notEmpty: true,
-    errorMessage: 'groupId is invalid',
-  },
-});
+const addUserToGroup = checkSchema({ userId, groupId });
 
+const removeUserFromGroup = checkSchema({ userId, groupId });
 
-const paginationParams = checkSchema({
-  'pagination.[limit]': {
-    in: 'query',
-    trim: true,
-    escape: true,
-    isInt: true,
-    optional: true,
-    custom: {
-      options: (value: string) => +value >= 0,
-    },
-    errorMessage: 'Pagination params is invalid',
-  },
-  'pagination.[offset]': {
-    in: 'query',
-    trim: true,
-    escape: true,
-    isInt: true,
-    optional: true,
-    custom: {
-      options: (value: string) => +value >= 0,
-    },
-    errorMessage: 'Pagination params is invalid',
-  },
-  'sort.[type]': {
-    in: 'query',
-    toLowerCase: true,
-    isIn: {
-      options: [Object.values(SORT_TYPE)],
-    },
-    trim: true,
-    escape: true,
-    optional: true,
-    errorMessage: 'Sort params is invalid',
-  },
-  'sort.[field]': {
-    in: 'query',
-    toLowerCase: true,
-    isIn: {
-      options: [Object.values(SORT_FIELD)],
-    },
-    trim: true,
-    escape: true,
-    optional: true,
-    errorMessage: 'Sort params is invalid',
-  },
-});
+const getGroupById = checkSchema({ id });
 
-const idParams = checkSchema({
-  id: {
-    in: ['params'],
-    trim: true,
-    isInt: true,
-    escape: true,
-    errorMessage: 'ID is invalid',
-  },
+const deleteGroupById = checkSchema({ id });
+
+const getAllGroups = checkSchema({
+  'pagination.[limit]': paginations.limit,
+  'pagination.[offset]': paginations.offset,
+  'sort.[type]': paginations.type,
+  'sort.[field]': paginations.field,
 });
 
 export {
-  userInGroup,
   updateGroupById,
   createGroup,
-  idParams,
-  paginationParams,
+  getAllGroups,
+  getGroupById,
+  deleteGroupById,
+  addUserToGroup,
+  removeUserFromGroup,
 };
