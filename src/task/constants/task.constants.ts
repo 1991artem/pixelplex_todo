@@ -1,6 +1,6 @@
 export enum TASK_STATUS {
-  TO_DO = 'to do',
-  IN_PROGRESS = 'in progress',
+  TO_DO = 'to_do',
+  IN_PROGRESS = 'in_progress',
   DONE = 'done',
 }
 

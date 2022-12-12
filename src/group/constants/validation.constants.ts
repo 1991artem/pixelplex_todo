@@ -7,7 +7,7 @@ type Pagination = {
   field: ParamSchema,
 };
 
-const id: ParamSchema = {
+const ID: ParamSchema = {
   in: ['params'],
   trim: true,
   isInt: true,
@@ -15,7 +15,7 @@ const id: ParamSchema = {
   errorMessage: 'ID is invalid',
 };
 
-const paginations: Pagination = {
+const PAGINATIONS: Pagination = {
   limit: {
     in: 'query',
     trim: true,
@@ -40,6 +40,7 @@ const paginations: Pagination = {
   },
   type: {
     in: 'query',
+    toLowerCase: true,
     isIn: {
       options: [['asc', 'desc']],
     },
@@ -50,6 +51,7 @@ const paginations: Pagination = {
   },
   field: {
     in: 'query',
+    toLowerCase: true,
     isIn: {
       options: [['date', 'name']],
     },
@@ -60,7 +62,7 @@ const paginations: Pagination = {
   },
 };
 
-const userId: ParamSchema = {
+const USER_ID: ParamSchema = {
   trim: true,
   isInt: true,
   escape: true,
@@ -68,7 +70,7 @@ const userId: ParamSchema = {
   errorMessage: 'userId is invalid',
 };
 
-const groupId: ParamSchema = {
+const GROUP_ID: ParamSchema = {
   trim: true,
   isInt: true,
   escape: true,
@@ -76,4 +78,4 @@ const groupId: ParamSchema = {
   errorMessage: 'userId is invalid',
 };
 
-export { id, paginations, userId, groupId };
+export { ID, PAGINATIONS, USER_ID, GROUP_ID };

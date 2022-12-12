@@ -1,6 +1,6 @@
 import { ParamSchema } from 'express-validator';
 
-const email: ParamSchema = {
+const EMAIL: ParamSchema = {
   normalizeEmail: {
     options: { gmail_remove_dots: true, all_lowercase: true },
   },
@@ -11,4 +11,4 @@ const email: ParamSchema = {
   escape: true,
 };
 
-export { email };
+export { EMAIL };

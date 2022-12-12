@@ -16,7 +16,7 @@ type Task = {
   priority: ParamSchema,
 };
 
-const id: ParamSchema = {
+const ID: ParamSchema = {
   in: ['params'],
   trim: true,
   isInt: true,
@@ -24,7 +24,14 @@ const id: ParamSchema = {
   errorMessage: 'ID is invalid',
 };
 
-const paginations: Pagination = {
+const USER_ID: ParamSchema = {
+  in: ['params'],
+  trim: true,
+  escape: true,
+  errorMessage: 'USER_ID is invalid',
+};
+
+const PAGINATIONS: Pagination = {
   limit: {
     in: 'query',
     trim: true,
@@ -49,6 +56,7 @@ const paginations: Pagination = {
   },
   type: {
     in: 'query',
+    toLowerCase: true,
     isIn: {
       options: [['asc', 'desc']],
     },
@@ -59,6 +67,7 @@ const paginations: Pagination = {
   },
   field: {
     in: 'query',
+    toLowerCase: true,
     isIn: {
       options: [['date', 'name']],
     },
@@ -69,7 +78,7 @@ const paginations: Pagination = {
   },
 };
 
-const task: Task = {
+const TASK: Task = {
   name: {
     notEmpty: true,
     trim: true,
@@ -120,4 +129,4 @@ const task: Task = {
   },
 };
 
-export { id, paginations, task };
+export { ID, PAGINATIONS, TASK, USER_ID };

@@ -1,19 +1,20 @@
 import { checkSchema } from 'express-validator';
-import { task, id, paginations } from './constants';
+import * as VALIDATION_SCHEMAS from './constants/validation.constants';
 
-const createTask = checkSchema({ ...task });
+const createTask = checkSchema({ ...VALIDATION_SCHEMAS.TASK });
 
-const updateTaskById = checkSchema({ id, ...task });
+const updateTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID, ...VALIDATION_SCHEMAS.TASK });
 
-const getTaskById = checkSchema({ id });
+const getTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 
-const deleteTaskById = checkSchema({ id });
+const deleteTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 
 const getAllTasks = checkSchema({
-  'pagination.[limit]': paginations.limit,
-  'pagination.[offset]': paginations.offset,
-  'sort.[type]': paginations.type,
-  'sort.[field]': paginations.field,
+  'pagination.[limit]': VALIDATION_SCHEMAS.PAGINATIONS.limit,
+  'pagination.[offset]': VALIDATION_SCHEMAS.PAGINATIONS.offset,
+  'sort.[type]': VALIDATION_SCHEMAS.PAGINATIONS.type,
+  'sort.[field]': VALIDATION_SCHEMAS.PAGINATIONS.field,
+  'filter.[user]': VALIDATION_SCHEMAS.USER_ID,
 });
 
 export {

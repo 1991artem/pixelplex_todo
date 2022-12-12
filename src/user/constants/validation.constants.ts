@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ParamSchema } from 'express-validator';
 
-const id: ParamSchema = {
+const ID: ParamSchema = {
   in: ['params'],
   trim: true,
   isInt: true,
@@ -10,4 +10,4 @@ const id: ParamSchema = {
   errorMessage: 'ID is invalid',
 };
 
-export { id };
+export { ID };

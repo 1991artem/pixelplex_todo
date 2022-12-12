@@ -1,5 +1,5 @@
 import { checkSchema } from 'express-validator';
-import { groupId, id, paginations, userId } from './constants';
+import * as VALIDATION_SCHEMAS from './constants/validation.constants';
 
 const createGroup = checkSchema({
   name: {
@@ -15,7 +15,7 @@ const createGroup = checkSchema({
 });
 
 const updateGroupById = checkSchema({
-  id: id,
+  id: VALIDATION_SCHEMAS.ID,
   name: {
     notEmpty: true,
     trim: true,
@@ -30,19 +30,19 @@ const updateGroupById = checkSchema({
   },
 });
 
-const addUserToGroup = checkSchema({ userId, groupId });
+const addUserToGroup = checkSchema({ userId: VALIDATION_SCHEMAS.USER_ID, groupId: VALIDATION_SCHEMAS.GROUP_ID });
 
-const removeUserFromGroup = checkSchema({ userId, groupId });
+const removeUserFromGroup = checkSchema({ userId: VALIDATION_SCHEMAS.USER_ID, groupId: VALIDATION_SCHEMAS.GROUP_ID });
 
-const getGroupById = checkSchema({ id });
+const getGroupById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 
-const deleteGroupById = checkSchema({ id });
+const deleteGroupById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 
 const getAllGroups = checkSchema({
-  'pagination.[limit]': paginations.limit,
-  'pagination.[offset]': paginations.offset,
-  'sort.[type]': paginations.type,
-  'sort.[field]': paginations.field,
+  'pagination.[limit]': VALIDATION_SCHEMAS.PAGINATIONS.limit,
+  'pagination.[offset]': VALIDATION_SCHEMAS.PAGINATIONS.offset,
+  'sort.[type]': VALIDATION_SCHEMAS.PAGINATIONS.type,
+  'sort.[field]': VALIDATION_SCHEMAS.PAGINATIONS.field,
 });
 
 export {

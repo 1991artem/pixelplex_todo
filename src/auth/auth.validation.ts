@@ -1,8 +1,8 @@
 import { checkSchema } from 'express-validator';
-import { email } from './constants';
+import * as VALIDATION_SCHEMAS from './constants/validation.constants';
 
 const signUp = checkSchema({
-  email,
+  email: VALIDATION_SCHEMAS.EMAIL,
   name: {
     isLength: {
       errorMessage: 'Name should be at least 5 chars long and maximum of 256 chars',
@@ -19,7 +19,7 @@ const signUp = checkSchema({
     trim: true,
     escape: true,
     isStrongPassword: {
-      errorMessage: 'Please enter a valid password (ex: Password123#)',
+      errorMessage: 'Please enter a valid password (ex: Password123#)(minLowercase: 1, minUppercase: 1, minSymbols: 1, minNumbers: 1)',
       options: [
         {
           minLowercase: 1,
@@ -33,11 +33,11 @@ const signUp = checkSchema({
 });
 
 const login = checkSchema({
-  email,
+  email: VALIDATION_SCHEMAS.EMAIL,
   password: {
     isLength: {
-      errorMessage: 'Password should be at least 8 chars long and maximum of 256 chars',
-      options: { min: 8, max: 256 },
+      errorMessage: 'Password equired',
+      options: { min: 1 },
     },
     trim: true,
     escape: true,
