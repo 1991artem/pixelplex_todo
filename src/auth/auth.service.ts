@@ -1,8 +1,8 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { UserType } from 'user/types/user-types';
+import { STATUS_CODE } from '../constants';
 import { AppError } from '../errors/app.error';
-import { STATUS_CODE } from '../types/enums';
 import { UserCreateDTO } from '../user/dtos/user.dtos';
 import { User } from '../user/entity/user.entity';
 import { UserRepository } from '../user/user.repository';
@@ -23,8 +23,8 @@ class AuthService {
       email,
       password: hashedPassword,
     };
-    UserRepository.createUser(authParams);
-    return UserRepository.createUser(authParams);
+    const user: User = await UserRepository.createUser(authParams);
+    return user;
   }
 
   async userLogin(userDTO: UserAuthDTO): Promise<string | void> {

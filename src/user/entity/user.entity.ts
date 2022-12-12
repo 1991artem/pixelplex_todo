@@ -9,9 +9,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { USER_ROLE } from 'user/constants';
 import { Group } from '../../group/entity/group.entity';
 import { Task } from '../../task/entity/task.entity';
-import { ROLE } from '../../types/enums';
 
 @Entity({
   name: 'users',
@@ -32,8 +32,8 @@ export class User extends BaseEntity {
     email: string;
 
   @Column({
-    enum: ROLE,
-    default: ROLE.USER,
+    enum: USER_ROLE,
+    default: USER_ROLE.USER,
   })
     role: string;
 

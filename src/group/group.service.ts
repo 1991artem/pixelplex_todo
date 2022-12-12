@@ -1,27 +1,25 @@
-import { SORT_FIELD } from 'types/enums';
-import { QueryType } from 'types/types';
 import { UserRepository } from 'user/user.repository';
 import { AppError } from 'errors/app.error';
 import { User } from 'user/entity/user.entity';
 import { UserType } from '../user/types/user-types';
-import { STATUS_CODE } from '../types/enums';
+import { STATUS_CODE } from '../constants';
 import { GreateGroupDTO, UserInGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';
-import { IGetAllGroupResponse, IGetGroupById, IGroupPaginationsParams } from './types/group-interfaces';
+import { IGetAllGroupResponse, IGetGroupById, IGroupPaginationsParams, QueryPaginationType } from './types/group-interfaces';
 import { GroupType } from './types/group-types';
 
 export class GroupService {
   static createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
     return GroupRepository.createGroup(groupDTO);
   }
-  static async getAllGroups(queryParams: Partial<QueryType>): Promise<IGetAllGroupResponse> {
-    const { pagination, sort } = queryParams;
+  static async getAllGroups(queryParams: Partial<QueryPaginationType>): Promise<IGetAllGroupResponse> {
+    const { paginations, sort } = queryParams;
     const paginationParams: IGroupPaginationsParams = {
-      limit: Number(pagination?.limit) || 10,
-      offset: Number(pagination?.offset) || 0,
+      limit: Number(paginations?.limit) || 10,
+      offset: Number(paginations?.offset) || 0,
       type: sort?.type?.toUpperCase(),
-      field: sort?.field?.toLowerCase() || SORT_FIELD.NAME,
+      field: sort?.field?.toLowerCase() || 'name',
     };
     const groups: Group[] = await GroupRepository.getAllGroups(paginationParams);
     const allGroupResponse: IGetAllGroupResponse = {

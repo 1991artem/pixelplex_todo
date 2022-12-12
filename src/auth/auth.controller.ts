@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthRequest } from 'types/express';
-import { STATUS_CODE } from '../types/enums';
 import { User } from '../user/entity/user.entity';
 import { AppError } from '../errors/app.error';
 import { UserCreateDTO } from '../user/dtos/user.dtos';
+import { STATUS_CODE } from '../constants';
 import { authService } from './auth.service';
 import { UserAuthDTO } from './dtos/auth.dtos';
 

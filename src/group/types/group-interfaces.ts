@@ -27,3 +27,14 @@ export interface IGetGroupById {
   createdAt: Date,
   users: Partial<User>[],
 }
+
+export type QueryPaginationType = {
+  paginations: {
+    limit: number,
+    offset: number,
+  },
+  sort: {
+    type: string | undefined;
+    field: string;
+  }
+};

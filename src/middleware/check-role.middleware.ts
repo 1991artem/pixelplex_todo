@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 import { NextFunction, Response } from 'express';
 import { AppError } from 'errors/app.error';
-import { STATUS_CODE } from 'types/enums';
-import { AuthRequest } from 'types/express';
-import { IUserAuthInfoInRequest } from 'types/types';
+import { AuthRequest, IUserAuthInfoInRequest } from 'types/express';
+import { STATUS_CODE } from '../constants';
 
 export function checkRole(userRoles: string[]) {
   return (req: AuthRequest, res: Response, next: NextFunction): void | Response<any, Record<string, any>> => {
@@ -11,7 +10,7 @@ export function checkRole(userRoles: string[]) {
       if (req.method === 'OPTIONS') {
         next();
       }
-      const userInfo: IUserAuthInfoInRequest | undefined = req.user;
+      const userInfo: IUserAuthInfoInRequest | null | undefined = req.user;
       if (!userInfo) {
         return next(new AppError(STATUS_CODE.UNAUTHORIZED, 'Authorization is invalid'));
       }

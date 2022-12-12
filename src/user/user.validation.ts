@@ -1,15 +1,8 @@
 import { checkSchema } from 'express-validator';
+import * as VALIDATION_SCHEMAS from './constants/validation.constants';
 
-const idParams = checkSchema({
-  id: {
-    in: ['params'],
-    trim: true,
-    isInt: true,
-    escape: true,
-    errorMessage: 'ID is invalid',
-  },
-});
+const getUserStatistics = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 
 export {
-  idParams,
+  getUserStatistics,
 };

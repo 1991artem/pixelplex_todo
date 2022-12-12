@@ -1,5 +1,5 @@
 import { AppError } from 'errors/app.error';
-import { STATUS_CODE } from 'types/enums';
+import { STATUS_CODE } from '../constants';
 import { AppDataSource } from '../../data-source';
 import { UserCreateDTO } from './dtos/user.dtos';
 import { User } from './entity/user.entity';

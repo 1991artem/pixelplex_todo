@@ -1,12 +1,11 @@
 import { NextFunction, Response } from 'express';
 
 import * as jwt from 'jsonwebtoken';
-import { AuthRequest } from 'types/express';
+import { AuthRequest, IUserAuthInfoInRequest } from 'types/express';
 import { AppError } from 'errors/app.error';
-import { STATUS_CODE } from 'types/enums';
-import { IUserAuthInfoInRequest } from 'types/types';
+import { STATUS_CODE } from '../constants';
 
-export function isAuth(req: AuthRequest, res: Response, next: NextFunction): void {
+export function isAuth(req: AuthRequest, _res: Response, next: NextFunction): void {
   const jwt_secret_key: string | undefined = process.env.JWT_SECRET;
   try {
     if (req.method === 'OPTIONS') {
@@ -18,7 +17,7 @@ export function isAuth(req: AuthRequest, res: Response, next: NextFunction): voi
       throw new AppError(STATUS_CODE.BAD_REQUEST,'Authorization header is missing');
     }
 
-    const [, token] = authHeader.split(' '); // 'Bearer {{token}}'
+    const [, token] = authHeader.split(' ');
 
     if (jwt_secret_key) {
       const verifiedToken: IUserAuthInfoInRequest = jwt.verify(token, jwt_secret_key) as jwt.JwtPayload & { token: string, role: string, userId: string };

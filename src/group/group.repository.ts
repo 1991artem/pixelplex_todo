@@ -1,6 +1,6 @@
 import { AppError } from 'errors/app.error';
-import { STATUS_CODE } from 'types/enums';
 import { User } from 'user/entity/user.entity';
+import { STATUS_CODE } from '../constants';
 import { AppDataSource } from '../../data-source';
 import { GreateGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
@@ -11,10 +11,17 @@ export class GroupRepository {
   private static _groupsRepository = AppDataSource.getRepository(Group);
 
   static async createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
+    const findGroup = await this.getGroupByName(groupDTO.name);
+
+    if (findGroup) {
+      throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
+        'Group already exists',
+      );
+    }
     const group: Group = this._groupsRepository.create(groupDTO);
     if (!group) {
       throw new AppError(STATUS_CODE.INTERNAL_SERVER_ERROR,
-        'User not created',
+        'Group not created',
       );
     }
     await this._groupsRepository.save(group);
@@ -41,13 +48,22 @@ export class GroupRepository {
     }
     return groups;
   }
-  static async getGroupById(id: number): Promise<Group> {
+  static async getGroupById(id: number): Promise<Group | null> {
     const group: GroupType = await this._groupsRepository.findOne({
       where: {
         id: id,
       },
       relations: {
         users: true,
+      },
+    });
+    return group;
+  }
+
+  static async getGroupByName(groupName: string): Promise<Group> {
+    const group: GroupType = await this._groupsRepository.findOne({
+      where: {
+        name: groupName,
       },
     });
     if (!group) {
@@ -57,6 +73,7 @@ export class GroupRepository {
     }
     return group;
   }
+
   static async deleteGroupById(id: number): Promise<void> {
     const group: Group = await this.getGroupById(id);
     await this._groupsRepository.remove(group);

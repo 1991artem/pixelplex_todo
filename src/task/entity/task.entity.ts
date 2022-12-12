@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TASK_STATUS, TASK_PRIORITY } from '../../types/enums';
+import { TASK_PRIORITY, TASK_STATUS } from 'task/constants';
 import { User } from '../../user/entity/user.entity';
 
 @Entity({

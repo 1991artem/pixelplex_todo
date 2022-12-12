@@ -7,10 +7,10 @@ import TaskController from './task.controller';
 
 const router = Router();
 router.post('/create', isAuth, checkRole(['user', 'admin']), validation.createTask, validatePayload, TaskController.createTask);
-router.get('/all', isAuth, checkRole(['user', 'admin']), validation.paginationParams, validatePayload, TaskController.getAllTasks);
-router.get('/:id', isAuth, checkRole(['user', 'admin']), validation.idParams, validatePayload, TaskController.getTaskById);
-router.delete('/:id',isAuth, checkRole(['user', 'admin']), validation.idParams, validatePayload, TaskController.deleteTaskById);
-router.patch('/:id', isAuth, checkRole(['user', 'admin']), validation.idParams, validation.updateTaskById, validatePayload, TaskController.updateTaskById);
+router.get('/all', isAuth, checkRole(['user', 'admin']), validation.getAllTasks, validatePayload, TaskController.getAllTasks);
+router.get('/:id', isAuth, checkRole(['user', 'admin']), validation.getTaskById, validatePayload, TaskController.getTaskById);
+router.delete('/:id',isAuth, checkRole(['user', 'admin']), validation.deleteTaskById, validatePayload, TaskController.deleteTaskById);
+router.patch('/:id', isAuth, checkRole(['user', 'admin']), validation.updateTaskById, validatePayload, TaskController.updateTaskById);
 
 export function mountRouter(app: Application): void {
   app.use('/api/v1/task', router);

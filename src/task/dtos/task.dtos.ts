@@ -1,4 +1,4 @@
-import { TASK_STATUS, TASK_PRIORITY } from '../../types/enums';
+import { TASK_PRIORITY, TASK_STATUS } from 'task/constants';
 
 export interface TaskDTO {
   name: string,
