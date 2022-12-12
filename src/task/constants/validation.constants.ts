@@ -49,9 +49,8 @@ const paginations: Pagination = {
   },
   type: {
     in: 'query',
-    toLowerCase: true,
     isIn: {
-      options: ['ASC', 'DESC'],
+      options: [['asc', 'desc']],
     },
     trim: true,
     escape: true,
@@ -60,9 +59,8 @@ const paginations: Pagination = {
   },
   field: {
     in: 'query',
-    toLowerCase: true,
     isIn: {
-      options: ['date', 'name'],
+      options: [['date', 'name']],
     },
     trim: true,
     escape: true,
