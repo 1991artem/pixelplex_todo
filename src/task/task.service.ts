@@ -1,6 +1,9 @@
 import { STATUS_CODE } from '../constants';
 import { AppError } from '../errors/app.error';
-import { QueryPaginationType } from '../group/types/group-interfaces';
+import { Group } from '../group/entity/group.entity';
+import { QueryPaginationType } from '../task/types/task-interfaces';
+import { UserType } from '../user/types/user-types';
+import { UserRepository } from '../user/user.repository';
 import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { Task } from './entity/task.entity';
 import { TaskRepository } from './task.repository';
@@ -21,24 +24,34 @@ export default class TaskService {
     return await TaskRepository.createTask(taskDTO);
   }
   static async getAllTasks(queryParams: Partial<QueryPaginationType>): Promise<IGetAllTaskResponse> {
-    const { paginations, sort } = queryParams;
+    const { paginations, sort, filter } = queryParams;
     const paginationParams: ITaskPaginationsParams = {
       limit: Number(paginations?.limit) || 10,
       offset: Number(paginations?.offset) || 0,
       type: sort?.type?.toUpperCase(),
       field: sort?.field?.toLowerCase() || 'name',
     };
-    const tasks: Task[] = await TaskRepository.getAllTasks(paginationParams);
-    if (!tasks.length) {
-      throw new AppError(STATUS_CODE.NOT_FOUND,
-        'Tasks not found',
-      );
+    if(!filter?.user){
+      const tasks: Task[] = await TaskRepository.getAllTasks(paginationParams);
+      if (!tasks.length) {
+        throw new AppError(STATUS_CODE.NOT_FOUND,
+          'Tasks not found',
+        );
+      }
+      const allTaskResponse: IGetAllTaskResponse = {
+        amount: tasks.length,
+        tasks: tasks,
+      };
+      return allTaskResponse;
+    } else {
+      const tasks: Task[] = await this.getAllTasksByUserId(filter?.user, paginationParams);
+      const allTaskResponse: IGetAllTaskResponse = {
+        amount: tasks.length,
+        tasks: tasks,
+      };
+      return allTaskResponse;
     }
-    const allTaskResponse: IGetAllTaskResponse = {
-      amount: tasks.length,
-      tasks: tasks,
-    };
-    return allTaskResponse;
+
   }
   static async deleteTaskById(id: string): Promise<void> {
     const task: TaskType = await TaskRepository.findOneById(+id);
@@ -72,5 +85,20 @@ export default class TaskService {
       );
     }
     return updatedTask;
+  }
+  static async getAllTasksByUserId(userId: string, paginationParams: ITaskPaginationsParams): Promise<Task[]>{
+    const user: UserType = await UserRepository.getUserByIdWithGroup(+userId);
+    if (!user) {
+      throw new AppError(STATUS_CODE.NOT_FOUND,
+        'User not found',
+      );
+    }
+    const groupIds: number[] = user.groups.map((group: Group) => group.id);
+    const tasks: Task[] = await TaskRepository.getAllTasksWithUserInfo(paginationParams);
+    return tasks.filter((task: Task) => {
+      if(groupIds.includes(task.user.id)){
+        return task;
+      }
+    })
   }
 }

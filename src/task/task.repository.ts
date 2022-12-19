@@ -37,6 +37,21 @@ export class TaskRepository {
     });
     return groups;
   }
+
+  static async getAllTasksWithUserInfo(paginationParams: ITaskPaginationsParams): Promise<Task[]> {
+    const { limit, offset, field, type } = paginationParams;
+    const groups: Task[] = await this._tasksRepository.find({
+      relations: {
+        user: true,
+      },
+      skip: offset,
+      take: limit,
+      order: {
+        [field]: type,
+      },
+    });
+    return groups;
+  }
   
   static async updateTaskById(id: number, updateBody: Partial<UpdateTaskDTO>): Promise<void> {
     await this._tasksRepository

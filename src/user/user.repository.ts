@@ -31,6 +31,18 @@ export class UserRepository {
     return user;
   }
 
+  static async getUserByIdWithGroup(id: number): Promise<User | null> {
+    const user: UserType = await this._usersRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        groups: true,
+      },
+    });
+    return user;
+  }
+
   static async createUser(authParams: UserCreateDTO): Promise<User> {
     const user: User = this._usersRepository.create(authParams);
     await this._usersRepository.save(user);

@@ -28,6 +28,9 @@ import { Task } from "../entity/task.entity";
     sort: {
       type: string | undefined;
       field: string;
+    },
+    filter: {
+      user: string;
     }
   };
   
