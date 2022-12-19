@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { User } from './src/user/entity/user.entity';
 import { Group } from './src/group/entity/group.entity';
 import { Task } from './src/task/entity/task.entity';
+import * as Migrations from './src/migrations';
 
 dotenv.config();
 
@@ -24,5 +25,6 @@ export const AppDataSource = new DataSource({
   logging: false,
   entities: [User, Group, Task],
   subscribers: [],
-  migrations: [],
+  migrations: Object.values(Migrations),
+  migrationsTableName: 'admin_migration_table',
 });
