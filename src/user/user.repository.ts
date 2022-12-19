@@ -1,5 +1,3 @@
-import { AppError } from 'errors/app.error';
-import { STATUS_CODE } from '../constants';
 import { AppDataSource } from '../../data-source';
 import { UserCreateDTO } from './dtos/user.dtos';
 import { User } from './entity/user.entity';
@@ -21,13 +19,20 @@ export class UserRepository {
     return user;
   }
 
+  static async getUserById(id: number): Promise<User | null> {
+    const user: UserType = await this._usersRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        tasks: true,
+      },
+    });
+    return user;
+  }
+
   static async createUser(authParams: UserCreateDTO): Promise<User> {
     const user: User = this._usersRepository.create(authParams);
-    if (!user) {
-      throw new AppError(STATUS_CODE.INTERNAL_SERVER_ERROR,
-        'User not created',
-      );
-    }
     await this._usersRepository.save(user);
     return user;
   }

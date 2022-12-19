@@ -10,7 +10,13 @@ import { IGetAllGroupResponse, IGetGroupById, IGroupPaginationsParams, QueryPagi
 import { GroupType } from './types/group-types';
 
 export class GroupService {
-  static createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
+  static async createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
+    const group: GroupType = await GroupRepository.getGroupByName(groupDTO.name);
+    if (group) {
+      throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
+        'Group already exists',
+      );
+    }
     return GroupRepository.createGroup(groupDTO);
   }
   static async getAllGroups(queryParams: Partial<QueryPaginationType>): Promise<IGetAllGroupResponse> {
@@ -22,6 +28,11 @@ export class GroupService {
       field: sort?.field?.toLowerCase() || 'name',
     };
     const groups: Group[] = await GroupRepository.getAllGroups(paginationParams);
+    if (!groups.length) {
+      throw new AppError(STATUS_CODE.NOT_FOUND,
+        'Groups not found',
+      );
+    }
     const allGroupResponse: IGetAllGroupResponse = {
       amount: groups.length,
       groups: groups.map((group: Group) => {
@@ -37,7 +48,12 @@ export class GroupService {
     return allGroupResponse;
   }
   static async getGroupById(id: string): Promise<IGetGroupById> {
-    const group: Group = await GroupRepository.getGroupById(+id);
+    const group: GroupType = await GroupRepository.getGroupById(+id);
+    if (!group) {
+      throw new AppError(STATUS_CODE.NOT_FOUND,
+        'Group not found',
+      );
+    }
     return {
       id: group.id,
       name: group.name,
@@ -53,23 +69,40 @@ export class GroupService {
       }),
     };
   }
-  static deleteGroupById(id: string): Promise<void> {
-    return GroupRepository.deleteGroupById(+id);
+  static async deleteGroupById(id: string): Promise<void> {
+    const group: GroupType = await GroupRepository.getGroupById(+id);
+    if (!group) {
+      throw new AppError(STATUS_CODE.NOT_FOUND,
+        'Group not found',
+      );
+    }
+    await GroupRepository.deleteGroup(group);
   }
   static async updateGroupById(id: string, updateBody: Partial<GreateGroupDTO>): Promise<Partial<Group>> {
+    const group: GroupType = await GroupRepository.getGroupById(+id);
+    if (!group) {
+      throw new AppError(STATUS_CODE.NOT_FOUND,
+        'Group not found',
+      );
+    }
     await GroupRepository.updateGroupById(+id, updateBody);
-    const group: Group = await GroupRepository.getGroupById(+id);
+
+    const updatedGroup: GroupType = await GroupRepository.getGroupById(+id);
+    if (!updatedGroup) {
+      throw new AppError(STATUS_CODE.NOT_FOUND,
+        'Group not found',
+      );
+    }
     return {
-      id: group.id,
-      name: group.name,
-      description: group.description,
+      id: updatedGroup.id,
+      name: updatedGroup.name,
+      description: updatedGroup.description,
     };
   }
   static async addUserToGroup(data: UserInGroupDTO): Promise<void> {
     const { userId, groupId } = data;
     const user: UserType = await UserRepository.findOneById(+userId);
     const group: GroupType = await GroupRepository.getGroupById(+groupId);
-
     if (!user || !group) {
       throw new AppError(STATUS_CODE.NOT_FOUND, 'Group or User not found');
     }
@@ -79,7 +112,6 @@ export class GroupService {
     const { userId, groupId } = data;
     const user: UserType = await UserRepository.findOneById(+userId);
     const group: GroupType = await GroupRepository.getGroupById(+groupId);
-
     if (!user || !group) {
       throw new AppError(STATUS_CODE.NOT_FOUND, 'Group or User not found');
     }

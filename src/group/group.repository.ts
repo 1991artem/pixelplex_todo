@@ -11,19 +11,7 @@ export class GroupRepository {
   private static _groupsRepository = AppDataSource.getRepository(Group);
 
   static async createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
-    const findGroup = await this.getGroupByName(groupDTO.name);
-
-    if (findGroup) {
-      throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
-        'Group already exists',
-      );
-    }
     const group: Group = this._groupsRepository.create(groupDTO);
-    if (!group) {
-      throw new AppError(STATUS_CODE.INTERNAL_SERVER_ERROR,
-        'Group not created',
-      );
-    }
     await this._groupsRepository.save(group);
     return group;
   }
@@ -40,12 +28,6 @@ export class GroupRepository {
         [field]: type,
       },
     });
-
-    if (!groups.length) {
-      throw new AppError(STATUS_CODE.NOT_FOUND,
-        'Groups not found',
-      );
-    }
     return groups;
   }
   static async getGroupById(id: number): Promise<Group | null> {
@@ -60,22 +42,16 @@ export class GroupRepository {
     return group;
   }
 
-  static async getGroupByName(groupName: string): Promise<Group> {
+  static async getGroupByName(groupName: string): Promise<Group | null> {
     const group: GroupType = await this._groupsRepository.findOne({
       where: {
         name: groupName,
       },
     });
-    if (!group) {
-      throw new AppError(STATUS_CODE.NOT_FOUND,
-        'Group not found',
-      );
-    }
     return group;
   }
 
-  static async deleteGroupById(id: number): Promise<void> {
-    const group: Group = await this.getGroupById(id);
+  static async deleteGroup(group: Group): Promise<void> {
     await this._groupsRepository.remove(group);
   }
   static async updateGroupById(id: number, updateBody: Partial<GreateGroupDTO>): Promise<void> {

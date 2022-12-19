@@ -1,32 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
+import { CreateTaskDTO } from './dtos/task.dtos';
+import { Task } from './entity/task.entity';
+import TaskService from './task.service';
+import { IGetAllTaskResponse, QueryPaginationType } from './types/task-interfaces';
 
 export default class TaskController {
   static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskDTO = {
+      const taskDTO: CreateTaskDTO = {
         name: req.body?.name,
         description: req.body?.description,
         status: req.body?.status,
         deadline: req.body?.deadline,
         priority: req.body?.priority,
       };
-      res.status(201).json(taskDTO);
+      const task: Task = await TaskService.createTask(taskDTO);
+      res.status(201).json(  {
+        id: task.id,
+        message: 'Task has been created',
+      });
     } catch (error) {
       next(error);
     }
   }
   static async getAllTasks( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams = req.query;
-      res.status(200).json(queryParams);
-    } catch (error) {
-      next(error);
-    }
-  }
-  static async getTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const taskId = req.params?.id;
-      res.status(200).json(taskId);
+      const queryParams: Partial<QueryPaginationType> = req.query;
+      const allTaskResponse: IGetAllTaskResponse = await TaskService.getAllTasks(queryParams);
+      res.status(200).json(allTaskResponse);
     } catch (error) {
       next(error);
     }
@@ -34,7 +35,8 @@ export default class TaskController {
   static async deleteTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const taskId = req.params?.id;
-      res.status(200).json(taskId);
+      await TaskService.deleteTaskById(taskId);
+      res.status(200).json({ message: 'Task has been deleted' });
     } catch (error) {
       next(error);
     }
@@ -49,7 +51,8 @@ export default class TaskController {
         deadline: req.body?.deadline,
         priority: req.body?.priority,
       };
-      res.status(200).json({ taskId, updateBody });
+      const taskInfo: Partial<Task> = await TaskService.updateTaskById(taskId, updateBody);
+      res.status(200).json({ message: 'Task has been updated', group: taskInfo });
     } catch (error) {
       next(error);
     }
