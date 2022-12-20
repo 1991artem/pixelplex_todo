@@ -8,6 +8,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { USER_ROLE } from 'user/constants';
 import { Group } from '../../group/entity/group.entity';
@@ -43,14 +44,10 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
     updatedAt: Date;
 
-  @OneToMany(() => Task, (task) => task.user, {
-    cascade: true,
-  })
+  @OneToMany(() => Task, (task: Task) => task.user, { eager: true, cascade: true})
     tasks: Task[];
 
-  @ManyToMany(() => Group, {
-    cascade: false,
-  })
+  @ManyToMany(() => Group)
   @JoinTable({
     name: 'user_group',
   })

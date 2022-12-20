@@ -6,6 +6,8 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
+  RelationId,
 } from 'typeorm';
 import { TASK_PRIORITY, TASK_STATUS } from 'task/constants';
 import { User } from '../../user/entity/user.entity';
@@ -48,6 +50,6 @@ export class Task extends BaseEntity {
   @UpdateDateColumn()
     updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.tasks)
+  @ManyToOne(() => User, (user: User) => user.tasks)
     user: User;
 }
