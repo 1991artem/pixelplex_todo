@@ -3,6 +3,9 @@ import { ParamSchema } from 'express-validator';
 type Pagination = {
   limit: ParamSchema,
   offset: ParamSchema,
+};
+
+type Sort = {
   type: ParamSchema,
   field: ParamSchema,
 };
@@ -38,6 +41,10 @@ const PAGINATIONS: Pagination = {
     },
     errorMessage: 'Pagination params is invalid',
   },
+};
+
+
+const SORT: Sort = {
   type: {
     in: 'query',
     toLowerCase: true,
@@ -78,4 +85,4 @@ const GROUP_ID: ParamSchema = {
   errorMessage: 'userId is invalid',
 };
 
-export { ID, PAGINATIONS, USER_ID, GROUP_ID };
+export { ID, PAGINATIONS, SORT, USER_ID, GROUP_ID };

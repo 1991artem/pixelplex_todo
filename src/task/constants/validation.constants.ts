@@ -4,6 +4,9 @@ import { TASK_STATUS, TASK_PRIORITY } from './task.constants';
 type Pagination = {
   limit: ParamSchema,
   offset: ParamSchema,
+};
+
+type Sort = {
   type: ParamSchema,
   field: ParamSchema,
 };
@@ -54,6 +57,10 @@ const PAGINATIONS: Pagination = {
     },
     errorMessage: 'Pagination params is invalid',
   },
+};
+
+
+const SORT: Sort = {
   type: {
     in: 'query',
     toLowerCase: true,
@@ -129,4 +136,16 @@ const TASK: Task = {
   },
 };
 
-export { ID, PAGINATIONS, TASK, USER_ID };
+const INCLUDE_GROUPMATES_TASKS: ParamSchema = {
+  in: 'query',
+  toLowerCase: true,
+  isIn: {
+    options: [['true', 'false']],
+  },
+  trim: true,
+  escape: true,
+  optional: true,
+  errorMessage: 'IncludeGroupmatesTasks params is invalid',
+}
+
+export { ID, PAGINATIONS, SORT, TASK, USER_ID, INCLUDE_GROUPMATES_TASKS };

@@ -41,8 +41,8 @@ const deleteGroupById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 const getAllGroups = checkSchema({
   'pagination.[limit]': VALIDATION_SCHEMAS.PAGINATIONS.limit,
   'pagination.[offset]': VALIDATION_SCHEMAS.PAGINATIONS.offset,
-  'sort.[type]': VALIDATION_SCHEMAS.PAGINATIONS.type,
-  'sort.[field]': VALIDATION_SCHEMAS.PAGINATIONS.field,
+  'sort.[type]': VALIDATION_SCHEMAS.SORT.type,
+  'sort.[field]': VALIDATION_SCHEMAS.SORT.field,
 });
 
 export {
