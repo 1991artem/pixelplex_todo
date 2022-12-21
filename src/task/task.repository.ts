@@ -4,6 +4,7 @@ import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { TaskType } from './types/task-types';
 import { ITaskQueryParams } from './types/task-interfaces';
 import { In } from 'typeorm';
+import { User } from '@user';
 
 export class TaskRepository {
   private static _tasksRepository = AppDataSource.getRepository(Task);
@@ -21,8 +22,8 @@ export class TaskRepository {
     return task;
   }
 
-  static async createTask(taskDTO: CreateTaskDTO): Promise<Task> {
-    const task: Task = this._tasksRepository.create(taskDTO);
+  static async createTask(taskDTO: CreateTaskDTO, user: User): Promise<Task> {
+    const task: Task = this._tasksRepository.create({...taskDTO, ...{ user } });
     await this._tasksRepository.save(task);
     return task;
   }

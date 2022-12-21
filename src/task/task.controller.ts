@@ -15,7 +15,8 @@ export default class TaskController {
         deadline: req.body?.deadline,
         priority: req.body?.priority,
       };
-      const task: Task = await TaskService.createTask(taskDTO);
+      const userId = req.user?.id as string;
+      const task: Task = await TaskService.createTask(taskDTO, userId);
       res.status(201).json(  {
         id: task.id,
         message: 'Task has been created',
@@ -27,7 +28,7 @@ export default class TaskController {
   static async getAllTasks( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const queryParams: Partial<QueryType> = req.query;
-      const userId = req.user?.id;
+      const userId = req.user?.id as string;
       const allTaskResponse: IGetAllTaskResponse | undefined = await TaskService.getAllTasks(queryParams, userId);
       res.status(200).json(allTaskResponse);
     } catch (error) {

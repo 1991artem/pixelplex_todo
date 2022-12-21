@@ -1,6 +1,6 @@
 import { AppError } from '@errors';
 import { Group } from '@group';
-import { UserRepository, UserType } from '@user';
+import { User, UserRepository, UserType } from '@user';
 import { STATUS_CODE } from '@constants';
 import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { Task } from './entity/task.entity';
@@ -9,20 +9,23 @@ import { IGetAllTaskResponse, ITaskQueryParams } from './types/task-interfaces';
 import { QueryType, TaskType } from './types/task-types';
 
 export default class TaskService {
-  static async createTask(taskDTO: CreateTaskDTO): Promise<Task> {
+  static async createTask(taskDTO: CreateTaskDTO, userId: string): Promise<Task> {
     const task: TaskType = await TaskRepository.getTaskByName(taskDTO.name);
     if (task) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'Task already exists',
       );
     }
+    const user: User = await UserRepository.findOneById(+userId) as User;
+
     if (taskDTO.deadline){
       const createTaskDTO: CreateTaskDTO = {...taskDTO, ...{deadline: new Date(taskDTO?.deadline) } }
-      return await TaskRepository.createTask(createTaskDTO);
+      return await TaskRepository.createTask(createTaskDTO, user);
     }
-    return await TaskRepository.createTask(taskDTO);
+    return await TaskRepository.createTask(taskDTO, user);
   }
-  static async getAllTasks(queryParams: Partial<QueryType>, userId: string | undefined): Promise<IGetAllTaskResponse | undefined> {
+
+  static async getAllTasks(queryParams: Partial<QueryType>, userId: string): Promise<IGetAllTaskResponse | undefined> {
     const { pagination, sort, filter, includeGroupmatesTasks } = queryParams;
     const params: ITaskQueryParams = {
       limit: Number(pagination?.limit) || 10,
@@ -30,7 +33,6 @@ export default class TaskService {
       type: sort?.type?.toUpperCase(),
       field: sort?.field?.toLowerCase() || 'name',
     };
-    if (userId) {
       const filterId = filter?.user ? +filter?.user : undefined;
       const tasks: Task[] = includeGroupmatesTasks !== 'true' ?
       await TaskRepository.getAllTasksByUserId(+userId, params) 
@@ -46,7 +48,6 @@ export default class TaskService {
         tasks: tasks,
       };
       return allTaskResponse;
-    }
   }
 
   static async deleteTaskById(id: string): Promise<void> {
