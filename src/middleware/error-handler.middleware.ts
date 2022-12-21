@@ -3,7 +3,7 @@
 import { Response, Request, NextFunction } from 'express';
 import { isAppError, AppError } from '../errors/app.error';
 
-const errorHandler = (error: AppError, _req: Request, res: Response, _next: NextFunction): void => {
+export const errorHandler = (error: AppError, _req: Request, res: Response, _next: NextFunction): void => {
   if (isAppError(error)) {
     const { message, statusCode } = error;
     res.status(statusCode).json({ message, statusCode });
@@ -12,5 +12,3 @@ const errorHandler = (error: AppError, _req: Request, res: Response, _next: Next
   console.error(error);
   res.status(500).json({ message: 'Server error', statusCode: 500 });
 };
-
-export default errorHandler;

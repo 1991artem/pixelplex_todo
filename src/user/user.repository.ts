@@ -1,4 +1,4 @@
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../data-source';
 import { UserCreateDTO } from './dtos/user.dtos';
 import { User } from './entity/user.entity';
 import { UserType } from './types/user-types';

@@ -1,4 +1,4 @@
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../data-source';
 import { Task } from './entity/task.entity';
 import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { TaskType } from './types/task-types';

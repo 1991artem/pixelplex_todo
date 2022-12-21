@@ -1,11 +1,8 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { UserType } from 'user/types/user-types';
-import { STATUS_CODE } from '../constants';
-import { AppError } from '../errors/app.error';
-import { UserCreateDTO } from '../user/dtos/user.dtos';
-import { User } from '../user/entity/user.entity';
-import { UserRepository } from '../user/user.repository';
+import { User, UserType, UserCreateDTO, UserRepository } from '@user';
+import { AppError } from '@errors';
+import { STATUS_CODE } from '@constants';
 import { UserAuthDTO } from './dtos/auth.dtos';
 
 class AuthService {

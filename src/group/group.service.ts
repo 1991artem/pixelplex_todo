@@ -1,8 +1,6 @@
-import { UserRepository } from 'user/user.repository';
-import { AppError } from 'errors/app.error';
-import { User } from 'user/entity/user.entity';
-import { UserType } from '../user/types/user-types';
-import { STATUS_CODE } from '../constants';
+import { AppError } from '@errors';
+import { User, UserRepository, UserType } from '@user';
+import { STATUS_CODE } from '@constants';
 import { GreateGroupDTO, UserInGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';

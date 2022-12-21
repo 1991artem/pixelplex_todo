@@ -1,13 +1,13 @@
-import { STATUS_CODE } from '../constants';
-import { AppError } from '../errors/app.error';
-import { Group } from '../group/entity/group.entity';
-import { UserType } from '../user/types/user-types';
-import { UserRepository } from '../user/user.repository';
+import { AppError } from '@errors';
+import { Group } from '@group';
+import { UserRepository, UserType } from '@user';
+import { STATUS_CODE } from '@constants';
 import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { Task } from './entity/task.entity';
 import { TaskRepository } from './task.repository';
 import { IGetAllTaskResponse, ITaskQueryParams } from './types/task-interfaces';
 import { QueryType, TaskType } from './types/task-types';
+
 export default class TaskService {
   static async createTask(taskDTO: CreateTaskDTO): Promise<Task> {
     const task: TaskType = await TaskRepository.getTaskByName(taskDTO.name);

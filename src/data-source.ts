@@ -1,10 +1,10 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import 'reflect-metadata';
-import { User } from './src/user/entity/user.entity';
-import { Group } from './src/group/entity/group.entity';
-import { Task } from './src/task/entity/task.entity';
-import * as Migrations from './src/migrations';
+import { User } from '@user';
+import { Group } from '@group';
+import { Task } from '@task';
+import * as Migrations from './migrations';
 
 dotenv.config();
 
@@ -24,7 +24,6 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   logging: false,
   entities: [User, Group, Task],
-  subscribers: [],
   migrations: Object.values(Migrations),
-  migrationsTableName: 'admin_migration_table',
+  migrationsTableName: 'migration_list_table',
 });

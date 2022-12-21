@@ -1,10 +1,8 @@
-import { AppError } from 'errors/app.error';
-import { User } from 'user/entity/user.entity';
-import { STATUS_CODE } from '../constants';
-import { AppDataSource } from '../../data-source';
+import { User } from '@user';
+import { AppDataSource } from '../data-source';
 import { GreateGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
-import { IGroupPaginationsParams } from './types/group-interfaces';
+import { IGroupQueryParams } from './types/group-interfaces';
 import { GroupType } from './types/group-types';
 
 export class GroupRepository {
@@ -16,7 +14,7 @@ export class GroupRepository {
     return group;
   }
 
-  static async getAllGroups(paginationParams: IGroupPaginationsParams): Promise<Group[]> {
+  static async getAllGroups(paginationParams: IGroupQueryParams): Promise<Group[]> {
     const { limit, offset, field, type } = paginationParams;
     const groups: Group[] = await this._groupsRepository.find({
       relations: {

@@ -1,7 +1,5 @@
 import { Application, Router } from 'express';
-import { isAuth } from 'middleware/is-auth';
-import { checkRole } from 'middleware/check-role.middleware';
-import { validatePayload } from '../middleware/validate-payload.middleware';
+import { isAuth, checkRole, validatePayload } from '@middleware';
 import * as validation from './user.validation';
 import UserController from './user.controller';
 

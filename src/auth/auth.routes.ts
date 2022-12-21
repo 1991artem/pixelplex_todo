@@ -1,6 +1,5 @@
 import { Application, Router } from 'express';
-import { isAuth } from 'middleware/is-auth';
-import { validatePayload } from '../middleware/validate-payload.middleware';
+import { validatePayload, isAuth } from '@middleware';
 import * as validation from './auth.validation';
 import AuthController from './auth.controller';
 

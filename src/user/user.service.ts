@@ -1,9 +1,8 @@
+import { Task, TASK_STATUS } from "@task";
+import { AppError } from "@errors";
+import { STATUS_CODE } from "@constants";
 import { UserStatistics, UserType } from "./types/user-types";
-import { UserRepository } from 'user/user.repository';
-import { AppError } from "../errors/app.error";
-import { STATUS_CODE } from "../constants";
-import { TASK_STATUS } from "../task/constants";
-import { Task } from "../task/entity/task.entity";
+import { UserRepository } from './user.repository';
 
 export class UserService {
     static async getUserStatistics(id: string): Promise<UserStatistics>{

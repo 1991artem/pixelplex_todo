@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthRequest } from 'types/express';
-import { User } from '../user/entity/user.entity';
-import { AppError } from '../errors/app.error';
-import { UserCreateDTO } from '../user/dtos/user.dtos';
+import { User, UserCreateDTO } from '@user';
+import { AppError } from '@errors';
 import { STATUS_CODE } from '../constants';
 import { authService } from './auth.service';
 import { UserAuthDTO } from './dtos/auth.dtos';
@@ -45,7 +43,7 @@ export default class AuthController {
     }
   }
 
-  static logout(req: AuthRequest, res: Response, next: NextFunction): void {
+  static logout(req: Request, res: Response, next: NextFunction): void {
     try {
       req.headers.authorization?.replace('Bearer ', '');
       res.status(STATUS_CODE.OK).clearCookie('token').json({

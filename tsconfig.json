@@ -24,16 +24,17 @@
       "./node_modules/@types"
     ],
     "paths": {
-      "@auth": ["./src/auth"],
-      "@group": ["./src/group"],
-      "@task": ["./src/task"],
-      "@user": ["./src/user"],
-      "@errors": ["./src/errors"],
-      "@middleware": ["./src/middleware"],
+      "@auth": ["auth"],
+      "@group": ["group"],
+      "@task": ["task"],
+      "@user": ["user"],
+      "@errors": ["errors"],
+      "@middleware": ["middleware"],
+      "@constants": ["constants"],
     }
   },
   "exclude": ["node_modules"],
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "src/data-source.ts"],
   "ts-node": {
     "files": true
   }

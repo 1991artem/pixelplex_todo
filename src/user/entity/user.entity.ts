@@ -8,7 +8,6 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 import { USER_ROLE } from 'user/constants';
 import { Group } from '../../group/entity/group.entity';

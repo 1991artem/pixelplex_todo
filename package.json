@@ -16,10 +16,10 @@
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "typeorm": "typeorm-ts-node-esm",
-    "migrate:create": "npm run typeorm migration:create ./src/migrations/migrations",
-    "migrate:run": "npm run typeorm migration:run -- -d data-source.ts",
-    "migrate:revert": "npm run typeorm migration:revert -- -d data-source.ts",
-    "migrate:generate": "npm run typeorm migration:generate ./src/migrations/migrations -- -d data-source.ts"
+    "migrate:create": "npm run typeorm migration:create ./src/migrations/ -- -n",
+    "migrate:run": "npm run typeorm migration:run -- -d src/data-source.ts",
+    "migrate:revert": "npm run typeorm migration:revert -- -d ./src/data-source.ts",
+    "migrate:generate": "npm run typeorm migration:generate ./src/migrations/ -- -d ./src/data-source.ts"
   },
   "repository": {
     "type": "git",
