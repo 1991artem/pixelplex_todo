@@ -1,7 +1,7 @@
 export interface IUserAuthInfoInRequest {
   token: string;
   role: string;
-  userId: string;
+  id: string;
 };
 
 declare global {

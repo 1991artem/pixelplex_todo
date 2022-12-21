@@ -20,7 +20,7 @@ export function isAuth(req: Request, _res: Response, next: NextFunction): void {
     const [, token] = authHeader.split(' ');
 
     if (jwt_secret_key) {
-      const verifiedToken: IUserAuthInfoInRequest = jwt.verify(token, jwt_secret_key) as jwt.JwtPayload & { token: string, role: string, userId: string };
+      const verifiedToken: IUserAuthInfoInRequest = jwt.verify(token, jwt_secret_key) as jwt.JwtPayload & { token: string, role: string, id: string };
       req.user = verifiedToken;
       next();
     }

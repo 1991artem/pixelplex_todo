@@ -3,7 +3,7 @@ import { Group } from 'group/entity/group.entity';
 export type GroupType = Group | null;
 
 export type QueryType = {
-    paginations: {
+    pagination: {
       limit: number,
       offset: number,
     },

@@ -30,9 +30,6 @@ export class TaskRepository {
   static async getAllTasksByUserId(userId: number, params: ITaskQueryParams): Promise<Task[]> {
     const { limit, offset, field, type } = params;
     const tasks: Task[] = await this._tasksRepository.find({
-      relations: {
-        user: true,
-      },
       where: {
         user: {
           id: userId,
@@ -47,14 +44,12 @@ export class TaskRepository {
     return tasks;
   }
 
-  static async getAllGroupmatesTasks(groupIds: number[], params: ITaskQueryParams): Promise<Task[]> {
+  static async getAllGroupmatesTasks(groupIds: number[], filterId: number | undefined, params: ITaskQueryParams): Promise<Task[]> {
     const { limit, offset, field, type } = params;
     const tasks: Task[] = await this._tasksRepository.find({
-      relations: {
-        user: true,
-      },
       where: {
         user: {
+          id: filterId,
           groups: {
             id: In(groupIds),
           },

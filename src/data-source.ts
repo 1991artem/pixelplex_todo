@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import 'reflect-metadata';
-import { User } from '@user';
-import { Group } from '@group';
-import { Task } from '@task';
+import { User } from './user/entity/user.entity';
+import { Group } from './group/entity/group.entity';
+import { Task } from './task/entity/task.entity';
 import * as Migrations from './migrations';
 
 dotenv.config();

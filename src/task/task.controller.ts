@@ -27,7 +27,7 @@ export default class TaskController {
   static async getAllTasks( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const queryParams: Partial<QueryType> = req.query;
-      const userId = req.user?.userId;
+      const userId = req.user?.id;
       const allTaskResponse: IGetAllTaskResponse | undefined = await TaskService.getAllTasks(queryParams, userId);
       res.status(200).json(allTaskResponse);
     } catch (error) {

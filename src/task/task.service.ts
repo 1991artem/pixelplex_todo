@@ -23,17 +23,18 @@ export default class TaskService {
     return await TaskRepository.createTask(taskDTO);
   }
   static async getAllTasks(queryParams: Partial<QueryType>, userId: string | undefined): Promise<IGetAllTaskResponse | undefined> {
-    const { paginations, sort, filter, includeGroupmatesTasks } = queryParams;
+    const { pagination, sort, filter, includeGroupmatesTasks } = queryParams;
     const params: ITaskQueryParams = {
-      limit: Number(paginations?.limit) || 10,
-      offset: Number(paginations?.offset) || 0,
+      limit: Number(pagination?.limit) || 10,
+      offset: Number(pagination?.offset) || 0,
       type: sort?.type?.toUpperCase(),
       field: sort?.field?.toLowerCase() || 'name',
     };
     if (userId) {
+      const filterId = filter?.user ? +filter?.user : undefined;
       const tasks: Task[] = includeGroupmatesTasks !== 'true' ?
       await TaskRepository.getAllTasksByUserId(+userId, params) 
-      : await this.getAllGroupmatesTasks(+userId, params, filter?.user);
+      : await this.getAllGroupmatesTasks(+userId, params, filterId);
 
       if (!tasks.length) {
         throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -81,17 +82,15 @@ export default class TaskService {
     }
     return updatedTask;
   }
-  static async getAllGroupmatesTasks(userId: number, params: ITaskQueryParams, filterId: string | undefined): Promise<Task[]>{
+  static async getAllGroupmatesTasks(userId: number, params: ITaskQueryParams, filterId: number | undefined): Promise<Task[]>{
     const user: UserType = await UserRepository.getUserByIdWithGroup(+userId);
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',
       );
     }
-    const groupIds: number[] = filterId ?
-    user.groups.map((group: Group) => group.id).filter((id: number) => id === +filterId)
-    : user.groups.map((group: Group) => group.id);
-    const tasks: Task[] = await TaskRepository.getAllGroupmatesTasks(groupIds, params);
+    const groupIds: number[] = user.groups.map((group: Group) => group.id);
+    const tasks: Task[] = await TaskRepository.getAllGroupmatesTasks(groupIds, filterId, params);
     return tasks;
   }
 }

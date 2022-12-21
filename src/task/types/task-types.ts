@@ -3,15 +3,15 @@ import { Task } from "../entity/task.entity";
 export type TaskType = Task | null;
 
 export type QueryType = {
-    paginations?: {
+    pagination: {
       limit: number,
       offset: number,
     },
-    sort?: {
+    sort: {
       type: string | undefined;
       field: string;
     },
-    filter?: {
+    filter: {
       user: string;
     },
     includeGroupmatesTasks?: string

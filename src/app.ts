@@ -2,7 +2,7 @@
 import * as express from 'express';
 import { urlencoded, json } from 'express';
 import * as cookieParser from 'cookie-parser';
-import { AppDataSource } from 'data-source';
+import { AppDataSource } from './data-source';
 import { processError, processNotFoundEndpoint, errorHandler } from '@middleware';
 import { mountRouter as mountAuthRouter } from '@auth';
 import { mountRouter as mountUserRouter } from '@user';
