@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-import { NextFunction, Response } from 'express';
+import { NextFunction, Response, Request } from 'express';
 import { AppError } from 'errors/app.error';
-import { AuthRequest, IUserAuthInfoInRequest } from 'types/express';
+import { IUserAuthInfoInRequest } from 'types/express';
 import { STATUS_CODE } from '../constants';
 
 export function checkRole(userRoles: string[]) {
-  return (req: AuthRequest, res: Response, next: NextFunction): void | Response<any, Record<string, any>> => {
+  return (req: Request, res: Response, next: NextFunction): void | Response<any, Record<string, any>> => {
     try {
       if (req.method === 'OPTIONS') {
         next();

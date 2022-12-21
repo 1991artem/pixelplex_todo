@@ -1,11 +1,11 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Response, Request } from 'express';
 
 import * as jwt from 'jsonwebtoken';
-import { AuthRequest, IUserAuthInfoInRequest } from 'types/express';
+import { IUserAuthInfoInRequest } from 'types/express';
 import { AppError } from 'errors/app.error';
 import { STATUS_CODE } from '../constants';
 
-export function isAuth(req: AuthRequest, _res: Response, next: NextFunction): void {
+export function isAuth(req: Request, _res: Response, next: NextFunction): void {
   const jwt_secret_key: string | undefined = process.env.JWT_SECRET;
   try {
     if (req.method === 'OPTIONS') {

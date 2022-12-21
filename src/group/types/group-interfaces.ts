@@ -13,7 +13,7 @@ interface IGroupResponse {
   usersAmount: number
 };
 
-export interface IGroupPaginationsParams {
+export interface IGroupQueryParams {
   limit: number;
   offset: number;
   type: string | undefined;
@@ -27,14 +27,3 @@ export interface IGetGroupById {
   createdAt: Date,
   users: Partial<User>[],
 }
-
-export type QueryPaginationType = {
-  paginations: {
-    limit: number,
-    offset: number,
-  },
-  sort: {
-    type: string | undefined;
-    field: string;
-  }
-};

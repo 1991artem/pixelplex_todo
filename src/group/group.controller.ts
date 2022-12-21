@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { Group } from './entity/group.entity';
 import { GroupService } from './group.service';
 import { GreateGroupDTO } from './dtos/group.dtos';
-import { IGetAllGroupResponse, QueryPaginationType } from './types/group-interfaces';
+import { IGetAllGroupResponse } from './types/group-interfaces';
+import { QueryType } from './types/group-types';
 
 export default class GroupController {
   static async createGroup( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -22,7 +23,7 @@ export default class GroupController {
   }
   static async getAllGroups( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams: Partial<QueryPaginationType> = req.query;
+      const queryParams: Partial<QueryType> = req.query;
       const allGroupResponse: IGetAllGroupResponse = await GroupService.getAllGroups(queryParams);
       res.status(200).json(allGroupResponse);
     } catch (error) {

@@ -6,8 +6,8 @@ import { STATUS_CODE } from '../constants';
 import { GreateGroupDTO, UserInGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';
-import { IGetAllGroupResponse, IGetGroupById, IGroupPaginationsParams, QueryPaginationType } from './types/group-interfaces';
-import { GroupType } from './types/group-types';
+import { IGetAllGroupResponse, IGetGroupById, IGroupQueryParams } from './types/group-interfaces';
+import { GroupType, QueryType } from './types/group-types';
 
 export class GroupService {
   static async createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
@@ -19,15 +19,15 @@ export class GroupService {
     }
     return GroupRepository.createGroup(groupDTO);
   }
-  static async getAllGroups(queryParams: Partial<QueryPaginationType>): Promise<IGetAllGroupResponse> {
+  static async getAllGroups(queryParams: Partial<QueryType>): Promise<IGetAllGroupResponse> {
     const { paginations, sort } = queryParams;
-    const paginationParams: IGroupPaginationsParams = {
+    const params: IGroupQueryParams = {
       limit: Number(paginations?.limit) || 10,
       offset: Number(paginations?.offset) || 0,
       type: sort?.type?.toUpperCase(),
       field: sort?.field?.toLowerCase() || 'name',
     };
-    const groups: Group[] = await GroupRepository.getAllGroups(paginationParams);
+    const groups: Group[] = await GroupRepository.getAllGroups(params);
     if (!groups.length) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Groups not found',

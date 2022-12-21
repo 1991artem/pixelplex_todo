@@ -2,7 +2,8 @@ import { AppDataSource } from '../../data-source';
 import { Task } from './entity/task.entity';
 import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { TaskType } from './types/task-types';
-import { ITaskPaginationsParams } from './types/task-interfaces';
+import { ITaskQueryParams } from './types/task-interfaces';
+import { In } from 'typeorm';
 
 export class TaskRepository {
   private static _tasksRepository = AppDataSource.getRepository(Task);
@@ -26,31 +27,46 @@ export class TaskRepository {
     return task;
   }
 
-  static async getAllTasks(paginationParams: ITaskPaginationsParams): Promise<Task[]> {
-    const { limit, offset, field, type } = paginationParams;
-    const groups: Task[] = await this._tasksRepository.find({
-      skip: offset,
-      take: limit,
-      order: {
-        [field]: type,
-      },
-    });
-    return groups;
-  }
-
-  static async getAllTasksWithUserInfo(paginationParams: ITaskPaginationsParams): Promise<Task[]> {
-    const { limit, offset, field, type } = paginationParams;
-    const groups: Task[] = await this._tasksRepository.find({
+  static async getAllTasksByUserId(userId: number, params: ITaskQueryParams): Promise<Task[]> {
+    const { limit, offset, field, type } = params;
+    const tasks: Task[] = await this._tasksRepository.find({
       relations: {
         user: true,
       },
+      where: {
+        user: {
+          id: userId,
+        }
+      },
       skip: offset,
       take: limit,
       order: {
         [field]: type,
       },
     });
-    return groups;
+    return tasks;
+  }
+
+  static async getAllGroupmatesTasks(groupIds: number[], params: ITaskQueryParams): Promise<Task[]> {
+    const { limit, offset, field, type } = params;
+    const tasks: Task[] = await this._tasksRepository.find({
+      relations: {
+        user: true,
+      },
+      where: {
+        user: {
+          groups: {
+            id: In(groupIds),
+          },
+        }
+      },
+      skip: offset,
+      take: limit,
+      order: {
+        [field]: type,
+      },
+    });
+    return tasks;
   }
   
   static async updateTaskById(id: number, updateBody: Partial<UpdateTaskDTO>): Promise<void> {

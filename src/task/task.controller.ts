@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { CreateTaskDTO } from './dtos/task.dtos';
 import { Task } from './entity/task.entity';
 import TaskService from './task.service';
-import { IGetAllTaskResponse, QueryPaginationType } from './types/task-interfaces';
+import { IGetAllTaskResponse } from './types/task-interfaces';
+import { QueryType } from './types/task-types';
 
 export default class TaskController {
   static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -25,8 +26,9 @@ export default class TaskController {
   }
   static async getAllTasks( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams: Partial<QueryPaginationType> = req.query;
-      const allTaskResponse: IGetAllTaskResponse = await TaskService.getAllTasks(queryParams);
+      const queryParams: Partial<QueryType> = req.query;
+      const userId = req.user?.userId;
+      const allTaskResponse: IGetAllTaskResponse | undefined = await TaskService.getAllTasks(queryParams, userId);
       res.status(200).json(allTaskResponse);
     } catch (error) {
       next(error);

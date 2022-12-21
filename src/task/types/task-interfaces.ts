@@ -5,7 +5,7 @@ import { Task } from "../entity/task.entity";
     tasks: Task[]
   };
   
-  export interface ITaskPaginationsParams {
+  export interface ITaskQueryParams {
     limit: number;
     offset: number;
     type: string | undefined;
@@ -19,18 +19,4 @@ import { Task } from "../entity/task.entity";
     createdAt: Date,
     users: Partial<Task>[],
   }
-  
-  export type QueryPaginationType = {
-    paginations: {
-      limit: number,
-      offset: number,
-    },
-    sort: {
-      type: string | undefined;
-      field: string;
-    },
-    filter: {
-      user: string;
-    }
-  };
   
