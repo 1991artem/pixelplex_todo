@@ -74,4 +74,4 @@ const GROUP_ID: ParamSchema = {
   errorMessage: 'userId is invalid',
 };
 
-export { ID, PAGINATIONS, USER_ID, GROUP_ID, SORT };
+export { ID, LIMIT, TYPE, FIELD, OFFSET, USER_ID, GROUP_ID };
