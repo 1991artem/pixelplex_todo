@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 import { Response, Request, NextFunction } from 'express';
-import { isApiError } from '../errors/app.error';
+import { isAppError, AppError } from '../errors/app.error';
 
-const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
-  if (isApiError(error)) {
+export const errorHandler = (error: AppError, _req: Request, res: Response, _next: NextFunction): void => {
+  if (isAppError(error)) {
     const { message, statusCode } = error;
     res.status(statusCode).json({ message, statusCode });
     return;
@@ -11,5 +12,3 @@ const errorHandler = (error: any, req: Request, res: Response, next: NextFunctio
   console.error(error);
   res.status(500).json({ message: 'Server error', statusCode: 500 });
 };
-
-export default errorHandler;

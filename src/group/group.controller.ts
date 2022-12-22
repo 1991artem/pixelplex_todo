@@ -1,21 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
+import { Group } from './entity/group.entity';
+import { GroupService } from './group.service';
+import { GreateGroupDTO } from './dtos/group.dtos';
+import { IGetAllGroupResponse } from './types/group-interfaces';
+import { QueryType } from './types/group-types';
 
 export default class GroupController {
   static async createGroup( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const groupDTO = {
+      const groupDTO: GreateGroupDTO = {
         name: req.body?.name,
         description: req.body?.description,
       };
-      res.status(201).json(groupDTO);
+      const group: Group = await GroupService.createGroup(groupDTO);
+      res.status(201).json({
+        id: group.id,
+        message: 'Group has been created',
+      });
     } catch (error) {
       next(error);
     }
   }
   static async getAllGroups( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams = req.query;
-      res.status(200).json(queryParams);
+      const queryParams: Partial<QueryType> = req.query;
+      const allGroupResponse: IGetAllGroupResponse = await GroupService.getAllGroups(queryParams);
+      res.status(200).json(allGroupResponse);
     } catch (error) {
       next(error);
     }
@@ -23,7 +33,8 @@ export default class GroupController {
   static async getGroupById( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const groupId = req.params?.id;
-      res.status(200).json(groupId);
+      const groupByIdRes = await GroupService.getGroupById(groupId);
+      res.status(200).json(groupByIdRes);
     } catch (error) {
       next(error);
     }
@@ -31,7 +42,8 @@ export default class GroupController {
   static async deleteGroupById( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const groupId = req.params?.id;
-      res.status(200).json(groupId);
+      await GroupService.deleteGroupById(groupId);
+      res.status(200).json({ message: 'Group has been deleted' });
     } catch (error) {
       next(error);
     }
@@ -43,7 +55,8 @@ export default class GroupController {
         name: req.body?.name,
         description: req.body?.description,
       };
-      res.status(200).json({ groupId, updateBody });
+      const groupInfo: Partial<Group> = await GroupService.updateGroupById(groupId, updateBody);
+      res.status(200).json({ message: 'Group has been updated', group: groupInfo });
     } catch (error) {
       next(error);
     }
@@ -54,7 +67,8 @@ export default class GroupController {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
       };
-      res.status(200).json(addParams);
+      await GroupService.addUserToGroup(addParams);
+      res.status(200).json( { message: 'The user has been added to the group' } );
     } catch (error) {
       next(error);
     }
@@ -65,7 +79,8 @@ export default class GroupController {
         userId: Number(req.body?.userId),
         groupId: Number(req.body?.groupId),
       };
-      res.status(200).json(removeParams);
+      await GroupService.removeUserFromGroup(removeParams);
+      res.status(200).json( { message: 'The user has been removed from the group' } );
     } catch (error) {
       next(error);
     }

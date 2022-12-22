@@ -1,9 +1,9 @@
 import { checkSchema } from 'express-validator';
 import * as VALIDATION_SCHEMAS from './constants/validation.constants';
 
-const createTask = checkSchema({ ...VALIDATION_SCHEMAS.TASK });
+const createTask = checkSchema({ name: VALIDATION_SCHEMAS.NAME, priority: VALIDATION_SCHEMAS.PRIORITY, status: VALIDATION_SCHEMAS.STATUS, deadline: VALIDATION_SCHEMAS.DEADLINE });
 
-const updateTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID, ...VALIDATION_SCHEMAS.TASK });
+const updateTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID, name: VALIDATION_SCHEMAS.NAME, priority: VALIDATION_SCHEMAS.PRIORITY, status: VALIDATION_SCHEMAS.STATUS, deadline: VALIDATION_SCHEMAS.DEADLINE });
 
 const getTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 

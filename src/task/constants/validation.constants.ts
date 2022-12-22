@@ -66,55 +66,57 @@ const FIELD: ParamSchema = {
   errorMessage: 'Sort params is invalid',
 };
 
-const TASK: Task = {
-  name: {
-    notEmpty: true,
-    trim: true,
-    escape: true,
-    optional: true,
-    errorMessage: 'Name required',
+const NAME: ParamSchema = {
+  notEmpty: true,
+  trim: true,
+  escape: true,
+  optional: true,
+  errorMessage: 'Name required',
+};
+
+const DESCRIPTION: ParamSchema = {
+  trim: true,
+  escape: true,
+  optional: true,
+};
+
+const STATUS: ParamSchema = {
+  trim: true,
+  escape: true,
+  toLowerCase: true,
+  optional: true,
+  isIn: {
+    options: [Object.values(TASK_STATUS)],
   },
-  description: {
-    trim: true,
-    escape: true,
-    optional: true,
-  },
-  status: {
-    trim: true,
-    escape: true,
-    toLowerCase: true,
-    optional: true,
-    isIn: {
-      options: [Object.values(TASK_STATUS)],
+  errorMessage: 'Invalid status',
+};
+
+const DEADLINE: ParamSchema = {
+  trim: true,
+  optional: true,
+  isDate: {
+    options: {
+      format: 'YYYY-MM-DD',
+      delimiters: ['/', '-'],
+      strictMode: false,
     },
-    errorMessage: 'Invalid status',
+    errorMessage: 'Invalid Date format',
   },
-  deadline: {
-    trim: true,
-    optional: true,
-    isDate: {
-      options: {
-        format: 'YYYY-MM-DD',
-        delimiters: ['/', '-'],
-        strictMode: false,
-      },
-      errorMessage: 'Invalid Date format',
-    },
-    custom: {
-      options: (value: string) => new Date(value) > new Date(),
-    },
-    errorMessage: 'Invalid deadline',
+  custom: {
+    options: (value: string) => new Date(value) > new Date(),
   },
-  priority: {
-    trim: true,
-    escape: true,
-    toLowerCase: true,
-    optional: true,
-    isIn: {
-      options: [Object.values(TASK_PRIORITY)],
-    },
-    errorMessage: 'Invalid priority',
+  errorMessage: 'Invalid deadline',
+};
+
+const PRIORITY: ParamSchema = {
+  trim: true,
+  escape: true,
+  toLowerCase: true,
+  optional: true,
+  isIn: {
+    options: [Object.values(TASK_PRIORITY)],
   },
+  errorMessage: 'Invalid priority',
 };
 
 const INCLUDE_GROUPMATES_TASKS: ParamSchema = {
@@ -127,4 +129,4 @@ const INCLUDE_GROUPMATES_TASKS: ParamSchema = {
   errorMessage: 'IncludeGroupmatesTasks params is invalid',
 }
 
-export { ID, LIMIT, TYPE, FIELD, OFFSET, TASK, USER_ID, INCLUDE_GROUPMATES_TASKS };
+export { ID, LIMIT, TYPE, FIELD, OFFSET, PRIORITY, DEADLINE, NAME, STATUS, USER_ID, INCLUDE_GROUPMATES_TASKS };
