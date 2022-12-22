@@ -1,15 +1,5 @@
 import { ParamSchema } from 'express-validator';
 
-type Pagination = {
-  limit: ParamSchema,
-  offset: ParamSchema,
-};
-
-type Sort = {
-  type: ParamSchema,
-  field: ParamSchema,
-};
-
 const ID: ParamSchema = {
   in: ['params'],
   trim: true,

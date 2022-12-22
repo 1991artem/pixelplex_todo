@@ -1,24 +1,6 @@
 import { ParamSchema } from 'express-validator';
 import { TASK_STATUS, TASK_PRIORITY } from './task.constants';
 
-type Pagination = {
-  limit: ParamSchema,
-  offset: ParamSchema,
-};
-
-type Sort = {
-  type: ParamSchema,
-  field: ParamSchema,
-};
-
-type Task = {
-  name: ParamSchema,
-  description: ParamSchema,
-  status: ParamSchema,
-  deadline: ParamSchema,
-  priority: ParamSchema,
-};
-
 const ID: ParamSchema = {
   in: ['params'],
   trim: true,
