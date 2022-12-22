@@ -4,7 +4,6 @@ import { Task } from './entity/task.entity';
 import TaskService from './task.service';
 import { IGetAllTaskResponse } from './types/task-interfaces';
 import { QueryType } from './types/task-types';
-
 export default class TaskController {
   static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

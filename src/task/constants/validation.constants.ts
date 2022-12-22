@@ -66,7 +66,6 @@ const FIELD: ParamSchema = {
   errorMessage: 'Sort params is invalid',
 };
 
-
 const NAME: ParamSchema = {
   notEmpty: true,
   trim: true,
