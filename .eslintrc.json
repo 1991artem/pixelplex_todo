@@ -57,11 +57,16 @@
         "key-spacing": ["error"],
         "keyword-spacing": ["error"],
         "require-await": ["error"],
-        "no-return-await": ["error"]
+        "no-return-await": ["error"],
+        "import/extensions": "off"
     },
     "settings": {
         "import/resolver": {
-          "typescript": {}
+            "typescript": {},
+            "node": {
+                "paths": ["src"],
+                "extensions": [".ts", ".tsx"]
+              }
         }
       }
 }
