@@ -1,24 +1,6 @@
 import { ParamSchema } from 'express-validator';
 import { TASK_STATUS, TASK_PRIORITY } from './task.constants';
 
-type Pagination = {
-  limit: ParamSchema,
-  offset: ParamSchema,
-};
-
-type Sort = {
-  type: ParamSchema,
-  field: ParamSchema,
-};
-
-type Task = {
-  name: ParamSchema,
-  description: ParamSchema,
-  status: ParamSchema,
-  deadline: ParamSchema,
-  priority: ParamSchema,
-};
-
 const ID: ParamSchema = {
   in: ['params'],
   trim: true,
@@ -34,57 +16,57 @@ const USER_ID: ParamSchema = {
   errorMessage: 'USER_ID is invalid',
 };
 
-const PAGINATIONS: Pagination = {
-  limit: {
-    in: 'query',
-    trim: true,
-    escape: true,
-    isInt: true,
-    optional: true,
-    custom: {
-      options: (value: string) => +value >= 0,
-    },
-    errorMessage: 'Pagination params is invalid',
+const LIMIT: ParamSchema = {
+  in: 'query',
+  trim: true,
+  escape: true,
+  isInt: {
+    options: {
+      min: 0,
+    }
   },
-  offset: {
-    in: 'query',
-    trim: true,
-    escape: true,
-    isInt: true,
-    optional: true,
-    custom: {
-      options: (value: string) => +value >= 0,
-    },
-    errorMessage: 'Pagination params is invalid',
-  },
+  optional: true,
+  errorMessage: 'Pagination params is invalid',
 };
 
-const SORT: Sort = {
-  type: {
-    in: 'query',
-    toLowerCase: true,
-    isIn: {
-      options: [['asc', 'desc']],
-    },
-    trim: true,
-    escape: true,
-    optional: true,
-    errorMessage: 'Sort params is invalid',
+const OFFSET: ParamSchema = {
+  in: 'query',
+  trim: true,
+  escape: true,
+  isInt: {
+    options: {
+      min: 0,
+    }
   },
-  field: {
-    in: 'query',
-    toLowerCase: true,
-    isIn: {
-      options: [['date', 'name']],
-    },
-    trim: true,
-    escape: true,
-    optional: true,
-    errorMessage: 'Sort params is invalid',
-  },
+  optional: true,
+  errorMessage: 'Pagination params is invalid',
 };
 
-const TASK: Task = {
+const TYPE: ParamSchema = {
+  in: 'query',
+  toLowerCase: true,
+  isIn: {
+    options: [['asc', 'desc']],
+  },
+  trim: true,
+  escape: true,
+  optional: true,
+  errorMessage: 'Sort params is invalid',
+};
+
+const FIELD: ParamSchema = {
+  in: 'query',
+  toLowerCase: true,
+  isIn: {
+    options: [['date', 'name']],
+  },
+  trim: true,
+  escape: true,
+  optional: true,
+  errorMessage: 'Sort params is invalid',
+};
+
+const TASK: ParamSchema = {
   name: {
     notEmpty: true,
     trim: true,
@@ -138,13 +120,11 @@ const TASK: Task = {
 const INCLUDE_GROUPMATES_TASKS: ParamSchema = {
   in: 'query',
   toLowerCase: true,
-  isIn: {
-    options: [['true', 'false']],
-  },
+  isBoolean: true,
   trim: true,
   escape: true,
   optional: true,
   errorMessage: 'IncludeGroupmatesTasks params is invalid',
 }
 
-export { ID, PAGINATIONS, TASK, USER_ID, INCLUDE_GROUPMATES_TASKS, SORT };
+export { ID, LIMIT, TYPE, FIELD, OFFSET, TASK, USER_ID, INCLUDE_GROUPMATES_TASKS };

@@ -10,10 +10,10 @@ const getTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 const deleteTaskById = checkSchema({ id: VALIDATION_SCHEMAS.ID });
 
 const getAllTasks = checkSchema({
-  'pagination.[limit]': VALIDATION_SCHEMAS.PAGINATIONS.limit,
-  'pagination.[offset]': VALIDATION_SCHEMAS.PAGINATIONS.offset,
-  'sort.[type]': VALIDATION_SCHEMAS.SORT.type,
-  'sort.[field]': VALIDATION_SCHEMAS.SORT.field,
+  'pagination.[limit]': VALIDATION_SCHEMAS.LIMIT,
+  'pagination.[offset]': VALIDATION_SCHEMAS.OFFSET,
+  'sort.[type]': VALIDATION_SCHEMAS.TYPE,
+  'sort.[field]': VALIDATION_SCHEMAS.FIELD,
   'filter.[user]': VALIDATION_SCHEMAS.USER_ID,
   includeGroupmatesTasks: VALIDATION_SCHEMAS.INCLUDE_GROUPMATES_TASKS,
 });
