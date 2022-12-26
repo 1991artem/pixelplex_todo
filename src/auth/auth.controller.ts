@@ -1,4 +1,4 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { User } from '@user';
 import { STATUS_CODE } from '../constants';
 import { authService } from './auth.service';
@@ -20,6 +20,16 @@ export default class AuthController {
       res.status(STATUS_CODE.OK).json({
         token,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static logout(_req: Request, res: Response, next: NextFunction): void {
+    try {
+      res.status(STATUS_CODE.OK).clearCookie('token').json({
+        message: 'User logged out',
+      });;
     } catch (error) {
       next(error);
     }

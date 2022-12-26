@@ -11,7 +11,7 @@ import { AppDataSource } from './data-source';
 import { mountWsRouter } from 'ws/ws.routes';
 
 const app = express();
-const wss = ws(app);
+export const wss = ws(app);
 
 app.use(json());
 app.use(urlencoded({ extended: false }));
