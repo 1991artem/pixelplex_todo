@@ -23,7 +23,7 @@ const LIMIT: ParamSchema = {
   isInt: {
     options: {
       min: 0,
-    }
+    },
   },
   optional: true,
   errorMessage: 'Pagination params is invalid',
@@ -36,7 +36,7 @@ const OFFSET: ParamSchema = {
   isInt: {
     options: {
       min: 0,
-    }
+    },
   },
   optional: true,
   errorMessage: 'Pagination params is invalid',
@@ -127,6 +127,6 @@ const INCLUDE_GROUPMATES_TASKS: ParamSchema = {
   escape: true,
   optional: true,
   errorMessage: 'IncludeGroupmatesTasks params is invalid',
-}
+};
 
 export { ID, LIMIT, TYPE, FIELD, OFFSET, PRIORITY, DEADLINE, NAME, STATUS, DESCRIPTION, USER_ID, INCLUDE_GROUPMATES_TASKS };

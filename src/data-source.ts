@@ -8,11 +8,15 @@ import * as Migrations from './migrations';
 
 dotenv.config();
 
-const user = process.env.DB_USER as string;
+const user = process.env.DB_USER;
 const host = process.env.DB_HOST || 'localhost';
-const database = process.env.DB_NAME as string;
-const password = process.env.DB_PASSWORD as string;
+const database = process.env.DB_NAME;
+const password = process.env.DB_PASSWORD;
 const port = Number(process.env.DB_PORT) || 5432;
+
+if (!user || !database || !password) {
+  throw new Error('DB_USER, DB_NAME, DB_PASSWORD not set');
+}
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

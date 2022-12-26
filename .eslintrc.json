@@ -65,7 +65,7 @@
             "typescript": {},
             "node": {
                 "paths": ["src"],
-                "extensions": [".ts", ".tsx"]
+                "extensions": [".ts"]
               }
         }
       }

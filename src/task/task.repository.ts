@@ -1,10 +1,10 @@
+import { In } from 'typeorm';
+import { User } from '@user';
 import { AppDataSource } from '../data-source';
 import { Task } from './entity/task.entity';
 import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { TaskType } from './types/task-types';
 import { ITaskQueryParams } from './types/task-interfaces';
-import { In } from 'typeorm';
-import { User } from '@user';
 
 export class TaskRepository {
   private static _tasksRepository = AppDataSource.getRepository(Task);
@@ -23,7 +23,7 @@ export class TaskRepository {
   }
 
   static async createTask(taskDTO: CreateTaskDTO, user: User): Promise<Task> {
-    const task: Task = this._tasksRepository.create({...taskDTO, ...{ user } });
+    const task: Task = this._tasksRepository.create({ ...taskDTO, ...{ user } });
     await this._tasksRepository.save(task);
     return task;
   }
@@ -34,7 +34,7 @@ export class TaskRepository {
       where: {
         user: {
           id: userId,
-        }
+        },
       },
       skip: offset,
       take: limit,
@@ -54,7 +54,7 @@ export class TaskRepository {
           groups: {
             id: In(groupIds),
           },
-        }
+        },
       },
       skip: offset,
       take: limit,
@@ -64,7 +64,7 @@ export class TaskRepository {
     });
     return tasks;
   }
-  
+
   static async updateTaskById(id: number, updateBody: Partial<UpdateTaskDTO>): Promise<void> {
     await this._tasksRepository
       .createQueryBuilder()

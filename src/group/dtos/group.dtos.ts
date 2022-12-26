@@ -1,4 +1,4 @@
-export interface GreateGroupDTO {
+export interface CreateGroupDTO {
   name: string;
   description: string;
 };

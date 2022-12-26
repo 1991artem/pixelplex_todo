@@ -6,8 +6,6 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
-  RelationId,
 } from 'typeorm';
 import { TASK_PRIORITY, TASK_STATUS } from 'task/constants';
 import { User } from '../../user/entity/user.entity';

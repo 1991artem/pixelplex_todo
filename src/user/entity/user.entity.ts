@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
     updatedAt: Date;
 
-  @OneToMany(() => Task, (task: Task) => task.user, { eager: true, cascade: true})
+  @OneToMany(() => Task, (task: Task) => task.user, { eager: true, cascade: true })
     tasks: Task[];
 
   @ManyToMany(() => Group)

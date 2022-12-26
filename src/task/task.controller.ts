@@ -1,22 +1,17 @@
-import { Request, Response, NextFunction } from 'express';
-import { CreateTaskDTO } from './dtos/task.dtos';
+import { Response, NextFunction } from 'express';
+import { STATUS_CODE } from '@constants';
+import { AppError } from '@errors';
 import { Task } from './entity/task.entity';
 import TaskService from './task.service';
-import { IGetAllTaskResponse } from './types/task-interfaces';
-import { QueryType } from './types/task-types';
+import { CreateTaskRequest, DeleteTaskRequest, GetAllTaskRequest, IGetAllTaskResponse, UpdateTaskRequest } from './types/task-interfaces';
 export default class TaskController {
-  static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createTask( req: CreateTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskDTO: CreateTaskDTO = {
-        name: req.body?.name,
-        description: req.body?.description,
-        status: req.body?.status,
-        deadline: req.body?.deadline,
-        priority: req.body?.priority,
-      };
-      const userId = req.user?.id as string;
-      const task: Task = await TaskService.createTask(taskDTO, userId);
-      res.status(201).json(  {
+      if (!req.user?.id) {
+        throw new AppError(STATUS_CODE.BAD_REQUEST, 'Invalid id');
+      }
+      const task: Task = await TaskService.createTask(req.body, req.user?.id);
+      res.status(201).json( {
         id: task.id,
         message: 'Task has been created',
       });
@@ -24,36 +19,29 @@ export default class TaskController {
       next(error);
     }
   }
-  static async getAllTasks( req: Request, res: Response, next: NextFunction): Promise<void> {
+
+  static async getAllTasks( req: GetAllTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams: Partial<QueryType> = req.query;
-      const userId = req.user?.id as string;
-      const allTaskResponse: IGetAllTaskResponse | undefined = await TaskService.getAllTasks(queryParams, userId);
+      if (!req.user?.id) {
+        throw new AppError(STATUS_CODE.BAD_REQUEST, 'Invalid id');
+      }
+      const allTaskResponse: IGetAllTaskResponse | undefined = await TaskService.getAllTasks(req.query, req.user?.id);
       res.status(200).json(allTaskResponse);
     } catch (error) {
       next(error);
     }
   }
-  static async deleteTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteTaskById( req: DeleteTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskId = req.params?.id;
-      await TaskService.deleteTaskById(taskId);
+      await TaskService.deleteTaskById(req.params?.id);
       res.status(200).json({ message: 'Task has been deleted' });
     } catch (error) {
       next(error);
     }
   }
-  static async updateTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateTaskById( req: UpdateTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskId = req.params?.id;
-      const updateBody = {
-        name: req.body?.name,
-        description: req.body?.description,
-        status: req.body?.status,
-        deadline: req.body?.deadline,
-        priority: req.body?.priority,
-      };
-      const taskInfo: Partial<Task> = await TaskService.updateTaskById(taskId, updateBody);
+      const taskInfo: Partial<Task> = await TaskService.updateTaskById(req.params?.id, req.body);
       res.status(200).json({ message: 'Task has been updated', group: taskInfo });
     } catch (error) {
       next(error);
