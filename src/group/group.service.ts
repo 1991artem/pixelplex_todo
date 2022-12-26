@@ -10,7 +10,6 @@ import { GroupType, QueryType } from './types/group-types';
 export class GroupService {
   static async createGroup(groupDTO: CreateGroupDTO): Promise<Group> {
     const group: GroupType = await GroupRepository.getGroupByName(groupDTO.name);
-    console.log(group);
     if (group) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'Group already exists',
@@ -21,10 +20,10 @@ export class GroupService {
   static async getAllGroups(queryParams: Partial<QueryType>): Promise<IGetAllGroupResponse> {
     const { pagination, sort } = queryParams;
     const params: IGroupQueryParams = {
-      limit: Number(pagination?.limit) || 10,
-      offset: Number(pagination?.offset) || 0,
+      limit: Number(pagination?.limit),
+      offset: Number(pagination?.offset),
       type: sort?.type?.toUpperCase(),
-      field: sort?.field?.toLowerCase() || 'name',
+      field: sort?.field?.toLowerCase(),
     };
     const groups: Group[] = await GroupRepository.getAllGroups(params);
     if (!groups.length) {
@@ -47,7 +46,7 @@ export class GroupService {
     return allGroupResponse;
   }
   static async getGroupById(id: string): Promise<IGetGroupById> {
-    const group: GroupType = await GroupRepository.getGroupById(+id);
+    const group: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Group not found',
@@ -69,7 +68,7 @@ export class GroupService {
     };
   }
   static async deleteGroupById(id: string): Promise<void> {
-    const group: GroupType = await GroupRepository.getGroupById(+id);
+    const group: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Group not found',
@@ -78,15 +77,15 @@ export class GroupService {
     await GroupRepository.deleteGroup(group);
   }
   static async updateGroupById(id: string, updateBody: Partial<CreateGroupDTO>): Promise<Partial<Group>> {
-    const group: GroupType = await GroupRepository.getGroupById(+id);
+    const group: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Group not found',
       );
     }
-    await GroupRepository.updateGroupById(+id, updateBody);
+    await GroupRepository.updateGroupById(Number(id), updateBody);
 
-    const updatedGroup: GroupType = await GroupRepository.getGroupById(+id);
+    const updatedGroup: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!updatedGroup) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Group not found',
@@ -100,19 +99,25 @@ export class GroupService {
   }
   static async addUserToGroup(data: UserInGroupDTO): Promise<void> {
     const { userId, groupId } = data;
-    const user: UserType = await UserRepository.findOneById(+userId);
-    const group: GroupType = await GroupRepository.getGroupById(+groupId);
-    if (!user || !group) {
-      throw new AppError(STATUS_CODE.NOT_FOUND, 'Group or User not found');
+    const user: UserType = await UserRepository.findOneById(Number(userId));
+    const group: GroupType = await GroupRepository.getGroupById(Number(groupId));
+    if (!user) {
+      throw new AppError(STATUS_CODE.NOT_FOUND, 'User not found');
+    }
+    if (!group) {
+      throw new AppError(STATUS_CODE.NOT_FOUND, 'Group not found');
     }
     await GroupRepository.addUserToGroup(group, user);
   }
   static async removeUserFromGroup(data: UserInGroupDTO): Promise<void> {
     const { userId, groupId } = data;
-    const user: UserType = await UserRepository.findOneById(+userId);
-    const group: GroupType = await GroupRepository.getGroupById(+groupId);
-    if (!user || !group) {
-      throw new AppError(STATUS_CODE.NOT_FOUND, 'Group or User not found');
+    const user: UserType = await UserRepository.findOneById(Number(userId));
+    const group: GroupType = await GroupRepository.getGroupById(Number(groupId));
+    if (!user) {
+      throw new AppError(STATUS_CODE.NOT_FOUND, 'User not found');
+    }
+    if (!group) {
+      throw new AppError(STATUS_CODE.NOT_FOUND, 'Group not found');
     }
     await GroupRepository.removeUserFromGroup(group, user);
   }

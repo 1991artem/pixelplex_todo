@@ -14,17 +14,19 @@ export class GroupRepository {
     return group;
   }
 
-  static async getAllGroups(paginationParams: IGroupQueryParams): Promise<Group[]> {
-    const { limit, offset, field, type } = paginationParams;
+  static async getAllGroups(params: IGroupQueryParams): Promise<Group[]> {
+    const { limit, offset, field, type } = params;
     const groups: Group[] = await this._groupsRepository.find({
       relations: {
         users: true,
       },
       skip: offset,
       take: limit,
-      order: {
+      order: field ? 
+      {
         [field]: type,
-      },
+      }
+      : undefined,
     });
     return groups;
   }
@@ -57,7 +59,7 @@ export class GroupRepository {
       .createQueryBuilder()
       .update(Group)
       .set({ ...updateBody })
-      .where('id = :id', { id })
+      .where( { id })
       .execute();
   }
   static async addUserToGroup(group: Group, user: User): Promise<void> {

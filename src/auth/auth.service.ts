@@ -6,26 +6,30 @@ import { STATUS_CODE } from '@constants';
 import { UserAuthDTO } from './dtos/auth.dtos';
 
 class AuthService {
-  secretKey: string | undefined;
-  tokenLifetime: string | undefined;
+  private _secretKey: string | undefined;
+  private _tokenLifetime: string | undefined;
   constructor() {
-    this.secretKey = process.env.JWT_SECRET;
-    this.tokenLifetime = process.env.TOKEN_LIFETIME;
-    if (!this.secretKey || !this.tokenLifetime) {
-      throw new AppError(STATUS_CODE.INTERNAL_SERVER_ERROR, 'JWT_SECRET and TOKEN_LIFETIME environment variables are not defined');
-    }
+    this._secretKey = process.env.JWT_SECRET;
+    this._tokenLifetime = process.env.TOKEN_LIFETIME;
   };
+  get secretKey(): string {
+    if (!this._secretKey) throw new Error('JWT_SECRET environment variables are not defined');
+    return this._secretKey;
+  }
+  get tokenLifetime(): string {
+    if (!this._tokenLifetime) throw new Error('TOKEN_LIFETIME environment variables are not defined');
+    return this._tokenLifetime;
+  }
   async createUser(userDTO: UserCreateDTO): Promise<User> {
     const { email, password } = userDTO;
     const hashedPassword = await hash(password, 12);
     const candidate: UserType = await UserRepository.findOneByEmail(email);
-    console.log('candidate', candidate);
     if (candidate) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'User with this email address already exists',
       );
     }
-    const user: User = await UserRepository.createUser({...userDTO, ...{password: hashedPassword}});
+    const user: User = await UserRepository.createUser({ ...userDTO, password: hashedPassword });
     return user;
   }
 
@@ -43,12 +47,12 @@ class AuthService {
         'Authentification failed. Check your email/password.',
       );
     }
-    const token: string = this.getJtwToken(`${user?.id}`, user?.role, user?.name);
+    const token: string = this.getJtwToken(user.id, user.role, user.name);
     return token;
   }
 
-  getJtwToken(id: string, role: string, name: string): string {
-    return sign({ id, role, name }, this.secretKey as string, {
+  getJtwToken(id: number, role: string, name: string): string {
+    return sign({ id, role, name }, this.secretKey, {
       expiresIn: this.tokenLifetime,
     });
   }

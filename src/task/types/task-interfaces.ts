@@ -11,7 +11,7 @@ export interface ITaskQueryParams {
   limit: number;
   offset: number;
   type: string | undefined;
-  field: string;
+  field: string | undefined;
 };
 
 export interface IGetTaskById {

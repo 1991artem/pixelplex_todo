@@ -16,7 +16,7 @@ export class TaskService {
         'Task already exists',
       );
     }
-    const user: User = await UserRepository.findOneById(+userId) as User;
+    const user: User = await UserRepository.findOneById(Number(userId)) as User;
 
     if (taskDTO.deadline) {
       const createTaskDTO: CreateTaskDTO = { ...taskDTO, ...{ deadline: new Date(taskDTO?.deadline) } };
@@ -28,15 +28,15 @@ export class TaskService {
   static async getAllTasks(queryParams: Partial<QueryType>, userId: string): Promise<IGetAllTaskResponse | undefined> {
     const { pagination, sort, filter, includeGroupmatesTasks } = queryParams;
     const params: ITaskQueryParams = {
-      limit: Number(pagination?.limit) || 10,
-      offset: Number(pagination?.offset) || 0,
+      limit: Number(pagination?.limit),
+      offset: Number(pagination?.offset),
       type: sort?.type?.toUpperCase(),
-      field: sort?.field?.toLowerCase() || 'name',
+      field: sort?.field?.toLowerCase(),
     };
-    const filterId = filter?.user ? +filter?.user : undefined;
+    const filterId = filter?.user ? Number(filter?.user) : undefined;
     const tasks: Task[] = includeGroupmatesTasks !== 'true' ?
-      await TaskRepository.getAllTasksByUserId(+userId, params)
-      : await this.getAllGroupmatesTasks(+userId, params, filterId);
+      await TaskRepository.getAllTasksByUserId(Number(userId), params)
+      : await this.getAllGroupmatesTasks(Number(userId), params, filterId);
 
     if (!tasks.length) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -51,7 +51,7 @@ export class TaskService {
   }
 
   static async deleteTaskById(id: string): Promise<void> {
-    const task: TaskType = await TaskRepository.findOneById(+id);
+    const task: TaskType = await TaskRepository.findOneById(Number(id));
     if (!task) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Task not found',
@@ -60,7 +60,7 @@ export class TaskService {
     await TaskRepository.deleteTask(task);
   }
   static async updateTaskById(id: string, updateBody: Partial<UpdateTaskDTO>): Promise<Task> {
-    const task: TaskType = await TaskRepository.findOneById(+id);
+    const task: TaskType = await TaskRepository.findOneById(Number(id));
     if (!task) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Task not found',
@@ -74,8 +74,8 @@ export class TaskService {
     if (updateBody.deadline) {
       updateBody = { ...updateBody, ...{ deadline: new Date(updateBody.deadline) } };
     }
-    await TaskRepository.updateTaskById(+id, updateBody);
-    const updatedTask: TaskType = await TaskRepository.findOneById(+id);
+    await TaskRepository.updateTaskById(Number(id), updateBody);
+    const updatedTask: TaskType = await TaskRepository.findOneById(Number(id));
     if (!updatedTask) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Task not updated',
@@ -84,7 +84,7 @@ export class TaskService {
     return updatedTask;
   }
   static async getAllGroupmatesTasks(userId: number, params: ITaskQueryParams, filterId: number | undefined): Promise<Task[]> {
-    const user: UserType = await UserRepository.getUserByIdWithGroup(+userId);
+    const user: UserType = await UserRepository.getUserByIdWithGroup(Number(userId));
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',

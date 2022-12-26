@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '@user';
+import { User, UserCreateDTO } from '@user';
 import { STATUS_CODE } from '../constants';
 import { authService } from './auth.service';
-import { LoginRequest, SignUpRequest } from './interfaces/auth-interfaces';
+import { UserAuthDTO } from './dtos/auth.dtos';
 
 export default class AuthController {
-  static async signUp(req: SignUpRequest, res: Response, next: NextFunction): Promise<void> {
+  static async signUp(req: Request<any, UserCreateDTO>, res: Response, next: NextFunction): Promise<void> {
     try {
       const user: User = await authService.createUser(req.body);
       res.status(STATUS_CODE.OK).json({ id: user?.id, message: 'User has been created' });
@@ -14,7 +14,7 @@ export default class AuthController {
     }
   }
 
-  static async login(req: LoginRequest, res: Response, next: NextFunction): Promise<void> {
+  static async login(req: Request<any, UserAuthDTO>, res: Response, next: NextFunction): Promise<void> {
     try {
       const token = await authService.login(req.body);
       res.status(STATUS_CODE.OK).json({
@@ -27,7 +27,7 @@ export default class AuthController {
 
   static logout(_req: Request, res: Response, next: NextFunction): void {
     try {
-      res.status(STATUS_CODE.OK).clearCookie('token').json({
+      res.status(STATUS_CODE.OK).json({
         message: 'User logged out',
       });;
     } catch (error) {

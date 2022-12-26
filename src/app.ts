@@ -2,7 +2,7 @@
 import * as express from 'express';
 import * as ws from 'express-ws';
 import { urlencoded, json } from 'express';
-import { processError, processNotFoundEndpoint, errorHandler } from '@middleware';
+import { processNotFoundEndpoint, errorHandler } from '@middleware';
 import { mountRouter as mountAuthRouter } from '@auth';
 import { mountRouter as mountUserRouter } from '@user';
 import { mountRouter as mountGroupRouter } from '@group';
@@ -23,7 +23,6 @@ mountWsRouter(wss);
 
 app.use(processNotFoundEndpoint);
 app.use(errorHandler);
-app.use(processError);
 
 const init = async (): Promise<void> => {
   try {

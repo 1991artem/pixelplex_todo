@@ -58,9 +58,11 @@ export class TaskRepository {
       },
       skip: offset,
       take: limit,
-      order: {
+      order: field ? 
+      {
         [field]: type,
-      },
+      }
+      : undefined,
     });
     return tasks;
   }
@@ -70,7 +72,7 @@ export class TaskRepository {
       .createQueryBuilder()
       .update(Task)
       .set({ ...updateBody })
-      .where('id = :id', { id })
+      .where( { id })
       .execute();
   }
   static async deleteTask(task: Task): Promise<void> {

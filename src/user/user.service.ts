@@ -6,7 +6,7 @@ import { UserRepository } from './user.repository';
 
 export class UserService {
   static async getUserStatistics(id: string): Promise<UserStatistics> {
-    const user: UserType = await UserRepository.getUserById(+id);
+    const user: UserType = await UserRepository.getUserById(Number(id));
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',

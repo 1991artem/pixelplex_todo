@@ -16,6 +16,6 @@ export function mountWsRouter(wss: Instance): void {
     });
   });
   wss.app.ws('/api/v1/auth/logout', (ws: WebSocket) => {
-    ws.on('close', () => WsComtroller.logout(wss, ws));
+    ws.on('message', () => WsComtroller.logout(wss, ws));
   });
 }

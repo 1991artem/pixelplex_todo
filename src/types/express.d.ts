@@ -6,14 +6,10 @@ export interface IUserAuthInfoInRequest {
 
 declare global {
   namespace Express {
-    export interface Request {
+    export interface Request<T extends Query, U> {
       user?: IUserAuthInfoInRequest;
+      body?: U;
+      query?: T;
     }
-  }
-}
-
-declare module 'express-session' {
-  export interface SessionData {
-    userId: number;
   }
 }

@@ -19,7 +19,7 @@ export interface IGroupQueryParams {
   limit: number;
   offset: number;
   type: string | undefined;
-  field: string;
+  field: string | undefined;
 };
 
 export interface IGetGroupById {
