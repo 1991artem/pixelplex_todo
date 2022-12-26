@@ -7,11 +7,11 @@ import { mountRouter as mountAuthRouter } from '@auth';
 import { mountRouter as mountUserRouter } from '@user';
 import { mountRouter as mountGroupRouter } from '@group';
 import { mountRouter as mountTaskRouter } from '@task';
-import { mountWsRouter } from 'ws/ws.routes';
 import { AppDataSource } from './data-source';
+import { mountWsRouter } from 'ws/ws.routes';
 
 const app = express();
-export const wss = ws(app);
+const wss = ws(app);
 
 app.use(json());
 app.use(urlencoded({ extended: false }));
@@ -30,7 +30,7 @@ const init = async (): Promise<void> => {
     const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4500;
     const DB: string | undefined = process.env.DB_NAME;
     await AppDataSource.initialize();
-    wss.app.listen(PORT, () => {
+    app.listen(PORT, () => {
       console.log(`---listening port ${PORT}---`);
     });
     console.info(`Successfully connected to ${DB}`);

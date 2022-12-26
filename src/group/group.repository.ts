@@ -1,6 +1,6 @@
 import { User } from '@user';
 import { AppDataSource } from '../data-source';
-import { GreateGroupDTO } from './dtos/group.dtos';
+import { CreateGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
 import { IGroupQueryParams } from './types/group-interfaces';
 import { GroupType } from './types/group-types';
@@ -8,7 +8,7 @@ import { GroupType } from './types/group-types';
 export class GroupRepository {
   private static _groupsRepository = AppDataSource.getRepository(Group);
 
-  static async createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
+  static async createGroup(groupDTO: CreateGroupDTO): Promise<Group> {
     const group: Group = this._groupsRepository.create(groupDTO);
     await this._groupsRepository.save(group);
     return group;
@@ -52,7 +52,7 @@ export class GroupRepository {
   static async deleteGroup(group: Group): Promise<void> {
     await this._groupsRepository.remove(group);
   }
-  static async updateGroupById(id: number, updateBody: Partial<GreateGroupDTO>): Promise<void> {
+  static async updateGroupById(id: number, updateBody: Partial<CreateGroupDTO>): Promise<void> {
     await this._groupsRepository
       .createQueryBuilder()
       .update(Group)

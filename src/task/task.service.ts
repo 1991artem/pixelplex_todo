@@ -8,7 +8,7 @@ import { TaskRepository } from './task.repository';
 import { IGetAllTaskResponse, ITaskQueryParams } from './types/task-interfaces';
 import { QueryType, TaskType } from './types/task-types';
 
-export default class TaskService {
+export class TaskService {
   static async createTask(taskDTO: CreateTaskDTO, userId: string): Promise<Task> {
     const task: TaskType = await TaskRepository.getTaskByName(taskDTO.name);
     if (task) {

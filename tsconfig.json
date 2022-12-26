@@ -31,6 +31,7 @@
       "@errors": ["errors"],
       "@middleware": ["middleware"],
       "@constants": ["constants"],
+      "@ws": ["ws"],
     }
   },
   "exclude": ["node_modules"],

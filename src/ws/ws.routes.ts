@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Instance } from 'express-ws';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { WsComtroller } from './ws.controller';
 
 export function mountWsRouter(wss: Instance): void {

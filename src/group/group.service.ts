@@ -1,15 +1,16 @@
 import { AppError } from '@errors';
 import { User, UserRepository, UserType } from '@user';
 import { STATUS_CODE } from '@constants';
-import { GreateGroupDTO, UserInGroupDTO } from './dtos/group.dtos';
+import { CreateGroupDTO, UserInGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';
 import { IGetAllGroupResponse, IGetGroupById, IGroupQueryParams } from './types/group-interfaces';
 import { GroupType, QueryType } from './types/group-types';
 
 export class GroupService {
-  static async createGroup(groupDTO: GreateGroupDTO): Promise<Group> {
+  static async createGroup(groupDTO: CreateGroupDTO): Promise<Group> {
     const group: GroupType = await GroupRepository.getGroupByName(groupDTO.name);
+    console.log(group);
     if (group) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'Group already exists',
@@ -18,10 +19,10 @@ export class GroupService {
     return GroupRepository.createGroup(groupDTO);
   }
   static async getAllGroups(queryParams: Partial<QueryType>): Promise<IGetAllGroupResponse> {
-    const { paginations, sort } = queryParams;
+    const { pagination, sort } = queryParams;
     const params: IGroupQueryParams = {
-      limit: Number(paginations?.limit) || 10,
-      offset: Number(paginations?.offset) || 0,
+      limit: Number(pagination?.limit) || 10,
+      offset: Number(pagination?.offset) || 0,
       type: sort?.type?.toUpperCase(),
       field: sort?.field?.toLowerCase() || 'name',
     };
@@ -76,7 +77,7 @@ export class GroupService {
     }
     await GroupRepository.deleteGroup(group);
   }
-  static async updateGroupById(id: string, updateBody: Partial<GreateGroupDTO>): Promise<Partial<Group>> {
+  static async updateGroupById(id: string, updateBody: Partial<CreateGroupDTO>): Promise<Partial<Group>> {
     const group: GroupType = await GroupRepository.getGroupById(+id);
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,

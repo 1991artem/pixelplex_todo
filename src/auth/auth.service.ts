@@ -16,20 +16,16 @@ class AuthService {
     }
   };
   async createUser(userDTO: UserCreateDTO): Promise<User> {
-    const { email, password, name } = userDTO;
+    const { email, password } = userDTO;
     const hashedPassword = await hash(password, 12);
     const candidate: UserType = await UserRepository.findOneByEmail(email);
+    console.log('candidate', candidate);
     if (candidate) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'User with this email address already exists',
       );
     }
-    const authParams: UserCreateDTO = {
-      name,
-      email,
-      password: hashedPassword,
-    };
-    const user: User = await UserRepository.createUser(authParams);
+    const user: User = await UserRepository.createUser({...userDTO, ...{password: hashedPassword}});
     return user;
   }
 
