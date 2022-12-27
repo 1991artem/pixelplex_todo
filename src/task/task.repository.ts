@@ -1,10 +1,9 @@
 import { In } from 'typeorm';
 import { User } from '@user';
 import { AppDataSource } from '../data-source';
+import { CreateTaskBody, UpdateTaskBody } from './types/body.types';
 import { Task } from './entity/task.entity';
-import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
-import { TaskType } from './types/task-types';
-import { ITaskQueryParams } from './types/task-interfaces';
+import { QueryParams, TaskType } from './types/task-types';
 
 export class TaskRepository {
   private static _tasksRepository = AppDataSource.getRepository(Task);
@@ -22,13 +21,13 @@ export class TaskRepository {
     return task;
   }
 
-  static async createTask(taskDTO: CreateTaskDTO, user: User): Promise<Task> {
+  static async createTask(taskDTO: CreateTaskBody, user: User): Promise<Task> {
     const task: Task = this._tasksRepository.create({ ...taskDTO, ...{ user } });
     await this._tasksRepository.save(task);
     return task;
   }
 
-  static async getAllTasksByUserId(userId: number, params: ITaskQueryParams): Promise<Task[]> {
+  static async getAllTasksByUserId(userId: number, params: QueryParams): Promise<Task[]> {
     const { limit, offset, field, type } = params;
     const tasks: Task[] = await this._tasksRepository.find({
       where: {
@@ -38,14 +37,16 @@ export class TaskRepository {
       },
       skip: offset,
       take: limit,
-      order: {
-        [field]: type,
-      },
+      order: field ?
+        {
+          [field]: type,
+        }
+        : undefined,
     });
     return tasks;
   }
 
-  static async getAllGroupmatesTasks(groupIds: number[], filterId: number | undefined, params: ITaskQueryParams): Promise<Task[]> {
+  static async getAllGroupmatesTasks(groupIds: number[], filterId: number | undefined, params: QueryParams): Promise<Task[]> {
     const { limit, offset, field, type } = params;
     const tasks: Task[] = await this._tasksRepository.find({
       where: {
@@ -67,7 +68,7 @@ export class TaskRepository {
     return tasks;
   }
 
-  static async updateTaskById(id: number, updateBody: Partial<UpdateTaskDTO>): Promise<void> {
+  static async updateTaskById(id: number, updateBody: UpdateTaskBody): Promise<void> {
     await this._tasksRepository
       .createQueryBuilder()
       .update(Task)

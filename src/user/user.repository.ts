@@ -1,5 +1,5 @@
+import { UserAuthBody } from 'auth/types/body.types';
 import { AppDataSource } from '../data-source';
-import { UserCreateDTO } from './dtos/user.dtos';
 import { User } from './entity/user.entity';
 import { UserType } from './types/user-types';
 
@@ -43,7 +43,7 @@ export class UserRepository {
     return user;
   }
 
-  static async createUser(authParams: UserCreateDTO): Promise<User> {
+  static async createUser(authParams: UserAuthBody): Promise<User> {
     const user: User = this._usersRepository.create(authParams);
     await this._usersRepository.save(user);
     return user;

@@ -2,17 +2,22 @@ import { Task } from '../entity/task.entity';
 
 export type TaskType = Task | null;
 
-export type QueryType = {
-  pagination: {
-    limit: number,
-    offset: number,
-  },
-  sort: {
-    type: string | undefined;
-    field: string;
-  },
-  filter: {
-    user: string;
-  },
-  includeGroupmatesTasks?: string
+export type QueryParams = {
+  limit: number;
+  offset: number;
+  type: string | undefined;
+  field: string | undefined;
+};
+
+export type GetAllTaskResponse = {
+  amount: number,
+  tasks: Task[]
+};
+
+export type GetTaskById = {
+  id: number,
+  name: string,
+  description: string,
+  createdAt: Date,
+  users: Partial<Task>[],
 };

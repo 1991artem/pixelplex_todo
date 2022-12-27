@@ -1,14 +1,14 @@
 import { AppError } from '@errors';
 import { User, UserRepository, UserType } from '@user';
 import { STATUS_CODE } from '@constants';
-import { CreateGroupDTO, UserInGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';
-import { IGetAllGroupResponse, IGetGroupById, IGroupQueryParams } from './types/group-interfaces';
-import { GroupType, QueryType } from './types/group-types';
+import { GetAllGroupResponse, GetGroupById, GroupType, QueryParams } from './types/group-types';
+import { GetAllQuery } from './types/query.types';
+import { CreateGroupBody, UpdateGroupBody, UserInGroupBody } from './types/body.types';
 
 export class GroupService {
-  static async createGroup(groupDTO: CreateGroupDTO): Promise<Group> {
+  static async createGroup(groupDTO: CreateGroupBody): Promise<Group> {
     const group: GroupType = await GroupRepository.getGroupByName(groupDTO.name);
     if (group) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
@@ -17,9 +17,9 @@ export class GroupService {
     }
     return GroupRepository.createGroup(groupDTO);
   }
-  static async getAllGroups(queryParams: Partial<QueryType>): Promise<IGetAllGroupResponse> {
+  static async getAllGroups(queryParams: Partial<GetAllQuery>): Promise<GetAllGroupResponse> {
     const { pagination, sort } = queryParams;
-    const params: IGroupQueryParams = {
+    const params: QueryParams = {
       limit: Number(pagination?.limit),
       offset: Number(pagination?.offset),
       type: sort?.type?.toUpperCase(),
@@ -31,7 +31,7 @@ export class GroupService {
         'Groups not found',
       );
     }
-    const allGroupResponse: IGetAllGroupResponse = {
+    const allGroupResponse: GetAllGroupResponse = {
       amount: groups.length,
       groups: groups.map((group: Group) => {
         return {
@@ -45,7 +45,7 @@ export class GroupService {
     };
     return allGroupResponse;
   }
-  static async getGroupById(id: string): Promise<IGetGroupById> {
+  static async getGroupById(id: string): Promise<GetGroupById> {
     const group: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -76,7 +76,7 @@ export class GroupService {
     }
     await GroupRepository.deleteGroup(group);
   }
-  static async updateGroupById(id: string, updateBody: Partial<CreateGroupDTO>): Promise<Partial<Group>> {
+  static async updateGroupById(id: string, updateBody: UpdateGroupBody): Promise<Partial<Group>> {
     const group: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -97,7 +97,7 @@ export class GroupService {
       description: updatedGroup.description,
     };
   }
-  static async addUserToGroup(data: UserInGroupDTO): Promise<void> {
+  static async addUserToGroup(data: UserInGroupBody): Promise<void> {
     const { userId, groupId } = data;
     const user: UserType = await UserRepository.findOneById(Number(userId));
     const group: GroupType = await GroupRepository.getGroupById(Number(groupId));
@@ -109,7 +109,7 @@ export class GroupService {
     }
     await GroupRepository.addUserToGroup(group, user);
   }
-  static async removeUserFromGroup(data: UserInGroupDTO): Promise<void> {
+  static async removeUserFromGroup(data: UserInGroupBody): Promise<void> {
     const { userId, groupId } = data;
     const user: UserType = await UserRepository.findOneById(Number(userId));
     const group: GroupType = await GroupRepository.getGroupById(Number(groupId));

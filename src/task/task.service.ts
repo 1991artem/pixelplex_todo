@@ -2,14 +2,14 @@ import { AppError } from '@errors';
 import { Group } from '@group';
 import { User, UserRepository, UserType } from '@user';
 import { STATUS_CODE } from '@constants';
-import { CreateTaskDTO, UpdateTaskDTO } from './dtos/task.dtos';
 import { Task } from './entity/task.entity';
 import { TaskRepository } from './task.repository';
-import { IGetAllTaskResponse, ITaskQueryParams } from './types/task-interfaces';
-import { QueryType, TaskType } from './types/task-types';
+import { GetAllTaskResponse, QueryParams, TaskType } from './types/task-types';
+import { CreateTaskBody, UpdateTaskBody } from './types/body.types';
+import { GetAllQuery } from './types/query.types';
 
 export class TaskService {
-  static async createTask(taskDTO: CreateTaskDTO, userId: string): Promise<Task> {
+  static async createTask(taskDTO: CreateTaskBody, userId: string): Promise<Task> {
     const task: TaskType = await TaskRepository.getTaskByName(taskDTO.name);
     if (task) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
@@ -19,15 +19,15 @@ export class TaskService {
     const user: User = await UserRepository.findOneById(Number(userId)) as User;
 
     if (taskDTO.deadline) {
-      const createTaskDTO: CreateTaskDTO = { ...taskDTO, ...{ deadline: new Date(taskDTO?.deadline) } };
+      const createTaskDTO: CreateTaskBody = { ...taskDTO, ...{ deadline: new Date(taskDTO?.deadline) } };
       return TaskRepository.createTask(createTaskDTO, user);
     }
     return TaskRepository.createTask(taskDTO, user);
   }
 
-  static async getAllTasks(queryParams: Partial<QueryType>, userId: string): Promise<IGetAllTaskResponse | undefined> {
+  static async getAllTasks(queryParams: Partial<GetAllQuery>, userId: string): Promise<GetAllTaskResponse | undefined> {
     const { pagination, sort, filter, includeGroupmatesTasks } = queryParams;
-    const params: ITaskQueryParams = {
+    const params: QueryParams = {
       limit: Number(pagination?.limit),
       offset: Number(pagination?.offset),
       type: sort?.type?.toUpperCase(),
@@ -43,7 +43,7 @@ export class TaskService {
         'Tasks not found',
       );
     }
-    const allTaskResponse: IGetAllTaskResponse = {
+    const allTaskResponse: GetAllTaskResponse = {
       amount: tasks.length,
       tasks: tasks,
     };
@@ -59,7 +59,7 @@ export class TaskService {
     }
     await TaskRepository.deleteTask(task);
   }
-  static async updateTaskById(id: string, updateBody: Partial<UpdateTaskDTO>): Promise<Task> {
+  static async updateTaskById(id: string, updateBody: UpdateTaskBody): Promise<Task> {
     const task: TaskType = await TaskRepository.findOneById(Number(id));
     if (!task) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -83,7 +83,7 @@ export class TaskService {
     }
     return updatedTask;
   }
-  static async getAllGroupmatesTasks(userId: number, params: ITaskQueryParams, filterId: number | undefined): Promise<Task[]> {
+  static async getAllGroupmatesTasks(userId: number, params: QueryParams, filterId: number | undefined): Promise<Task[]> {
     const user: UserType = await UserRepository.getUserByIdWithGroup(Number(userId));
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,

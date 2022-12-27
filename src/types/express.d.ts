@@ -6,9 +6,7 @@ export interface IUserAuthInfoInRequest {
 
 declare global {
   namespace Express {
-    export interface Request<T extends Query, U> {
-      body?: U;
-      query?: T;
+    export interface Request {
       user?: IUserAuthInfoInRequest;
     }
   }

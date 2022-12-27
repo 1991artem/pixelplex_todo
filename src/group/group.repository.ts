@@ -1,20 +1,19 @@
 import { User } from '@user';
 import { AppDataSource } from '../data-source';
-import { CreateGroupDTO } from './dtos/group.dtos';
 import { Group } from './entity/group.entity';
-import { IGroupQueryParams } from './types/group-interfaces';
-import { GroupType } from './types/group-types';
+import { CreateGroupBody } from './types/body.types';
+import { GroupType, QueryParams } from './types/group-types';
 
 export class GroupRepository {
   private static _groupsRepository = AppDataSource.getRepository(Group);
 
-  static async createGroup(groupDTO: CreateGroupDTO): Promise<Group> {
+  static async createGroup(groupDTO: CreateGroupBody): Promise<Group> {
     const group: Group = this._groupsRepository.create(groupDTO);
     await this._groupsRepository.save(group);
     return group;
   }
 
-  static async getAllGroups(params: IGroupQueryParams): Promise<Group[]> {
+  static async getAllGroups(params: QueryParams): Promise<Group[]> {
     const { limit, offset, field, type } = params;
     const groups: Group[] = await this._groupsRepository.find({
       relations: {
@@ -54,7 +53,7 @@ export class GroupRepository {
   static async deleteGroup(group: Group): Promise<void> {
     await this._groupsRepository.remove(group);
   }
-  static async updateGroupById(id: number, updateBody: Partial<CreateGroupDTO>): Promise<void> {
+  static async updateGroupById(id: number, updateBody: Partial<CreateGroupBody>): Promise<void> {
     await this._groupsRepository
       .createQueryBuilder()
       .update(Group)

@@ -1,14 +1,32 @@
+import { User } from '@user';
 import { Group } from 'group/entity/group.entity';
 
 export type GroupType = Group | null;
 
-export type QueryType = {
-  pagination: {
-    limit: number,
-    offset: number,
-  },
-  sort: {
-    type: string | undefined;
-    field: string;
-  }
+export type GetAllGroupResponse = {
+  amount: number;
+  groups: GroupResponse[];
+};
+
+type GroupResponse = {
+  id: number,
+  name: string,
+  description: string,
+  createdAt: Date,
+  usersAmount: number
+};
+
+export type QueryParams = {
+  limit: number;
+  offset: number;
+  type: string | undefined;
+  field: string | undefined;
+};
+
+export type GetGroupById = {
+  id: number,
+  name: string,
+  description: string,
+  createdAt: Date,
+  users: Partial<User>[],
 };

@@ -1,9 +1,9 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { User, UserType, UserCreateDTO, UserRepository } from '@user';
+import { User, UserType, UserRepository } from '@user';
 import { AppError } from '@errors';
 import { STATUS_CODE } from '@constants';
-import { UserAuthDTO } from './dtos/auth.dtos';
+import { CreateUserBody, UserAuthBody } from './types/body.types';
 
 class AuthService {
   private _secretKey: string | undefined;
@@ -24,7 +24,7 @@ class AuthService {
     }
     return this._tokenLifetime;
   }
-  async createUser(userDTO: UserCreateDTO): Promise<User> {
+  async createUser(userDTO: CreateUserBody): Promise<User> {
     const { email, password } = userDTO;
     const hashedPassword = await hash(password, 12);
     const candidate: UserType = await UserRepository.findOneByEmail(email);
@@ -37,7 +37,7 @@ class AuthService {
     return user;
   }
 
-  async login(userDTO: UserAuthDTO): Promise<string> {
+  async login(userDTO: UserAuthBody): Promise<string> {
     const { email, password } = userDTO;
     const user: UserType = await UserRepository.findOneByEmail(email);
     if (!user) {
