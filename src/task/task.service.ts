@@ -1,16 +1,16 @@
 import { AppError } from '@errors';
 import { Group } from '@group';
-import { User, UserRepository, UserType } from '@user';
+import { User, UserRepository } from '@user';
 import { STATUS_CODE } from '@constants';
 import { Task } from './entity/task.entity';
 import { TaskRepository } from './task.repository';
-import { GetAllTaskResponse, QueryParams, TaskType } from './types/task-types';
+import { GetAllTaskResponse, QueryParams } from './types/task-types';
 import { CreateTaskBody, UpdateTaskBody } from './types/body.types';
-import { GetAllQuery } from './types/query.types';
+import { GetAllQueryParams } from './types/query.types';
 
 export class TaskService {
   static async createTask(taskDTO: CreateTaskBody, userId: string): Promise<Task> {
-    const task: TaskType = await TaskRepository.getTaskByName(taskDTO.name);
+    const task: Task | null = await TaskRepository.getTaskByName(taskDTO.name);
     if (task) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'Task already exists',
@@ -25,13 +25,13 @@ export class TaskService {
     return TaskRepository.createTask(taskDTO, user);
   }
 
-  static async getAllTasks(queryParams: Partial<GetAllQuery>, userId: string): Promise<GetAllTaskResponse | undefined> {
+  static async getAllTasks(queryParams: Partial<GetAllQueryParams>, userId: string): Promise<GetAllTaskResponse | undefined> {
     const { pagination, sort, filter, includeGroupmatesTasks } = queryParams;
     const params: QueryParams = {
-      limit: Number(pagination?.limit),
-      offset: Number(pagination?.offset),
-      type: sort?.type?.toUpperCase(),
-      field: sort?.field?.toLowerCase(),
+      limit: pagination?.limit ? Number(pagination?.limit) : undefined,
+      offset: pagination?.offset ? Number(pagination?.offset) : undefined,
+      type: sort?.type ? sort?.type.toUpperCase() : undefined,
+      field: sort?.field ? sort?.field.toLowerCase() : undefined,
     };
     const filterId = filter?.user ? Number(filter?.user) : undefined;
     const tasks: Task[] = includeGroupmatesTasks !== 'true' ?
@@ -51,7 +51,7 @@ export class TaskService {
   }
 
   static async deleteTaskById(id: string): Promise<void> {
-    const task: TaskType = await TaskRepository.findOneById(Number(id));
+    const task: Task | null = await TaskRepository.findOneById(Number(id));
     if (!task) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Task not found',
@@ -60,7 +60,7 @@ export class TaskService {
     await TaskRepository.deleteTask(task);
   }
   static async updateTaskById(id: string, updateBody: UpdateTaskBody): Promise<Task> {
-    const task: TaskType = await TaskRepository.findOneById(Number(id));
+    const task: Task | null = await TaskRepository.findOneById(Number(id));
     if (!task) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Task not found',
@@ -74,8 +74,7 @@ export class TaskService {
     if (updateBody.deadline) {
       updateBody = { ...updateBody, ...{ deadline: new Date(updateBody.deadline) } };
     }
-    await TaskRepository.updateTaskById(Number(id), updateBody);
-    const updatedTask: TaskType = await TaskRepository.findOneById(Number(id));
+    const updatedTask: Task | null = await TaskRepository.updateTaskById(Number(id), updateBody);
     if (!updatedTask) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'Task not updated',
@@ -84,7 +83,7 @@ export class TaskService {
     return updatedTask;
   }
   static async getAllGroupmatesTasks(userId: number, params: QueryParams, filterId: number | undefined): Promise<Task[]> {
-    const user: UserType = await UserRepository.getUserByIdWithGroup(Number(userId));
+    const user: User | null = await UserRepository.getUserByIdWithGroup(Number(userId));
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',

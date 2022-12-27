@@ -8,6 +8,7 @@ import { mountRouter as mountUserRouter } from '@user';
 import { mountRouter as mountGroupRouter } from '@group';
 import { mountRouter as mountTaskRouter } from '@task';
 import { mountWsRouter } from 'ws/ws.routes';
+import { config } from 'config';
 import { AppDataSource } from './data-source';
 
 const app = express();
@@ -26,13 +27,12 @@ app.use(errorHandler);
 
 const init = async (): Promise<void> => {
   try {
-    const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4500;
-    const DB: string | undefined = process.env.DB_NAME;
+    const PORT: number = config.DEV.PORT;
     await AppDataSource.initialize();
     app.listen(PORT, () => {
       console.log(`---listening port ${PORT}---`);
     });
-    console.info(`Successfully connected to ${DB}`);
+    console.info('Successfully connected');
   } catch (error) {
     console.log(error);
     process.exit(1);

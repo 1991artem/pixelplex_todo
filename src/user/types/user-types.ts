@@ -1,7 +1,3 @@
-import { User } from 'user/entity/user.entity';
-
-export type UserType = User | null;
-
 export type UserStatistics = {
   to_do: {
     overdue: number,

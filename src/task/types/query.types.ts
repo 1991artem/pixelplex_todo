@@ -1,13 +1,13 @@
-export type GetAllQuery = {
-  pagination: {
-    limit: number,
-    offset: number,
+export type GetAllQueryParams = {
+  pagination?: {
+    limit?: number,
+    offset?: number,
   },
-  sort: {
-    type: string | undefined;
-    field: string;
+  sort?: {
+    type?: string;
+    field?: string;
   },
-  filter: {
+  filter?: {
     user: string;
   },
   includeGroupmatesTasks?: string

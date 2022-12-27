@@ -1,33 +1,16 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { User, UserType, UserRepository } from '@user';
+import { User, UserRepository } from '@user';
 import { AppError } from '@errors';
 import { STATUS_CODE } from '@constants';
+import { config } from 'config';
 import { CreateUserBody, UserAuthBody } from './types/body.types';
 
 class AuthService {
-  private _secretKey: string | undefined;
-  private _tokenLifetime: string | undefined;
-  constructor() {
-    this._secretKey = process.env.JWT_SECRET;
-    this._tokenLifetime = process.env.TOKEN_LIFETIME;
-  };
-  get secretKey(): string {
-    if (!this._secretKey) {
-      throw new Error('JWT_SECRET environment variables are not defined');
-    }
-    return this._secretKey;
-  }
-  get tokenLifetime(): string {
-    if (!this._tokenLifetime) {
-      throw new Error('TOKEN_LIFETIME environment variables are not defined');
-    }
-    return this._tokenLifetime;
-  }
   async createUser(userDTO: CreateUserBody): Promise<User> {
     const { email, password } = userDTO;
     const hashedPassword = await hash(password, 12);
-    const candidate: UserType = await UserRepository.findOneByEmail(email);
+    const candidate: User | null = await UserRepository.findOneByEmail(email);
     if (candidate) {
       throw new AppError(STATUS_CODE.UNPROCESSABLE_ENTITY,
         'User with this email address already exists',
@@ -39,7 +22,7 @@ class AuthService {
 
   async login(userDTO: UserAuthBody): Promise<string> {
     const { email, password } = userDTO;
-    const user: UserType = await UserRepository.findOneByEmail(email);
+    const user: User | null = await UserRepository.findOneByEmail(email);
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',
@@ -56,8 +39,8 @@ class AuthService {
   }
 
   getJtwToken(id: number, role: string, name: string): string {
-    return sign({ id, role, name }, this.secretKey, {
-      expiresIn: this.tokenLifetime,
+    return sign({ id, role, name }, config.DEV.JWT_SECRET, {
+      expiresIn: config.DEV.TOKEN_LIFETIME,
     });
   }
 }

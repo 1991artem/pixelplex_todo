@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import { NextFunction, Response, Request } from 'express';
-import { AppError } from 'errors/app.error';
 import { IUserAuthInfoInRequest } from 'types/express';
 import { STATUS_CODE } from '../constants';
 
@@ -10,14 +9,10 @@ export function checkRole(userRoles: string[]) {
       if (req.method === 'OPTIONS') {
         next();
       }
-      const userInfo: IUserAuthInfoInRequest | null | undefined = req.user;
-      if (!userInfo) {
-        return next(new AppError(STATUS_CODE.UNAUTHORIZED, 'Authorization is invalid'));
-      }
+      const { role } = req.user as IUserAuthInfoInRequest;
 
-      const { role } = userInfo;
       if (!role) {
-        return next(new AppError(STATUS_CODE.UNAUTHORIZED, 'Authorization is invalid'));
+        return next(new Error('Authorization is invalid'));
       }
       const hasRole = userRoles.includes(role);
 

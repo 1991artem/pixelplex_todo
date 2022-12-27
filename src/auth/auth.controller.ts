@@ -29,7 +29,7 @@ export default class AuthController {
     try {
       res.status(STATUS_CODE.OK).json({
         message: 'User logged out',
-      });;
+      });
     } catch (error) {
       next(error);
     }

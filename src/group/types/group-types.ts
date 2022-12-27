@@ -1,7 +1,4 @@
 import { User } from '@user';
-import { Group } from 'group/entity/group.entity';
-
-export type GroupType = Group | null;
 
 export type GetAllGroupResponse = {
   amount: number;
@@ -17,13 +14,13 @@ type GroupResponse = {
 };
 
 export type QueryParams = {
-  limit: number;
-  offset: number;
+  limit: number | undefined;
+  offset: number | undefined;
   type: string | undefined;
   field: string | undefined;
 };
 
-export type GetGroupById = {
+export type GetGroupByIdParams = {
   id: number,
   name: string,
   description: string,

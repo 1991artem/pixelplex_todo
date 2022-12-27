@@ -3,8 +3,8 @@ import { User, UserRepository, UserType } from '@user';
 import { STATUS_CODE } from '@constants';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';
-import { GetAllGroupResponse, GetGroupById, GroupType, QueryParams } from './types/group-types';
-import { GetAllQuery } from './types/query.types';
+import { GetAllGroupResponse, GetGroupByIdParams, GroupType, QueryParams } from './types/group-types';
+import { GetAllQueryParams } from './types/query.types';
 import { CreateGroupBody, UpdateGroupBody, UserInGroupBody } from './types/body.types';
 
 export class GroupService {
@@ -17,13 +17,13 @@ export class GroupService {
     }
     return GroupRepository.createGroup(groupDTO);
   }
-  static async getAllGroups(queryParams: Partial<GetAllQuery>): Promise<GetAllGroupResponse> {
+  static async getAllGroups(queryParams: Partial<GetAllQueryParams>): Promise<GetAllGroupResponse> {
     const { pagination, sort } = queryParams;
     const params: QueryParams = {
-      limit: Number(pagination?.limit),
-      offset: Number(pagination?.offset),
-      type: sort?.type?.toUpperCase(),
-      field: sort?.field?.toLowerCase(),
+      limit: pagination?.limit ? Number(pagination?.limit) : undefined,
+      offset: pagination?.offset ? Number(pagination?.offset) : undefined,
+      type: sort?.type ? sort?.type.toUpperCase() : undefined,
+      field: sort?.field ? sort?.field.toLowerCase() : undefined,
     };
     const groups: Group[] = await GroupRepository.getAllGroups(params);
     if (!groups.length) {
@@ -45,7 +45,7 @@ export class GroupService {
     };
     return allGroupResponse;
   }
-  static async getGroupById(id: string): Promise<GetGroupById> {
+  static async getGroupById(id: string): Promise<GetGroupByIdParams> {
     const group: GroupType = await GroupRepository.getGroupById(Number(id));
     if (!group) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
@@ -83,12 +83,10 @@ export class GroupService {
         'Group not found',
       );
     }
-    await GroupRepository.updateGroupById(Number(id), updateBody);
-
-    const updatedGroup: GroupType = await GroupRepository.getGroupById(Number(id));
+    const updatedGroup: GroupType = await GroupRepository.updateGroupById(Number(id), updateBody);
     if (!updatedGroup) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
-        'Group not found',
+        'Group not updated',
       );
     }
     return {

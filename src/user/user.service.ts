@@ -1,12 +1,13 @@
 import { Task, TASK_STATUS } from '@task';
 import { AppError } from '@errors';
 import { STATUS_CODE } from '@constants';
-import { UserStatistics, UserType } from './types/user-types';
+import { User } from '@user';
+import { UserStatistics } from './types/user-types';
 import { UserRepository } from './user.repository';
 
 export class UserService {
   static async getUserStatistics(id: string): Promise<UserStatistics> {
-    const user: UserType = await UserRepository.getUserById(Number(id));
+    const user: User | null = await UserRepository.getUserById(Number(id));
     if (!user) {
       throw new AppError(STATUS_CODE.NOT_FOUND,
         'User not found',

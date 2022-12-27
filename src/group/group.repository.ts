@@ -2,7 +2,7 @@ import { User } from '@user';
 import { AppDataSource } from '../data-source';
 import { Group } from './entity/group.entity';
 import { CreateGroupBody } from './types/body.types';
-import { GroupType, QueryParams } from './types/group-types';
+import { QueryParams } from './types/group-types';
 
 export class GroupRepository {
   private static _groupsRepository = AppDataSource.getRepository(Group);
@@ -30,9 +30,9 @@ export class GroupRepository {
     return groups;
   }
   static async getGroupById(id: number): Promise<Group | null> {
-    const group: GroupType = await this._groupsRepository.findOne({
+    const group: Group | null = await this._groupsRepository.findOne({
       where: {
-        id: id,
+        id,
       },
       relations: {
         users: true,
@@ -42,7 +42,7 @@ export class GroupRepository {
   }
 
   static async getGroupByName(groupName: string): Promise<Group | null> {
-    const group: GroupType = await this._groupsRepository.findOne({
+    const group: Group | null = await this._groupsRepository.findOne({
       where: {
         name: groupName,
       },
@@ -53,13 +53,22 @@ export class GroupRepository {
   static async deleteGroup(group: Group): Promise<void> {
     await this._groupsRepository.remove(group);
   }
-  static async updateGroupById(id: number, updateBody: Partial<CreateGroupBody>): Promise<void> {
-    await this._groupsRepository
+  static async updateGroupById(id: number, updateBody: Partial<CreateGroupBody>): Promise<Group | null> {
+    const updateResult = await this._groupsRepository
       .createQueryBuilder()
       .update(Group)
+      .returning('*')
+      .updateEntity(true)
       .set({ ...updateBody })
       .where( { id })
       .execute();
+
+    const [updatedGroup] = updateResult.raw as Group[];
+    if (!updatedGroup) {
+      return null;
+    }
+    return updatedGroup;
+
   }
   static async addUserToGroup(group: Group, user: User): Promise<void> {
     await this._groupsRepository.createQueryBuilder()

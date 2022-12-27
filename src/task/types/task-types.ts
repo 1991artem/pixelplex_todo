@@ -1,10 +1,8 @@
 import { Task } from '../entity/task.entity';
 
-export type TaskType = Task | null;
-
 export type QueryParams = {
-  limit: number;
-  offset: number;
+  limit: number | undefined;
+  offset: number | undefined;
   type: string | undefined;
   field: string | undefined;
 };
@@ -14,7 +12,7 @@ export type GetAllTaskResponse = {
   tasks: Task[]
 };
 
-export type GetTaskById = {
+export type GetTaskByIdParams = {
   id: number,
   name: string,
   description: string,

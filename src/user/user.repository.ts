@@ -1,26 +1,25 @@
 import { UserAuthBody } from 'auth/types/body.types';
 import { AppDataSource } from '../data-source';
 import { User } from './entity/user.entity';
-import { UserType } from './types/user-types';
 
 export class UserRepository {
   private static _usersRepository = AppDataSource.getRepository(User);
   static async findOneByEmail(email: string): Promise<User | null> {
-    const user: UserType = await this._usersRepository.findOneBy({
+    const user: User | null = await this._usersRepository.findOneBy({
       email,
     });
     return user;
   }
 
   static async findOneById(id: number): Promise<User | null> {
-    const user: UserType = await this._usersRepository.findOneBy({
+    const user: User | null = await this._usersRepository.findOneBy({
       id,
     });
     return user;
   }
 
   static async getUserById(id: number): Promise<User | null> {
-    const user: UserType = await this._usersRepository.findOne({
+    const user: User | null = await this._usersRepository.findOne({
       where: {
         id: id,
       },
@@ -32,7 +31,7 @@ export class UserRepository {
   }
 
   static async getUserByIdWithGroup(id: number): Promise<User | null> {
-    const user: UserType = await this._usersRepository.findOne({
+    const user: User | null = await this._usersRepository.findOne({
       where: {
         id: id,
       },

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 import { Response, Request, NextFunction } from 'express';
-import { isAppError, AppError } from '../errors/app.error';
+import { isAppError } from '../errors/app.error';
 
-export const errorHandler = (error: AppError, _req: Request, res: Response, _next: NextFunction): void => {
+export const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction): void => {
   if (isAppError(error)) {
     const { message, statusCode } = error;
     res.status(statusCode).json({ message, statusCode });
