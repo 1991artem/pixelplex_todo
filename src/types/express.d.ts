@@ -1,6 +1,7 @@
+import { USER_ROLE } from './../user/constants/user.constants';
+
 export interface IUserAuthInfoInRequest {
-  token: string;
-  role: string;
+  role: USER_ROLE;
   id: string;
 };
 

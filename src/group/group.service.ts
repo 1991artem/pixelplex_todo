@@ -3,7 +3,7 @@ import { User, UserRepository } from '@user';
 import { STATUS_CODE } from '@constants';
 import { Group } from './entity/group.entity';
 import { GroupRepository } from './group.repository';
-import { GetAllGroupResponse, GetGroupByIdParams, QueryParams } from './types/group-types';
+import { GetAllGroupResponse, GetGroupByIdResponse, QueryParams } from './types/group-types';
 import { GetAllQueryParams } from './types/query.types';
 import { CreateGroupBody, UpdateGroupBody, UserInGroupBody } from './types/body.types';
 
@@ -26,11 +26,6 @@ export class GroupService {
       field: sort?.field ? sort?.field.toLowerCase() : undefined,
     };
     const groups: Group[] = await GroupRepository.getAllGroups(params);
-    if (!groups.length) {
-      throw new AppError(STATUS_CODE.NOT_FOUND,
-        'Groups not found',
-      );
-    }
     const allGroupResponse: GetAllGroupResponse = {
       amount: groups.length,
       groups: groups.map((group: Group) => {
@@ -45,12 +40,10 @@ export class GroupService {
     };
     return allGroupResponse;
   }
-  static async getGroupById(id: string): Promise<GetGroupByIdParams> {
+  static async getGroupById(id: string): Promise<GetGroupByIdResponse | null> {
     const group: Group | null = await GroupRepository.getGroupById(Number(id));
     if (!group) {
-      throw new AppError(STATUS_CODE.NOT_FOUND,
-        'Group not found',
-      );
+      return null;
     }
     return {
       id: group.id,

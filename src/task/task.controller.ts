@@ -1,6 +1,4 @@
 import { Response, NextFunction } from 'express';
-import { STATUS_CODE } from '@constants';
-import { AppError } from '@errors';
 import { Task } from './entity/task.entity';
 import { TaskService } from './task.service';
 import { CreateTaskRequest, DeleteTaskRequest, GetAllTaskRequest, UpdateTaskRequest } from './types/request.types';
@@ -9,9 +7,7 @@ import { GetAllTaskResponse } from './types/task-types';
 export default class TaskController {
   static async createTask( req: CreateTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user?.id) {
-        throw new AppError(STATUS_CODE.BAD_REQUEST, 'Invalid id');
-      }
+      if (!req.user?.id) throw new Error();
       const task: Task = await TaskService.createTask(req.body, req.user.id);
       res.status(201).json( {
         id: task.id,
@@ -24,10 +20,8 @@ export default class TaskController {
 
   static async getAllTasks( req: GetAllTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user?.id) {
-        throw new AppError(STATUS_CODE.BAD_REQUEST, 'Invalid id');
-      }
-      const allTaskResponse: GetAllTaskResponse | undefined = await TaskService.getAllTasks(req.query, req.user.id);
+      if (!req.user?.id) throw new Error();
+      const allTaskResponse: GetAllTaskResponse | undefined = await TaskService.getAllTasks(req.query, req.user?.id);
       res.status(200).json(allTaskResponse);
     } catch (error) {
       next(error);

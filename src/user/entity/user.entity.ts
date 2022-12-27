@@ -32,10 +32,11 @@ export class User extends BaseEntity {
     email: string;
 
   @Column({
+    type: "enum",
     enum: USER_ROLE,
     default: USER_ROLE.USER,
   })
-    role: string;
+    role: USER_ROLE;
 
   @CreateDateColumn()
     createdAt: Date;

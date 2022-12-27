@@ -28,19 +28,21 @@ export class Task extends BaseEntity {
     description: string;
 
   @Column({
+    type: "enum",
     enum: TASK_STATUS,
     default: TASK_STATUS.TO_DO,
   })
-    status: string;
+    status: TASK_STATUS;
 
   @Column()
     deadline: Date;
 
   @Column({
-    enum: TASK_PRIORITY,
-    default: TASK_PRIORITY.HIGH,
+    type: "enum",
+    nullable: true,
+    enum: TASK_PRIORITY
   })
-    priority: string;
+    priority: TASK_PRIORITY;
 
   @CreateDateColumn()
     createdAt: Date;

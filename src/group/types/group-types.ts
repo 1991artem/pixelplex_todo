@@ -20,7 +20,7 @@ export type QueryParams = {
   field: string | undefined;
 };
 
-export type GetGroupByIdParams = {
+export type GetGroupByIdResponse = {
   id: number,
   name: string,
   description: string,

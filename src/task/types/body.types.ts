@@ -5,7 +5,7 @@ export type CreateTaskBody = {
   description?: string,
   status?: TASK_STATUS,
   deadline?: Date,
-  priority?: TASK_PRIORITY,
+  priority: TASK_PRIORITY,
 };
 
 export type UpdateTaskBody = Partial<CreateTaskBody>;

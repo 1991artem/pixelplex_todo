@@ -10,10 +10,6 @@ export function checkRole(userRoles: string[]) {
         next();
       }
       const { role } = req.user as IUserAuthInfoInRequest;
-
-      if (!role) {
-        return next(new Error('Authorization is invalid'));
-      }
       const hasRole = userRoles.includes(role);
 
       if (!hasRole) {

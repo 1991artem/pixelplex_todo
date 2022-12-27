@@ -34,12 +34,12 @@ class AuthService {
         'Authentification failed. Check your email/password.',
       );
     }
-    const token: string = this.getJtwToken(user.id, user.role, user.name);
+    const token: string = this.getJtwToken(user.id, user.role);
     return token;
   }
 
-  getJtwToken(id: number, role: string, name: string): string {
-    return sign({ id, role, name }, config.DEV.JWT_SECRET, {
+  getJtwToken(id: number, role: string): string {
+    return sign({ id, role }, config.DEV.JWT_SECRET, {
       expiresIn: config.DEV.TOKEN_LIFETIME,
     });
   }
