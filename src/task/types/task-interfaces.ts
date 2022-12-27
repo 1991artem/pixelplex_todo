@@ -1,5 +1,3 @@
-import { Request } from 'express';
-import { CreateTaskDTO, UpdateTaskDTO } from 'task/dtos/task.dtos';
 import { Task } from '../entity/task.entity';
 
 export interface IGetAllTaskResponse {
@@ -22,23 +20,6 @@ export interface IGetTaskById {
   users: Partial<Task>[],
 }
 
-export interface CreateTaskRequest extends Request {
-  body: CreateTaskDTO;
-}
-
-export interface UpdateTaskRequest extends Request {
-  params: {
-    id: string;
-  };
-  body: UpdateTaskDTO;
-}
-
-export interface GetAllTaskRequest extends Request {
-  body: UpdateTaskDTO;
-}
-
-export interface DeleteTaskRequest extends Request {
-  params: {
-    id: string;
-  };
+export interface TaskWithIdRequest {
+  id: string;
 }

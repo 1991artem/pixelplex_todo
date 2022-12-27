@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { expect } from 'chai';
-import 'mocha';
-
 import { before, describe } from 'mocha';
-import { AppError } from '@errors';
+
 import { DataSource } from 'typeorm';
+import { AppError } from '@errors';
 import { User } from '@user';
 import { AppDataSource } from 'test/test-data-source';
 import { authService } from '@auth';
@@ -37,38 +36,38 @@ describe('Test module auth/auth.service.ts', () => {
   describe('Test AuthService.createUser()', () => {
     it('Throws an error if email is already taken', async () => {
       try {
-        await authService.createUser({email: TEST_EMAIL, password: 'password', name: 'original_name'});
+        await authService.createUser({ email: TEST_EMAIL, password: 'password', name: 'original_name' });
       } catch (error) {
         expect(error).to.be.instanceOf(AppError, 'User with this email address already exists');
       }
     });
 
     it('Saves new user successfully', async () => {
-      const user = await authService.createUser({email: TEST_EMAIL2, password: TEST_PASSWORD2, name: TEST_USERNAME2});
+      const user = await authService.createUser({ email: TEST_EMAIL2, password: TEST_PASSWORD2, name: TEST_USERNAME2 });
       await user.remove();
     });
   });
 
   describe('Test AuthService.login()', () => {
     it('Logins new user successfully', async () => {
-      const user = await authService.createUser({email: TEST_EMAIL2, password: TEST_PASSWORD2, name: TEST_USERNAME2});
-      const token = await authService.login({email: TEST_EMAIL2, password: TEST_PASSWORD2 });
+      const user = await authService.createUser({ email: TEST_EMAIL2, password: TEST_PASSWORD2, name: TEST_USERNAME2 });
+      const token = await authService.login({ email: TEST_EMAIL2, password: TEST_PASSWORD2 });
       expect(token).to.be.a('string');
       await user.remove();
     });
 
-    it("Throws an error if user doesn't exist", async () => {
+    it('Throws an error if user doesn\'t exist', async () => {
       try {
-        await authService.login({email: TEST_EMAIL2, password: TEST_PASSWORD2 });
+        await authService.login({ email: TEST_EMAIL2, password: TEST_PASSWORD2 });
       } catch (error) {
         expect(error).to.be.instanceOf(AppError, 'Authentication failed. Check your email/password.');
       }
     });
 
     it('Throws an error if password is wrong', async () => {
-      const user = await authService.createUser({email: TEST_EMAIL2, password: TEST_PASSWORD2, name: TEST_USERNAME2});
+      const user = await authService.createUser({ email: TEST_EMAIL2, password: TEST_PASSWORD2, name: TEST_USERNAME2 });
       try {
-        await authService.login({email: TEST_EMAIL2, password: 'wrong_password' });
+        await authService.login({ email: TEST_EMAIL2, password: 'wrong_password' });
       } catch (error) {
         expect(error).to.be.instanceOf(AppError, 'Authentication failed. Check your email/password.');
       }

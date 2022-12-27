@@ -22,11 +22,11 @@ export class GroupRepository {
       },
       skip: offset,
       take: limit,
-      order: field ? 
-      {
-        [field]: type,
-      }
-      : undefined,
+      order: field ?
+        {
+          [field]: type,
+        }
+        : undefined,
     });
     return groups;
   }

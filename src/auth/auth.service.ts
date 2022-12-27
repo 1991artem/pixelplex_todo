@@ -13,11 +13,15 @@ class AuthService {
     this._tokenLifetime = process.env.TOKEN_LIFETIME;
   };
   get secretKey(): string {
-    if (!this._secretKey) throw new Error('JWT_SECRET environment variables are not defined');
+    if (!this._secretKey) {
+      throw new Error('JWT_SECRET environment variables are not defined');
+    }
     return this._secretKey;
   }
   get tokenLifetime(): string {
-    if (!this._tokenLifetime) throw new Error('TOKEN_LIFETIME environment variables are not defined');
+    if (!this._tokenLifetime) {
+      throw new Error('TOKEN_LIFETIME environment variables are not defined');
+    }
     return this._tokenLifetime;
   }
   async createUser(userDTO: UserCreateDTO): Promise<User> {

@@ -8,7 +8,7 @@ export default class AuthController {
   static async signUp(req: Request<any, UserCreateDTO>, res: Response, next: NextFunction): Promise<void> {
     try {
       const user: User = await authService.createUser(req.body);
-      res.status(STATUS_CODE.OK).json({ id: user?.id, message: 'User has been created' });
+      res.status(STATUS_CODE.OK).json({ id: user.id, message: 'User has been created' });
     } catch (error) {
       next(error);
     }

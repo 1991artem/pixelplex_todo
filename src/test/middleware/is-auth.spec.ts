@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { expect } from 'chai';
-import 'mocha';
+import { describe } from 'mocha';
 import * as sinon from 'sinon';
 
 import * as jwt from 'jsonwebtoken';
 
-import { isAuth } from '@middleware';
-import { describe } from 'mocha';
-import { AppError } from '@errors';
 import { NextFunction, Request, Response } from 'express';
+import { isAuth } from '@middleware';
+import { AppError } from '@errors';
 
 describe('middleware/is-auth.ts', () => {
   describe('Calls "next()" with AppError if:', () => {

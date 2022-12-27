@@ -58,11 +58,11 @@ export class TaskRepository {
       },
       skip: offset,
       take: limit,
-      order: field ? 
-      {
-        [field]: type,
-      }
-      : undefined,
+      order: field ?
+        {
+          [field]: type,
+        }
+        : undefined,
     });
     return tasks;
   }

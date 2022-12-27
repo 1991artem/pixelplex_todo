@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { expect } from 'chai';
-import 'mocha';
-
 import { before, describe } from 'mocha';
-import { AppError } from '@errors';
+
 import { DataSource } from 'typeorm';
+import { AppError } from '@errors';
 import { Group, GroupService } from '@group';
 import { AppDataSource } from 'test/test-data-source';
-
 
 const TEST_NAME = 'Group name 1';
 const TEST_NAME2 = 'Group name 2';
@@ -36,14 +34,14 @@ describe('Test module group/group.service.ts', () => {
   describe('Test GroupService.createGroup()', () => {
     it('Throws an error if name is already taken', async () => {
       try {
-        await GroupService.createGroup({name: TEST_NAME, description: TEST_DESCRIPTION});
+        await GroupService.createGroup({ name: TEST_NAME, description: TEST_DESCRIPTION });
       } catch (error) {
         expect(error).to.be.instanceOf(AppError, 'Group already exists');
       }
     });
 
     it('Saves new group successfully', async () => {
-      const group = await GroupService.createGroup({name: TEST_NAME2, description: TEST_DESCRIPTION});
+      const group = await GroupService.createGroup({ name: TEST_NAME2, description: TEST_DESCRIPTION });
       await group.remove();
     });
   });

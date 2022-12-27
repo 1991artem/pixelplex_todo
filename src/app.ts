@@ -7,8 +7,8 @@ import { mountRouter as mountAuthRouter } from '@auth';
 import { mountRouter as mountUserRouter } from '@user';
 import { mountRouter as mountGroupRouter } from '@group';
 import { mountRouter as mountTaskRouter } from '@task';
-import { AppDataSource } from './data-source';
 import { mountWsRouter } from 'ws/ws.routes';
+import { AppDataSource } from './data-source';
 
 const app = express();
 export const wss = ws(app);
