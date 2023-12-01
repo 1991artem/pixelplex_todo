@@ -1,55 +1,44 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { Task } from './entity/task.entity';
+import { TaskService } from './task.service';
+import { CreateTaskRequest, DeleteTaskRequest, GetAllTaskRequest, UpdateTaskRequest } from './types/request.types';
+import { GetAllTaskResponse } from './types/task-types';
 
 export default class TaskController {
-  static async createTask( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createTask( req: CreateTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskDTO = {
-        name: req.body?.name,
-        description: req.body?.description,
-        status: req.body?.status,
-        deadline: req.body?.deadline,
-        priority: req.body?.priority,
-      };
-      res.status(201).json(taskDTO);
+      if (!req.user?.id) throw new Error();
+      const task: Task = await TaskService.createTask(req.body, req.user.id);
+      res.status(201).json( {
+        id: task.id,
+        message: 'Task has been created',
+      });
     } catch (error) {
       next(error);
     }
   }
-  static async getAllTasks( req: Request, res: Response, next: NextFunction): Promise<void> {
+
+  static async getAllTasks( req: GetAllTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const queryParams = req.query;
-      res.status(200).json(queryParams);
+      if (!req.user?.id) throw new Error();
+      const allTaskResponse: GetAllTaskResponse | undefined = await TaskService.getAllTasks(req.query, req.user?.id);
+      res.status(200).json(allTaskResponse);
     } catch (error) {
       next(error);
     }
   }
-  static async getTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteTaskById( req: UpdateTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskId = req.params?.id;
-      res.status(200).json(taskId);
+      await TaskService.deleteTaskById(req.params.id);
+      res.status(200).json({ message: 'Task has been deleted' });
     } catch (error) {
       next(error);
     }
   }
-  static async deleteTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateTaskById( req: DeleteTaskRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const taskId = req.params?.id;
-      res.status(200).json(taskId);
-    } catch (error) {
-      next(error);
-    }
-  }
-  static async updateTaskById( req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const taskId = req.params?.id;
-      const updateBody = {
-        name: req.body?.name,
-        description: req.body?.description,
-        status: req.body?.status,
-        deadline: req.body?.deadline,
-        priority: req.body?.priority,
-      };
-      res.status(200).json({ taskId, updateBody });
+      const taskInfo: Partial<Task> = await TaskService.updateTaskById(req.params.id, req.body);
+      res.status(200).json({ message: 'Task has been updated', group: taskInfo });
     } catch (error) {
       next(error);
     }

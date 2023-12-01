@@ -15,7 +15,7 @@ const LIMIT: ParamSchema = {
   isInt: {
     options: {
       min: 0,
-    }
+    },
   },
   optional: true,
   errorMessage: 'Pagination params is invalid',
@@ -28,7 +28,7 @@ const OFFSET: ParamSchema = {
   isInt: {
     options: {
       min: 0,
-    }
+    },
   },
   optional: true,
   errorMessage: 'Pagination params is invalid',

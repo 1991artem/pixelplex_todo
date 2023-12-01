@@ -1,13 +1,42 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "sourceMap": false,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
     "outDir": "./dist",
-    "skipLibCheck": true
+    "baseUrl": "./src",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "strictPropertyInitialization": false,
+    "noFallthroughCasesInSwitch": false,
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ],
+    "paths": {
+      "@auth": ["auth"],
+      "@group": ["group"],
+      "@task": ["task"],
+      "@user": ["user"],
+      "@errors": ["errors"],
+      "@middleware": ["middleware"],
+      "@constants": ["constants"],
+      "@ws": ["ws"],
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/**/*.ts"],
+  "ts-node": {
+    "files": true
   }
 }
